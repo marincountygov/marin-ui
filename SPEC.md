@@ -1,4 +1,4 @@
-# Codex Spec: County of Marin Micro-App
+# Spec: County of Marin Micro-App
 
 ## Purpose
 
@@ -286,7 +286,7 @@ If no approved logo asset exists, replace the logo image with accessible text:
 
 ## Required shared CSS classes
 
-Codex should use these shared classes before inventing new visual patterns:
+Build agents should use these shared classes before inventing new visual patterns:
 
 ```text
 skip-link
@@ -666,7 +666,7 @@ All generated apps must conform to WCAG 2.2 Level AA.
 
 This is not optional. Treat accessibility as an implementation requirement, not a cleanup task.
 
-Codex must satisfy these requirements:
+Build agents must satisfy these requirements:
 
 ### Structure and semantics
 
@@ -708,7 +708,7 @@ focused content is not hidden behind sticky headers or overlays
 
 ### WCAG 2.2-specific interaction requirements
 
-Codex must account for WCAG 2.2 additions, especially:
+Build agents must account for WCAG 2.2 additions, especially:
 
 ```text
 focus not obscured
@@ -963,9 +963,9 @@ Any app that stores meaningful local data must include an export path.
 
 Do not treat browser storage as the only durable copy of official records.
 
-## Standard Codex prompt
+## Standard AI Code Agent prompt
 
-Use this prompt when asking Codex to build a County micro-app:
+Use this prompt when asking AI coding agents to build a County micro-app:
 
 ```text
 Build this as a County of Marin micro-app.
@@ -993,7 +993,7 @@ Use localStorage only for small preferences. Use IndexedDB through Dexie for rea
 
 ## Review checklist before accepting generated code
 
-Before accepting Codex output, verify:
+Before accepting AI code agent output, verify:
 
 ```text
 No unnecessary framework was introduced.
