@@ -10,7 +10,7 @@
     <style>
       .magic-hero {
         display: grid;
-        grid-template-columns: minmax(0, 1.5fr) minmax(16rem, 0.75fr);
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
         gap: 1rem;
         align-items: stretch;
         margin-bottom: 1.5rem;
@@ -178,10 +178,6 @@
       }
 
       @media (max-width: 720px) {
-        .magic-hero {
-          grid-template-columns: 1fr;
-        }
-
         .magic-tabs,
         .magic-tab,
         .magic-field-item {
@@ -239,7 +235,7 @@
     <main id="main" class="container app-main" tabindex="-1">
       <div id="app-status-message" role="status" aria-live="polite"></div>
 
-      <section class="magic-hero" aria-labelledby="home-heading">
+      <section id="home" class="magic-hero" aria-labelledby="home-heading">
         <article class="app-card magic-hero__panel">
           <p class="app-kicker">Spreadsheet to CMS content</p>
           <h2 id="home-heading">Build clean HTML from tabular data</h2>
@@ -254,15 +250,6 @@
             <li>Rich text and source copy tools</li>
           </ul>
         </article>
-      </section>
-
-      <div class="magic-tabs" role="tablist" aria-label="Main sections">
-        <button id="home-tab" class="magic-tab" type="button" role="tab" aria-selected="true" aria-controls="home-panel">Home</button>
-        <button id="help-tab" class="magic-tab" type="button" role="tab" aria-selected="false" aria-controls="help-panel" tabindex="-1">Help</button>
-        <button id="updates-tab" class="magic-tab" type="button" role="tab" aria-selected="false" aria-controls="updates-panel" tabindex="-1">Updates</button>
-      </div>
-
-      <section id="home-panel" role="tabpanel" aria-labelledby="home-tab">
         <article class="app-card magic-upload">
           <label for="file-input">Upload a spreadsheet or data file</label>
           <p id="upload-help" class="app-help-text">Drag and drop a file anywhere on this page, or use the browse button. Supported file types: <code>.csv</code>, <code>.xlsx</code>, <code>.xls</code>, <code>.json</code>.</p>
@@ -272,7 +259,9 @@
           <input id="file-input" class="visually-hidden" type="file" aria-describedby="upload-help" accept=".csv,.xlsx,.xls,.json,application/json,text/csv">
           <p id="file-status" class="app-help-text" role="status" aria-live="polite" aria-atomic="true">Select a file to begin.</p>
         </article>
+      </section>
 
+      <section id="home-panel" aria-label="MarinMagic conversion workflow">
         <article id="mapping-panel" class="app-card" hidden>
           <div class="app-toolbar">
             <div>
@@ -339,7 +328,7 @@
         </article>
       </section>
 
-      <section id="help-panel" class="app-card" role="tabpanel" aria-labelledby="help-tab" hidden>
+      <section id="help" class="app-card" hidden>
         <p class="app-kicker">Help</p>
         <h2>Use MarinMagic to publish spreadsheet content</h2>
         <h3>Prepare your file</h3>
@@ -364,7 +353,7 @@
         </ul>
       </section>
 
-      <section id="updates-panel" class="app-card" role="tabpanel" aria-labelledby="updates-tab" hidden>
+      <section id="updates" class="app-card" hidden>
         <p class="app-kicker">Updates</p>
         <h2>Latest MarinMagic commits</h2>
         <p id="updates-status" class="app-help-text" role="status" aria-live="polite" aria-atomic="true">Select the Updates tab to load recent commits.</p>
@@ -415,8 +404,11 @@
       const dropOverlay = document.querySelector("#drop-overlay");
       const updatesStatus = document.querySelector("#updates-status");
       const updatesList = document.querySelector("#updates-list");
-      const mainTabs = Array.from(document.querySelectorAll("#home-tab, #help-tab, #updates-tab"));
       const previewTabs = Array.from(document.querySelectorAll("#text-tab, #html-tab"));
+      const homeHero = document.querySelector("#home");
+      const homePanel = document.querySelector("#home-panel");
+      const helpSection = document.querySelector("#help");
+      const updatesSection = document.querySelector("#updates");
 
       let headers = [];
       let rows = [];
@@ -491,11 +483,15 @@
         });
       }
 
-      function syncMainTabFromHash() {
+      function showSectionFromHash() {
         const hash = window.location.hash || "#home";
-        const tab = hash === "#help" ? document.querySelector("#help-tab") : hash === "#updates" ? document.querySelector("#updates-tab") : document.querySelector("#home-tab");
-        activateTabs(mainTabs, tab);
-        if (tab.id === "updates-tab") loadUpdates();
+        const showHelp = hash === "#help";
+        const showUpdates = hash === "#updates";
+        homeHero.hidden = showHelp || showUpdates;
+        homePanel.hidden = showHelp || showUpdates;
+        helpSection.hidden = !showHelp;
+        updatesSection.hidden = !showUpdates;
+        if (showUpdates) loadUpdates();
       }
 
       function activateTabs(tabs, activeTab) {
@@ -874,16 +870,11 @@
         if (!event.matches) setMenuOpen(false);
       });
       window.addEventListener("hashchange", updateCurrentNavLink);
-      window.addEventListener("hashchange", syncMainTabFromHash);
-      setupTabs(mainTabs, (tab) => {
-        const hash = tab.id === "help-tab" ? "#help" : tab.id === "updates-tab" ? "#updates" : "#home";
-        if (window.location.hash !== hash) window.location.hash = hash;
-        if (tab.id === "updates-tab") loadUpdates();
-      });
+      window.addEventListener("hashchange", showSectionFromHash);
       setupTabs(previewTabs, () => undefined);
       setTheme(getPreferredTheme());
       updateCurrentNavLink();
-      syncMainTabFromHash();
+      showSectionFromHash();
     </script>
   </body>
 </html>
