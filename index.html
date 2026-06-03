@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>County of Marin Level 2 Micro-App Standard Demo</title>
+    <meta
+      name="description"
+      content="A standalone County of Marin Level 2 micro-app starter demonstrating accessible branded components."
+    >
+    <link rel="stylesheet" href="./vendor/pico.min.css">
+    <link rel="stylesheet" href="./shared/app-brand.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <button type="button" class="app-theme-toggle" id="theme-toggle" aria-pressed="false" aria-label="Switch to dark mode">
+      <svg class="app-theme-toggle__icon app-theme-toggle__icon--sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 4.5a1 1 0 0 1-1-1V2a1 1 0 1 1 2 0v1.5a1 1 0 0 1-1 1Zm0 18.5a1 1 0 0 1-1-1v-1.5a1 1 0 1 1 2 0V22a1 1 0 0 1-1 1Zm8-11a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2h-1a1 1 0 0 1-1-1ZM2 13a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2H2Zm15.66-6.66a1 1 0 0 1 0-1.41l1.06-1.06a1 1 0 0 1 1.41 1.41l-1.06 1.06a1 1 0 0 1-1.41 0ZM3.87 20.13a1 1 0 0 1 0-1.41l1.06-1.06a1 1 0 0 1 1.41 1.41l-1.06 1.06a1 1 0 0 1-1.41 0Zm14.79 0-1.06-1.06a1 1 0 1 1 1.41-1.41l1.06 1.06a1 1 0 0 1-1.41 1.41ZM4.93 6.34 3.87 5.28a1 1 0 0 1 1.41-1.41l1.06 1.06a1 1 0 0 1-1.41 1.41ZM12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+      </svg>
+      <svg class="app-theme-toggle__icon app-theme-toggle__icon--moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M20.58 15.79a1 1 0 0 1 .2 1.08A9.5 9.5 0 1 1 10.62 3.22a1 1 0 0 1 1.12 1.27 7.5 7.5 0 0 0 9.02 9.69 1 1 0 0 1 .82.61Zm-3.13 1.27A9.48 9.48 0 0 1 9.48 5.54a7.5 7.5 0 1 0 7.97 11.52Z"/>
+      </svg>
+      <span class="app-theme-toggle__label visually-hidden">Switch to dark mode</span>
+    </button>
+
+    <header class="app-header" role="banner">
+      <div class="app-header__inner">
+        <div class="app-identity">
+          <div class="app-official">Official County of Marin tool</div>
+          <div class="app-title-row">
+            <img src="./assets/logo.png" alt="County of Marin" class="app-logo">
+            <div>
+              <h1 class="app-title">Level 2 Micro-App Standard</h1>
+              <p class="app-subtitle">A durable starter for small County web tools using semantic HTML, Pico.css, County branding, and vanilla JavaScript.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-header__actions">
+          <button type="button" class="app-menu-toggle secondary" id="menu-toggle" aria-expanded="false" aria-controls="app-nav">
+            Menu
+          </button>
+
+          <nav class="app-nav" id="app-nav" aria-label="Application navigation">
+            <a href="#overview" aria-current="page">Overview</a>
+            <a href="#components">Components</a>
+            <a href="#forms">Forms</a>
+            <a href="#data">Data</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="container app-main" tabindex="-1">
+      <div id="app-status-message" role="status" aria-live="polite"></div>
+
+      <section id="overview" class="app-page-heading" aria-labelledby="overview-heading">
+        <p class="app-kicker">Standalone frontend standard</p>
+        <h2 id="overview-heading">Build small County tools without a build step</h2>
+        <p>
+          This codebase demonstrates the County of Marin Level 2 micro-app structure from <code>SPEC.md</code>.
+          It is intended for local-first utilities, internal review apps, data cleanup workflows, dashboards,
+          and other focused tools that should run from a basic static host or directly from <code>file:///</code>.
+        </p>
+      </section>
+
+      <section class="demo-grid" aria-label="Project summary">
+        <article class="app-card">
+          <h3>Required stack</h3>
+          <ul>
+            <li>Semantic HTML</li>
+            <li>Pico.css base styles</li>
+            <li><code>shared/app-brand.css</code> County branding</li>
+            <li>Vanilla JavaScript in <code>app.js</code></li>
+            <li>Jost heading typography with accessible fallbacks</li>
+          </ul>
+        </article>
+
+        <article class="app-card">
+          <h3>Accessibility baseline</h3>
+          <p>
+            The shell includes a skip link, one main landmark, visible focus styles, labeled controls,
+            non-color-only status labels, a light/dark mode toggle, and footer help language aligned with WCAG 2.2 Level AA.
+          </p>
+        </article>
+
+        <article class="app-card">
+          <h3>Branding approach</h3>
+          <p>
+            The demo uses the official County logo stored locally in the codebase. Logo artwork should not be recreated,
+            recolored, stretched, or approximated.
+          </p>
+        </article>
+      </section>
+
+      <section class="demo-section" aria-labelledby="tokens-heading">
+        <h2 id="tokens-heading">County Color Tokens</h2>
+        <p>Use Marin colors as accents and UI indicators while preserving readable text contrast.</p>
+        <ul class="demo-token-list">
+          <li><span class="demo-swatch" style="background: #000000"></span>Black</li>
+          <li><span class="demo-swatch" style="background: #e5b53b"></span>Gold</li>
+          <li><span class="demo-swatch" style="background: #0777cf"></span>Blue</li>
+          <li><span class="demo-swatch" style="background: #73784a"></span>Green</li>
+          <li><span class="demo-swatch" style="background: #a2662b"></span>Brown</li>
+          <li><span class="demo-swatch" style="background: #b45340"></span>Red</li>
+        </ul>
+      </section>
+
+      <section id="components" class="demo-section" aria-labelledby="components-heading">
+        <div class="app-toolbar">
+          <div>
+            <p class="app-kicker">Shared components</p>
+            <h2 id="components-heading">Reusable UI patterns</h2>
+          </div>
+          <div class="app-actions">
+            <button type="button" id="announce-update">Announce demo update</button>
+            <button type="button" class="secondary" id="open-dialog">Open accessible dialog</button>
+          </div>
+        </div>
+
+        <div class="demo-stack">
+          <div class="app-alert app-alert--info">
+            <strong>Info:</strong> Use alerts for short contextual messages that do not interrupt the workflow.
+          </div>
+          <div class="app-alert app-alert--success">
+            <strong>Success:</strong> Pair status color with clear text so meaning is not color-only.
+          </div>
+          <div class="app-alert app-alert--warning">
+            <strong>Warning:</strong> Gold is used as an accent with dark text for sufficient contrast.
+          </div>
+          <div class="app-alert app-alert--danger">
+            <strong>Error:</strong> Use direct language and associate form errors with their controls.
+          </div>
+        </div>
+
+        <article class="app-card">
+          <h3>Status labels and badges</h3>
+          <p>
+            <span class="app-badge">Demo component</span>
+            <span class="app-status" data-status="open">Open</span>
+            <span class="app-status" data-status="success">Ready</span>
+            <span class="app-status" data-status="warning">Needs review</span>
+            <span class="app-status" data-status="error">Error</span>
+          </p>
+        </article>
+      </section>
+
+      <section id="forms" class="demo-section" aria-labelledby="forms-heading">
+        <p class="app-kicker">Accessible validation</p>
+        <h2 id="forms-heading">Demo form</h2>
+        <p>Every control has a visible label, programmatic label, help text where useful, and clear validation feedback.</p>
+
+        <form id="demo-form" class="app-card" novalidate>
+          <div class="app-form-grid">
+            <div class="app-field">
+              <label for="app-name">Micro-app name <span class="app-required" aria-hidden="true">*</span></label>
+              <input
+                id="app-name"
+                name="appName"
+                autocomplete="off"
+                required
+                aria-describedby="app-name-help app-name-error"
+              >
+              <p id="app-name-help" class="app-help-text">Use a short, task-focused name such as Permit Review Helper.</p>
+              <p id="app-name-error" class="app-error" hidden>Enter a micro-app name.</p>
+            </div>
+
+            <div class="app-field">
+              <label for="department">Responsible department <span class="app-required" aria-hidden="true">*</span></label>
+              <select id="department" name="department" required aria-describedby="department-error">
+                <option value="">Select a department</option>
+                <option>Community Development Agency</option>
+                <option>Health and Human Services</option>
+                <option>Information Services and Technology</option>
+                <option>Public Works</option>
+              </select>
+              <p id="department-error" class="app-error" hidden>Select the responsible department.</p>
+            </div>
+          </div>
+
+          <fieldset>
+            <legend>Primary use case <span class="app-required" aria-hidden="true">*</span></legend>
+            <label>
+              <input type="radio" name="useCase" value="review" required aria-describedby="use-case-error">
+              Review workflow
+            </label>
+            <label>
+              <input type="radio" name="useCase" value="dashboard">
+              Dashboard or reporting
+            </label>
+            <label>
+              <input type="radio" name="useCase" value="cleanup">
+              Data cleanup utility
+            </label>
+            <p id="use-case-error" class="app-error" hidden>Select a primary use case.</p>
+          </fieldset>
+
+          <fieldset aria-describedby="accessibility-checks-help">
+            <legend>Accessibility checks to include</legend>
+            <label>
+              <input type="checkbox" name="accessibilityChecks" value="keyboard">
+              Keyboard navigation
+            </label>
+            <label>
+              <input type="checkbox" name="accessibilityChecks" value="focus">
+              Visible focus states
+            </label>
+            <label>
+              <input type="checkbox" name="accessibilityChecks" value="contrast">
+              Color contrast review
+            </label>
+            <label>
+              <input type="checkbox" name="accessibilityChecks" value="export-import">
+              Export/import workflow
+            </label>
+            <p id="accessibility-checks-help" class="app-help-text">Optional sample checkboxes for planning the accessibility review scope.</p>
+          </fieldset>
+
+          <div class="app-field">
+            <label for="notes">Implementation notes</label>
+            <textarea id="notes" name="notes" rows="4" aria-describedby="notes-help"></textarea>
+            <p id="notes-help" class="app-help-text">Optional notes are kept in memory for this demo only.</p>
+          </div>
+
+          <div class="app-actions">
+            <button type="submit">Validate demo form</button>
+            <button type="button" class="secondary" id="reset-form">Reset form</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="data" class="demo-section" aria-labelledby="data-heading">
+        <p class="app-kicker">Tables and empty states</p>
+        <h2 id="data-heading">Data presentation</h2>
+        <div class="app-table-wrap">
+          <table>
+            <caption>Example review items for a County micro-app</caption>
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Status</th>
+                <th scope="col">Assigned to</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Confirm required app shell</th>
+                <td><span class="app-status" data-status="success">Complete</span></td>
+                <td>Project owner</td>
+                <td><button type="button" class="secondary">Review app shell item</button></td>
+              </tr>
+              <tr>
+                <th scope="row">Validate form accessibility</th>
+                <td><span class="app-status" data-status="open">Open</span></td>
+                <td>Developer</td>
+                <td><button type="button" class="secondary">Review form item</button></td>
+              </tr>
+              <tr>
+                <th scope="row">Check contrast before release</th>
+                <td><span class="app-status" data-status="warning">Needs review</span></td>
+                <td>QA reviewer</td>
+                <td><button type="button" class="secondary">Review contrast item</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="app-empty" aria-label="Empty state example">
+          <h3>No imported records</h3>
+          <p>Use an empty state when a workflow has no records yet and explain the next useful action.</p>
+          <button type="button" id="empty-state-action">Show empty state guidance</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer" role="contentinfo">
+      <div>
+        <strong>County of Marin</strong>
+        <p>
+          Internal micro-app starter. For accessibility help or accommodation requests, contact the responsible department.
+        </p>
+      </div>
+    </footer>
+
+    <dialog id="demo-dialog" class="demo-dialog" aria-labelledby="dialog-title">
+      <article>
+        <h2 id="dialog-title">Accessible dialog example</h2>
+        <p>
+          Native dialogs support keyboard interaction and Escape-to-close behavior. This demo returns focus to the opening button when closed.
+        </p>
+        <footer>
+          <button type="button" id="close-dialog">Close dialog</button>
+        </footer>
+      </article>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

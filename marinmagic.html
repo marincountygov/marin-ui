@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MarinMagic | County of Marin</title>
+    <meta name="description" content="Convert spreadsheet data into CMS-ready structured rich text.">
+    <link rel="stylesheet" href="./vendor/pico.min.css">
+    <link rel="stylesheet" href="./shared/app-brand.css">
+    <style>
+      .magic-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(16rem, 0.75fr);
+        gap: 1rem;
+        align-items: stretch;
+        margin-bottom: 1.5rem;
+      }
+
+      .magic-hero__panel {
+        border-left: 0.375rem solid var(--marin-gold);
+      }
+
+      .magic-tabs {
+        display: inline-flex;
+        gap: 0.25rem;
+        padding: 0.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--app-border);
+        border-radius: 999px;
+        background: var(--app-surface);
+        flex-wrap: wrap;
+      }
+
+      .magic-tab {
+        margin: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--app-text);
+      }
+
+      .magic-tab[aria-selected="true"] {
+        background: var(--app-accent);
+        color: var(--app-bg);
+      }
+
+      .magic-upload {
+        border: 2px dashed var(--app-border);
+      }
+
+      .magic-preview {
+        min-height: 14rem;
+        padding: 1rem;
+        border: 1px solid var(--app-border);
+        border-radius: var(--pico-border-radius);
+        background: var(--app-surface);
+      }
+
+      .magic-preview--html {
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      }
+
+      .magic-field-list {
+        display: grid;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+      }
+
+      .magic-field-item {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 0.75rem;
+        align-items: center;
+        min-height: 3rem;
+        padding: 0.75rem;
+        border: 1px solid var(--app-border);
+        border-radius: var(--pico-border-radius);
+        background: var(--app-surface);
+      }
+
+      .magic-field-item[draggable="true"] {
+        cursor: grab;
+      }
+
+      .magic-field-item.is-dragging {
+        opacity: 0.7;
+      }
+
+      .magic-field-item.is-drag-over {
+        border-color: var(--app-accent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent) 25%, transparent);
+      }
+
+      .magic-field-label {
+        margin: 0;
+        font-weight: 700;
+      }
+
+      .magic-move-controls {
+        display: inline-flex;
+        gap: 0.375rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .magic-move-controls button,
+      .magic-icon-button {
+        min-height: 2.5rem;
+        padding: 0.4rem 0.65rem;
+      }
+
+      .magic-icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .magic-icon {
+        width: 1rem;
+        height: 1rem;
+        fill: currentColor;
+      }
+
+      .magic-drop-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 997;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.55);
+        color: #ffffff;
+        pointer-events: none;
+      }
+
+      .magic-drop-overlay[data-active="true"] {
+        display: flex;
+      }
+
+      .magic-drop-overlay__inner {
+        padding: 1.5rem;
+        border: 2px dashed #ffffff;
+        border-radius: var(--pico-border-radius);
+        background: rgba(0, 0, 0, 0.7);
+        font-weight: 700;
+      }
+
+      .magic-feedback {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 996;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--app-border);
+        border-radius: var(--pico-border-radius);
+        background: var(--app-surface);
+        color: var(--app-text);
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(16, 24, 40, 0.18);
+      }
+
+      .magic-feedback:hover {
+        color: var(--app-accent);
+      }
+
+      .magic-output h2,
+      .magic-output h3,
+      .magic-output h4,
+      .magic-output h5,
+      .magic-output h6 {
+        margin-top: 1rem;
+      }
+
+      @media (max-width: 720px) {
+        .magic-hero {
+          grid-template-columns: 1fr;
+        }
+
+        .magic-tabs,
+        .magic-tab,
+        .magic-field-item {
+          width: 100%;
+        }
+
+        .magic-field-item {
+          grid-template-columns: auto minmax(0, 1fr);
+        }
+
+        .magic-move-controls {
+          grid-column: 1 / -1;
+          justify-content: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <button type="button" class="app-theme-toggle" id="theme-toggle" aria-pressed="false" aria-label="Switch to dark mode">
+      <svg class="app-theme-toggle__icon app-theme-toggle__icon--sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 4.5a1 1 0 0 1-1-1V2a1 1 0 1 1 2 0v1.5a1 1 0 0 1-1 1Zm0 18.5a1 1 0 0 1-1-1v-1.5a1 1 0 1 1 2 0V22a1 1 0 0 1-1 1Zm8-11a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2h-1a1 1 0 0 1-1-1ZM2 13a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2H2Zm15.66-6.66a1 1 0 0 1 0-1.41l1.06-1.06a1 1 0 0 1 1.41 1.41l-1.06 1.06a1 1 0 0 1-1.41 0ZM3.87 20.13a1 1 0 0 1 0-1.41l1.06-1.06a1 1 0 0 1 1.41 1.41l-1.06 1.06a1 1 0 0 1-1.41 0Zm14.79 0-1.06-1.06a1 1 0 1 1 1.41-1.41l1.06 1.06a1 1 0 0 1-1.41 1.41ZM4.93 6.34 3.87 5.28a1 1 0 0 1 1.41-1.41l1.06 1.06a1 1 0 0 1-1.41 1.41ZM12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+      </svg>
+      <svg class="app-theme-toggle__icon app-theme-toggle__icon--moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M20.58 15.79a1 1 0 0 1 .2 1.08A9.5 9.5 0 1 1 10.62 3.22a1 1 0 0 1 1.12 1.27 7.5 7.5 0 0 0 9.02 9.69 1 1 0 0 1 .82.61Zm-3.13 1.27A9.48 9.48 0 0 1 9.48 5.54a7.5 7.5 0 1 0 7.97 11.52Z"/>
+      </svg>
+      <span class="app-theme-toggle__label visually-hidden">Switch to dark mode</span>
+    </button>
+
+    <header class="app-header" role="banner">
+      <div class="app-header__inner">
+        <div class="app-identity">
+          <div class="app-official">Official County of Marin tool</div>
+          <div class="app-title-row">
+            <img src="./assets/logo.png" alt="County of Marin" class="app-logo">
+            <div>
+              <h1 class="app-title">MarinMagic</h1>
+              <p class="app-subtitle">Convert spreadsheet data into CMS-ready structured rich text.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-header__actions">
+          <button type="button" class="app-menu-toggle secondary" id="menu-toggle" aria-expanded="false" aria-controls="app-nav">Menu</button>
+          <nav class="app-nav" id="app-nav" aria-label="Application navigation">
+            <a href="#home" aria-current="page">Home</a>
+            <a href="#help">Help</a>
+            <a href="#updates">Updates</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="container app-main" tabindex="-1">
+      <div id="app-status-message" role="status" aria-live="polite"></div>
+
+      <section class="magic-hero" aria-labelledby="home-heading">
+        <article class="app-card magic-hero__panel">
+          <p class="app-kicker">Spreadsheet to CMS content</p>
+          <h2 id="home-heading">Build clean HTML from tabular data</h2>
+          <p>Upload CSV, XLSX, XLS, or JSON data, choose the heading and list fields, preview the output, then copy rich text or HTML source into your CMS.</p>
+        </article>
+        <article class="app-card">
+          <h3>Supported output</h3>
+          <p><span class="app-status" data-status="success">CMS-ready HTML</span></p>
+          <ul>
+            <li>Heading levels h2 through h6</li>
+            <li>Unordered lists from selected fields</li>
+            <li>Rich text and source copy tools</li>
+          </ul>
+        </article>
+      </section>
+
+      <div class="magic-tabs" role="tablist" aria-label="Main sections">
+        <button id="home-tab" class="magic-tab" type="button" role="tab" aria-selected="true" aria-controls="home-panel">Home</button>
+        <button id="help-tab" class="magic-tab" type="button" role="tab" aria-selected="false" aria-controls="help-panel" tabindex="-1">Help</button>
+        <button id="updates-tab" class="magic-tab" type="button" role="tab" aria-selected="false" aria-controls="updates-panel" tabindex="-1">Updates</button>
+      </div>
+
+      <section id="home-panel" role="tabpanel" aria-labelledby="home-tab">
+        <article class="app-card magic-upload">
+          <label for="file-input">Upload a spreadsheet or data file</label>
+          <p id="upload-help" class="app-help-text">Drag and drop a file anywhere on this page, or use the browse button. Supported file types: <code>.csv</code>, <code>.xlsx</code>, <code>.xls</code>, <code>.json</code>.</p>
+          <div class="app-actions">
+            <button id="browse-files" type="button">Browse files</button>
+          </div>
+          <input id="file-input" class="visually-hidden" type="file" aria-describedby="upload-help" accept=".csv,.xlsx,.xls,.json,application/json,text/csv">
+          <p id="file-status" class="app-help-text" role="status" aria-live="polite" aria-atomic="true">Select a file to begin.</p>
+        </article>
+
+        <article id="mapping-panel" class="app-card" hidden>
+          <div class="app-toolbar">
+            <div>
+              <p class="app-kicker">Field mapping</p>
+              <h2>Choose output fields</h2>
+            </div>
+          </div>
+          <div class="app-form-grid">
+            <div class="app-field">
+              <label for="heading-column">Select heading column</label>
+              <select id="heading-column"></select>
+            </div>
+            <div class="app-field">
+              <label for="heading-level">Heading level</label>
+              <select id="heading-level">
+                <option value="h2" selected>h2</option>
+                <option value="h3">h3</option>
+                <option value="h4">h4</option>
+                <option value="h5">h5</option>
+                <option value="h6">h6</option>
+              </select>
+            </div>
+          </div>
+          <fieldset aria-describedby="field-list-help">
+            <legend>Select columns for list items</legend>
+            <p id="field-list-help" class="app-help-text">Drag fields to reorder them, or use Move up and Move down buttons as a keyboard-accessible alternative.</p>
+            <div id="field-list" class="magic-field-list"></div>
+          </fieldset>
+        </article>
+
+        <div class="app-toolbar">
+          <div class="app-actions">
+            <button id="generate-preview" type="button">Generate preview</button>
+            <button id="download-html" class="secondary" type="button">Download HTML</button>
+            <button id="reset-tool" class="secondary" type="button">Reset</button>
+          </div>
+        </div>
+
+        <article class="app-card">
+          <div class="app-toolbar">
+            <div>
+              <p class="app-kicker">Preview</p>
+              <h2>Generated content</h2>
+            </div>
+            <div class="app-actions">
+              <button id="copy-rich-text" class="secondary magic-icon-button" type="button" aria-label="Copy rich text" title="Copy rich text">
+                <svg class="magic-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v16h13a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 18H8V7h11v16Z"/></svg>
+              </button>
+              <button id="copy-html" class="secondary magic-icon-button" type="button" aria-label="Copy HTML source" title="Copy HTML source">
+                <svg class="magic-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8.7 16.3-1.4 1.4L1.6 12l5.7-5.7 1.4 1.4L4.1 12l4.6 4.3Zm6.6 0 4.6-4.3-4.6-4.3 1.4-1.4 5.7 5.7-5.7 5.7-1.4-1.4ZM13.9 4 10 20h-2l3.9-16h2Z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="magic-tabs" role="tablist" aria-label="Preview modes">
+            <button id="text-tab" class="magic-tab" type="button" role="tab" aria-selected="true" aria-controls="text-panel">Text</button>
+            <button id="html-tab" class="magic-tab" type="button" role="tab" aria-selected="false" aria-controls="html-panel" tabindex="-1">HTML</button>
+          </div>
+
+          <div id="text-panel" class="magic-preview magic-output" role="tabpanel" aria-labelledby="text-tab">
+            <p class="app-help-text">Preview will appear after a file is loaded.</p>
+          </div>
+          <pre id="html-panel" class="magic-preview magic-preview--html" role="tabpanel" aria-labelledby="html-tab" hidden></pre>
+        </article>
+      </section>
+
+      <section id="help-panel" class="app-card" role="tabpanel" aria-labelledby="help-tab" hidden>
+        <p class="app-kicker">Help</p>
+        <h2>Use MarinMagic to publish spreadsheet content</h2>
+        <h3>Prepare your file</h3>
+        <ul>
+          <li>Keep only the data you need.</li>
+          <li>Remove formulas and use plain text values.</li>
+          <li>Make sure column headers are clearly labeled.</li>
+          <li>Export as CSV when possible, or upload XLSX, XLS, or JSON.</li>
+        </ul>
+        <h3>Configure field mapping</h3>
+        <ol>
+          <li>Choose the column that should become each section heading.</li>
+          <li>Select the heading level to generate.</li>
+          <li>Choose which columns should appear as list items.</li>
+          <li>Drag fields or use Move up and Move down to order list items.</li>
+        </ol>
+        <h3>Copy into the CMS</h3>
+        <ul>
+          <li>Use Copy rich text for visual editors.</li>
+          <li>Use Copy HTML source for source or code editors.</li>
+          <li>Preview your CMS page before publishing.</li>
+        </ul>
+      </section>
+
+      <section id="updates-panel" class="app-card" role="tabpanel" aria-labelledby="updates-tab" hidden>
+        <p class="app-kicker">Updates</p>
+        <h2>Latest MarinMagic commits</h2>
+        <p id="updates-status" class="app-help-text" role="status" aria-live="polite" aria-atomic="true">Select the Updates tab to load recent commits.</p>
+        <div id="updates-list" class="demo-stack"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer" role="contentinfo">
+      <div>
+        <strong>County of Marin</strong>
+        <p>Internal micro-app. For accessibility help or accommodation requests, contact the responsible department.</p>
+      </div>
+    </footer>
+
+    <div id="drop-overlay" class="magic-drop-overlay" aria-hidden="true">
+      <div class="magic-drop-overlay__inner">Drop CSV, XLSX, XLS, or JSON file to upload</div>
+    </div>
+
+    <a class="magic-feedback" href="https://form.asana.com/?k=qVUT83d5DBmlDiIyi-WAyQ&amp;d=23133298259496" target="_blank" rel="noreferrer">
+      <svg class="magic-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"/></svg>
+      Feedback
+    </a>
+
+    <script src="./vendor/xlsx.full.min.js"></script>
+    <script>
+      const statusMessage = document.querySelector("#app-status-message");
+      const themeToggleButton = document.querySelector("#theme-toggle");
+      const themeToggleLabel = document.querySelector(".app-theme-toggle__label");
+      const menuToggleButton = document.querySelector("#menu-toggle");
+      const appNav = document.querySelector("#app-nav");
+      const menuMediaQuery = window.matchMedia("(max-width: 720px)");
+      const themeStorageKey = "marinmagic-theme";
+
+      const fileInput = document.querySelector("#file-input");
+      const browseFilesButton = document.querySelector("#browse-files");
+      const fileStatus = document.querySelector("#file-status");
+      const mappingPanel = document.querySelector("#mapping-panel");
+      const headingColumn = document.querySelector("#heading-column");
+      const headingLevel = document.querySelector("#heading-level");
+      const fieldList = document.querySelector("#field-list");
+      const textPanel = document.querySelector("#text-panel");
+      const htmlPanel = document.querySelector("#html-panel");
+      const generatePreviewButton = document.querySelector("#generate-preview");
+      const downloadHtmlButton = document.querySelector("#download-html");
+      const resetToolButton = document.querySelector("#reset-tool");
+      const copyRichTextButton = document.querySelector("#copy-rich-text");
+      const copyHtmlButton = document.querySelector("#copy-html");
+      const dropOverlay = document.querySelector("#drop-overlay");
+      const updatesStatus = document.querySelector("#updates-status");
+      const updatesList = document.querySelector("#updates-list");
+      const mainTabs = Array.from(document.querySelectorAll("#home-tab, #help-tab, #updates-tab"));
+      const previewTabs = Array.from(document.querySelectorAll("#text-tab, #html-tab"));
+
+      let headers = [];
+      let rows = [];
+      let output = "";
+      let updatesLoaded = false;
+
+      function announce(message) {
+        if (statusMessage) statusMessage.textContent = message;
+      }
+
+      function clean(value) {
+        return value == null ? "" : String(value).trim();
+      }
+
+      function esc(value) {
+        return clean(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function setFileStatus(message) {
+        fileStatus.textContent = message;
+      }
+
+      function getStoredTheme() {
+        try {
+          const value = localStorage.getItem(themeStorageKey);
+          return value === "dark" || value === "light" ? value : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function storeTheme(theme) {
+        try {
+          localStorage.setItem(themeStorageKey, theme);
+        } catch {
+          return;
+        }
+      }
+
+      function getPreferredTheme() {
+        return getStoredTheme() || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      }
+
+      function setTheme(theme, shouldAnnounce = false) {
+        const isDark = theme === "dark";
+        document.documentElement.dataset.theme = theme;
+        themeToggleButton.setAttribute("aria-pressed", isDark ? "true" : "false");
+        themeToggleButton.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+        themeToggleLabel.textContent = isDark ? "Switch to light mode" : "Switch to dark mode";
+        if (shouldAnnounce) announce(`${isDark ? "Dark" : "Light"} mode enabled.`);
+      }
+
+      function setMenuOpen(isOpen) {
+        menuToggleButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        if (isOpen) appNav.dataset.open = "true";
+        else appNav.removeAttribute("data-open");
+      }
+
+      function isMenuOpen() {
+        return menuToggleButton.getAttribute("aria-expanded") === "true";
+      }
+
+      function updateCurrentNavLink() {
+        const currentHash = window.location.hash || "#home";
+        Array.from(appNav.querySelectorAll("a")).forEach((link) => {
+          if (link.getAttribute("href") === currentHash) link.setAttribute("aria-current", "page");
+          else link.removeAttribute("aria-current");
+        });
+      }
+
+      function syncMainTabFromHash() {
+        const hash = window.location.hash || "#home";
+        const tab = hash === "#help" ? document.querySelector("#help-tab") : hash === "#updates" ? document.querySelector("#updates-tab") : document.querySelector("#home-tab");
+        activateTabs(mainTabs, tab);
+        if (tab.id === "updates-tab") loadUpdates();
+      }
+
+      function activateTabs(tabs, activeTab) {
+        tabs.forEach((tab) => {
+          const selected = tab === activeTab;
+          const panel = document.querySelector(`#${tab.getAttribute("aria-controls")}`);
+          tab.setAttribute("aria-selected", selected ? "true" : "false");
+          tab.tabIndex = selected ? 0 : -1;
+          if (panel) panel.hidden = !selected;
+        });
+      }
+
+      function setupTabs(tabs, onActivate) {
+        tabs.forEach((tab, index) => {
+          tab.addEventListener("click", () => {
+            activateTabs(tabs, tab);
+            onActivate(tab);
+          });
+          tab.addEventListener("keydown", (event) => {
+            let nextIndex = index;
+            if (event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+            else if (event.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
+            else if (event.key === "Home") nextIndex = 0;
+            else if (event.key === "End") nextIndex = tabs.length - 1;
+            else return;
+            event.preventDefault();
+            tabs[nextIndex].focus();
+            activateTabs(tabs, tabs[nextIndex]);
+            onActivate(tabs[nextIndex]);
+          });
+        });
+      }
+
+      function parseCsv(text) {
+        const out = [];
+        let row = [];
+        let cell = "";
+        let inQuotes = false;
+        const normalized = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+        for (let i = 0; i < normalized.length; i += 1) {
+          const ch = normalized[i];
+          const next = normalized[i + 1];
+          if (ch === "\"") {
+            if (inQuotes && next === "\"") {
+              cell += "\"";
+              i += 1;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (ch === "," && !inQuotes) {
+            row.push(cell);
+            cell = "";
+          } else if (ch === "\n" && !inQuotes) {
+            row.push(cell);
+            out.push(row);
+            row = [];
+            cell = "";
+          } else {
+            cell += ch;
+          }
+        }
+        if (cell !== "" || row.length) {
+          row.push(cell);
+          out.push(row);
+        }
+        return out.filter((item) => Array.isArray(item) && item.some((value) => clean(value)));
+      }
+
+      function parseJson(text) {
+        const data = JSON.parse(text);
+        if (!Array.isArray(data)) throw new Error("JSON must be an array of objects.");
+        const keys = [...new Set(data.flatMap((item) => Object.keys(item || {})))];
+        return [keys, ...data.map((item) => keys.map((key) => (item && item[key] != null ? String(item[key]) : "")))];
+      }
+
+      function detectFileType(file) {
+        const name = clean(file?.name).toLowerCase();
+        const type = clean(file?.type).toLowerCase();
+        if (name.endsWith(".xlsx") || name.endsWith(".xls")) return "xlsx";
+        if (name.endsWith(".csv")) return "csv";
+        if (name.endsWith(".json")) return "json";
+        if (type.includes("spreadsheetml") || type.includes("ms-excel")) return "xlsx";
+        if (type.includes("csv")) return "csv";
+        if (type.includes("json")) return "json";
+        return "unknown";
+      }
+
+      function moveItem(item, direction) {
+        const sibling = direction < 0 ? item.previousElementSibling : item.nextElementSibling;
+        if (!sibling) return;
+        if (direction < 0) fieldList.insertBefore(item, sibling);
+        else fieldList.insertBefore(sibling, item);
+        setFileStatus(`Moved ${item.querySelector(".magic-field-label").textContent}.`);
+      }
+
+      function enableDragDrop() {
+        let dragged = null;
+        Array.from(fieldList.querySelectorAll(".magic-field-item")).forEach((item) => {
+          item.addEventListener("dragstart", () => {
+            dragged = item;
+            item.classList.add("is-dragging");
+          });
+          item.addEventListener("dragend", () => {
+            item.classList.remove("is-dragging");
+            Array.from(fieldList.children).forEach((child) => child.classList.remove("is-drag-over"));
+            dragged = null;
+          });
+          item.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            if (dragged && dragged !== item) item.classList.add("is-drag-over");
+          });
+          item.addEventListener("dragleave", () => item.classList.remove("is-drag-over"));
+          item.addEventListener("drop", (event) => {
+            event.preventDefault();
+            item.classList.remove("is-drag-over");
+            if (!dragged || dragged === item) return;
+            const items = Array.from(fieldList.children);
+            if (items.indexOf(dragged) < items.indexOf(item)) fieldList.insertBefore(dragged, item.nextSibling);
+            else fieldList.insertBefore(dragged, item);
+          });
+        });
+      }
+
+      function renderMapping() {
+        headingColumn.innerHTML = "";
+        fieldList.innerHTML = "";
+        headers.forEach((header, index) => {
+          const label = clean(header) || `Column ${index + 1}`;
+          const option = document.createElement("option");
+          option.value = String(index);
+          option.textContent = label;
+          headingColumn.appendChild(option);
+
+          const item = document.createElement("div");
+          item.className = "magic-field-item";
+          item.draggable = true;
+          const checkbox = document.createElement("input");
+          checkbox.id = `field-${index}`;
+          checkbox.type = "checkbox";
+          checkbox.value = String(index);
+          checkbox.checked = index !== 0;
+          const checkboxLabel = document.createElement("label");
+          checkboxLabel.className = "magic-field-label";
+          checkboxLabel.setAttribute("for", checkbox.id);
+          checkboxLabel.textContent = label;
+          const controls = document.createElement("span");
+          controls.className = "magic-move-controls";
+          const up = document.createElement("button");
+          up.type = "button";
+          up.className = "secondary";
+          up.textContent = "Move up";
+          up.setAttribute("aria-label", `Move ${label} up`);
+          up.addEventListener("click", () => moveItem(item, -1));
+          const down = document.createElement("button");
+          down.type = "button";
+          down.className = "secondary";
+          down.textContent = "Move down";
+          down.setAttribute("aria-label", `Move ${label} down`);
+          down.addEventListener("click", () => moveItem(item, 1));
+          controls.append(up, down);
+          item.append(checkbox, checkboxLabel, controls);
+          fieldList.appendChild(item);
+        });
+        enableDragDrop();
+      }
+
+      function buildOutput() {
+        const headingIndex = Number(headingColumn.value);
+        if (Number.isNaN(headingIndex)) throw new Error("No heading selected.");
+        const tag = headingLevel.value || "h2";
+        const selectedColumns = Array.from(fieldList.querySelectorAll("input:checked"))
+          .map((input) => Number(input.value))
+          .filter((index) => index !== headingIndex);
+        const records = rows
+          .map((row) => ({ heading: clean(row[headingIndex]), row }))
+          .filter((record) => record.heading)
+          .sort((a, b) => a.heading.localeCompare(b.heading, undefined, { sensitivity: "base" }));
+        output = records.map((record) => {
+          const listItems = selectedColumns
+            .map((index) => clean(record.row[index]) ? `<li>${esc(headers[index])}: ${esc(record.row[index])}</li>` : "")
+            .join("");
+          return `<${tag}>${esc(record.heading)}</${tag}><ul>${listItems}</ul>`;
+        }).join("");
+        textPanel.innerHTML = output || '<p class="app-help-text">No output generated.</p>';
+        htmlPanel.textContent = output;
+      }
+
+      function loadTable(table) {
+        headers = table[0] || [];
+        rows = table.slice(1).filter((row) => Array.isArray(row) && row.some((value) => clean(value)));
+        if (!headers.length || !rows.length) {
+          mappingPanel.hidden = true;
+          textPanel.innerHTML = '<p class="app-help-text">No usable data found.</p>';
+          htmlPanel.textContent = "";
+          setFileStatus("No usable data found.");
+          return;
+        }
+        mappingPanel.hidden = false;
+        renderMapping();
+        buildOutput();
+        setFileStatus("Preview generated.");
+      }
+
+      function handleSelectedFile(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        const type = detectFileType(file);
+        if (type === "unknown") {
+          setFileStatus("Unsupported file type. Upload CSV, XLSX, XLS, or JSON.");
+          return;
+        }
+        setFileStatus(`Reading ${type.toUpperCase()} file...`);
+        if (type === "xlsx") {
+          reader.onload = (event) => {
+            try {
+              const workbook = XLSX.read(event.target.result, { type: "array" });
+              const sheet = workbook.Sheets[workbook.SheetNames[0]];
+              loadTable(XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" }));
+            } catch (error) {
+              console.error(error);
+              setFileStatus("Could not read the spreadsheet file.");
+            }
+          };
+          reader.readAsArrayBuffer(file);
+          return;
+        }
+        reader.onload = (event) => {
+          try {
+            const text = String(event.target.result || "");
+            loadTable(type === "json" ? parseJson(text) : parseCsv(text));
+          } catch (error) {
+            console.error(error);
+            setFileStatus(`Could not read the ${type.toUpperCase()} file.`);
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      function hasDraggedFiles(event) {
+        return event.dataTransfer && event.dataTransfer.types && Array.from(event.dataTransfer.types).includes("Files");
+      }
+
+      function setDropOverlay(active) {
+        dropOverlay.dataset.active = active ? "true" : "false";
+      }
+
+      async function loadUpdates() {
+        if (updatesLoaded) return;
+        updatesStatus.textContent = "Loading latest commits...";
+        updatesList.innerHTML = "";
+        try {
+          const response = await fetch("https://api.github.com/repos/marincountygov/marinmagic/commits?per_page=10", { headers: { Accept: "application/vnd.github+json" } });
+          if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+          const commits = await response.json();
+          if (!Array.isArray(commits) || !commits.length) {
+            updatesStatus.textContent = "No recent commits found.";
+            return;
+          }
+          updatesLoaded = true;
+          updatesStatus.textContent = "Latest commits loaded.";
+          updatesList.innerHTML = commits.map((commit) => {
+            const message = clean(commit?.commit?.message);
+            const title = message.split("\n")[0] || "Untitled commit";
+            const description = message.split("\n").slice(1).join(" ").trim();
+            const date = commit?.commit?.committer?.date ? new Date(commit.commit.committer.date).toLocaleString([], { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "Date unavailable";
+            const url = commit?.html_url || "https://github.com/marincountygov/marinmagic/commits";
+            return `<article class="app-card"><h3><a href="${esc(url)}" target="_blank" rel="noreferrer">${esc(title)}</a></h3><p class="app-help-text">${esc(date)}</p>${description ? `<p>${esc(description)}</p>` : ""}</article>`;
+          }).join("");
+        } catch (error) {
+          console.error(error);
+          updatesStatus.textContent = "Could not load updates right now.";
+        }
+      }
+
+      browseFilesButton.addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", (event) => handleSelectedFile(event.target.files && event.target.files[0]));
+      generatePreviewButton.addEventListener("click", () => {
+        try {
+          buildOutput();
+          setFileStatus("Preview generated.");
+        } catch (error) {
+          console.error(error);
+          setFileStatus("Could not generate preview.");
+        }
+      });
+      copyRichTextButton.addEventListener("click", () => {
+        try {
+          const temp = document.createElement("div");
+          temp.contentEditable = "true";
+          temp.style.position = "fixed";
+          temp.style.left = "-9999px";
+          temp.innerHTML = output || "";
+          document.body.appendChild(temp);
+          const range = document.createRange();
+          range.selectNodeContents(temp);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          const copied = document.execCommand("copy");
+          selection.removeAllRanges();
+          document.body.removeChild(temp);
+          if (!copied) throw new Error("Copy failed.");
+          setFileStatus("Copied rich text for paste.");
+        } catch (error) {
+          console.error(error);
+          setFileStatus("Rich text copy failed.");
+        }
+      });
+      copyHtmlButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(output || "");
+          setFileStatus("Copied HTML source.");
+        } catch (error) {
+          console.error(error);
+          setFileStatus("HTML copy failed.");
+        }
+      });
+      downloadHtmlButton.addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(new Blob([output || ""], { type: "text/html" }));
+        link.download = "marinmagic-output.html";
+        link.click();
+        setFileStatus("HTML file downloaded.");
+      });
+      resetToolButton.addEventListener("click", () => {
+        fileInput.value = "";
+        headers = [];
+        rows = [];
+        output = "";
+        mappingPanel.hidden = true;
+        fieldList.innerHTML = "";
+        textPanel.innerHTML = '<p class="app-help-text">Preview will appear after a file is loaded.</p>';
+        htmlPanel.textContent = "";
+        setFileStatus("Select a file to begin.");
+      });
+      window.addEventListener("dragenter", (event) => {
+        if (!hasDraggedFiles(event)) return;
+        event.preventDefault();
+        setDropOverlay(true);
+      });
+      window.addEventListener("dragover", (event) => {
+        if (!hasDraggedFiles(event)) return;
+        event.preventDefault();
+        setDropOverlay(true);
+      });
+      window.addEventListener("dragleave", (event) => {
+        if (!hasDraggedFiles(event)) return;
+        if (event.clientX <= 0 || event.clientY <= 0 || event.clientX >= window.innerWidth || event.clientY >= window.innerHeight) setDropOverlay(false);
+      });
+      window.addEventListener("drop", (event) => {
+        if (!hasDraggedFiles(event)) return;
+        event.preventDefault();
+        setDropOverlay(false);
+        const files = event.dataTransfer && event.dataTransfer.files;
+        if (!files || !files.length) return;
+        if (files.length > 1) setFileStatus(`Multiple files detected; using first file: ${files[0].name}`);
+        handleSelectedFile(files[0]);
+      });
+      themeToggleButton.addEventListener("click", () => {
+        const currentTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+        const nextTheme = currentTheme === "dark" ? "light" : "dark";
+        setTheme(nextTheme, true);
+        storeTheme(nextTheme);
+      });
+      menuToggleButton.addEventListener("click", () => setMenuOpen(!isMenuOpen()));
+      appNav.addEventListener("click", (event) => {
+        if (event.target instanceof HTMLAnchorElement && menuMediaQuery.matches) setMenuOpen(false);
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && isMenuOpen()) {
+          setMenuOpen(false);
+          menuToggleButton.focus();
+        }
+      });
+      menuMediaQuery.addEventListener("change", (event) => {
+        if (!event.matches) setMenuOpen(false);
+      });
+      window.addEventListener("hashchange", updateCurrentNavLink);
+      window.addEventListener("hashchange", syncMainTabFromHash);
+      setupTabs(mainTabs, (tab) => {
+        const hash = tab.id === "help-tab" ? "#help" : tab.id === "updates-tab" ? "#updates" : "#home";
+        if (window.location.hash !== hash) window.location.hash = hash;
+        if (tab.id === "updates-tab") loadUpdates();
+      });
+      setupTabs(previewTabs, () => undefined);
+      setTheme(getPreferredTheme());
+      updateCurrentNavLink();
+      syncMainTabFromHash();
+    </script>
+  </body>
+</html>
