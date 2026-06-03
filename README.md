@@ -1,6 +1,6 @@
-# County of Marin Level 2 Micro-App Standard
+# County of Marin Micro-App
 
-This project is a standalone demo and starter for County of Marin Level 2 micro-apps. It shows how to build small, durable County tools with semantic HTML, Pico.css, shared County branding, vanilla JavaScript, and WCAG 2.2 Level AA accessibility patterns.
+This project is a standalone demo and starter for County of Marin micro-apps. It shows how to build small, durable County tools with semantic HTML, Pico.css, shared County branding, vanilla JavaScript, and WCAG 2.2 Level AA accessibility patterns.
 
 ## Purpose
 
@@ -29,7 +29,7 @@ README.md
 - `shared/app-brand.css`: County-specific branding layer, design tokens, accessibility styles, layout utilities, and component classes.
 - `vendor/pico.min.css`: Local Pico.css base stylesheet.
 - `vendor/fonts/Jost-wght.ttf`: Local Jost variable font used for headings.
-- `SPEC.md`: Full Level 2 micro-app standard and review checklist.
+- `SPEC.md`: Full County of Marin micro-app standard and review checklist.
 
 ## How To Run
 

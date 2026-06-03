@@ -1,4 +1,4 @@
-# Codex Spec: County of Marin Level 2 Micro-App Standard
+# Codex Spec: County of Marin Micro-App
 
 ## Purpose
 
@@ -29,7 +29,7 @@ file:///.../index.html
 
 When IndexedDB, service workers, sync, or stricter browser origin behavior matters, support running through a local static server or packaged runtime.
 
-## Level 2 branding model
+## Branding model
 
 Use Pico.css as the base UI layer and `shared/app-brand.css` as the County-specific branding layer.
 
@@ -198,6 +198,8 @@ Use Arial/Verdana-compatible typography for body copy.
 
 Use Jost (https://fonts.google.com/specimen/Jost) for heading fonts. Include the Jost font file in the codebase and load it with `@font-face`; do not require external font calls from the document `<head>`. Provide accessible sans-serif fallbacks.
 
+Normalize Pico's responsive root font scaling to `--pico-font-size: 100%` at all Pico root breakpoints. Do not flatten heading-specific or `small` element font-size variables.
+
 Use Futura only if an approved licensed County font file or official rendered logo/logotype asset is already available in the project. Do not fetch, embed, generate, or substitute unlicensed font files.
 
 Do not use all-caps headings for long text. All-caps may be used only for short labels, eyebrow text, or metadata, with adequate letter spacing.
@@ -364,6 +366,42 @@ Use this as the starting point:
   --pico-primary-hover: #005ea8;
   --pico-primary-focus: rgba(7, 119, 207, 0.25);
   --pico-border-radius: 0.375rem;
+  --pico-font-size: 100%;
+}
+
+@media (min-width: 576px) {
+  :host,
+  :root {
+    --pico-font-size: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  :host,
+  :root {
+    --pico-font-size: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  :host,
+  :root {
+    --pico-font-size: 100%;
+  }
+}
+
+@media (min-width: 1280px) {
+  :host,
+  :root {
+    --pico-font-size: 100%;
+  }
+}
+
+@media (min-width: 1536px) {
+  :host,
+  :root {
+    --pico-font-size: 100%;
+  }
 }
 
 html {
@@ -930,7 +968,7 @@ Do not treat browser storage as the only durable copy of official records.
 Use this prompt when asking Codex to build a County micro-app:
 
 ```text
-Build this as a County of Marin Level 2 micro-app.
+Build this as a County of Marin micro-app.
 
 Use semantic HTML, Pico.css, shared/app-brand.css, and vanilla JavaScript. Use Alpine.js only if it materially simplifies repetitive DOM state. Use Dexie.js only if the app needs IndexedDB-backed record storage.
 

@@ -55,6 +55,42 @@
   --pico-primary-hover: #005ea8;
   --pico-primary-focus: rgba(7, 119, 207, 0.25);
   --pico-border-radius: 0.375rem;
+  --pico-font-size: 100%;
+}
+
+@media (min-width: 576px) {
+  :host,
+  :root {
+    --pico-font-size: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  :host,
+  :root {
+    --pico-font-size: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  :host,
+  :root {
+    --pico-font-size: 100%;
+  }
+}
+
+@media (min-width: 1280px) {
+  :host,
+  :root {
+    --pico-font-size: 100%;
+  }
+}
+
+@media (min-width: 1536px) {
+  :host,
+  :root {
+    --pico-font-size: 100%;
+  }
 }
 
 html[data-theme="dark"] {
