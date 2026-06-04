@@ -1,0 +1,1210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Marin WayMaker | County of Marin</title>
+    <meta name="description" content="Create clear decision guides and publish them as interactive web forms.">
+    <link rel="stylesheet" href="./vendor/pico.min.css">
+    <link rel="stylesheet" href="./shared/app-brand.css">
+    <style>
+      .way-hero,
+      .way-builder-grid,
+      .way-json-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .way-hero {
+        margin-bottom: 1.5rem;
+      }
+
+      .way-hero__primary {
+        border-left: 0.375rem solid var(--marin-gold);
+      }
+
+      .way-builder-grid {
+        grid-template-columns: minmax(min(100%, 24rem), 0.9fr) minmax(0, 1.1fr);
+      }
+
+      .way-diagram-card {
+        margin-bottom: 1rem;
+      }
+
+      .way-diagram-card--wide {
+        width: 100vw;
+        margin-right: calc(50% - 50vw);
+        margin-left: calc(50% - 50vw);
+        border-right: 0;
+        border-left: 0;
+        border-radius: 0;
+      }
+
+      .way-diagram-card--wide .way-diagram-wrap {
+        max-height: 75vh;
+      }
+
+      .way-icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.75rem;
+        padding-right: 0.65rem;
+        padding-left: 0.65rem;
+      }
+
+      .way-icon-button svg {
+        width: 1.125rem;
+        height: 1.125rem;
+        fill: currentColor;
+      }
+
+      .way-icon-button[aria-pressed="false"] .way-icon--contract,
+      .way-icon-button[aria-pressed="true"] .way-icon--expand {
+        display: none;
+      }
+
+      .way-stack {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .way-node-list,
+      .way-branch-list,
+      .way-diagram,
+      .way-path-list {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .way-node-button,
+      .way-diagram-node,
+      .way-branch-card,
+      .way-path-item {
+        width: 100%;
+        padding: 0.85rem;
+        border: 1px solid var(--app-border);
+        border-radius: var(--pico-border-radius);
+        background: var(--app-surface);
+        color: var(--app-text);
+        text-align: left;
+      }
+
+      .way-node-button[aria-current="true"],
+      .way-diagram-node[aria-current="true"] {
+        border-color: var(--app-accent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent) 20%, transparent);
+      }
+
+      .way-node-meta,
+      .way-branch-meta {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 0.35rem;
+      }
+
+      .way-node-actions,
+      .way-branch-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+      }
+
+      .way-diagram-wrap {
+        max-height: 34rem;
+        overflow: auto;
+        padding: 1rem;
+        border: 1px solid var(--app-border);
+        border-radius: var(--pico-border-radius);
+        background:
+          linear-gradient(90deg, color-mix(in srgb, var(--app-border) 55%, transparent) 1px, transparent 1px),
+          linear-gradient(color-mix(in srgb, var(--app-border) 55%, transparent) 1px, transparent 1px);
+        background-size: 1.5rem 1.5rem;
+      }
+
+      .way-diagram-node {
+        cursor: pointer;
+      }
+
+      .way-diagram-branches {
+        margin-top: 0.65rem;
+        padding-left: 1rem;
+        border-left: 3px solid var(--app-border);
+      }
+
+      .way-code {
+        min-height: 18rem;
+        max-height: 34rem;
+        overflow: auto;
+        padding: 1rem;
+        border: 1px solid var(--app-border);
+        border-radius: var(--pico-border-radius);
+        background: #0b1220;
+        color: #dce5ef;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .way-runner-card {
+        padding: clamp(1.25rem, 4vw, 2.5rem);
+      }
+
+      .way-choice-list {
+        display: grid;
+        gap: 0.75rem;
+        margin-top: 1rem;
+      }
+
+      .way-choice-button {
+        width: 100%;
+        text-align: left;
+      }
+
+      .way-error-summary {
+        border: 2px solid var(--app-danger-text);
+      }
+
+      .way-invalid {
+        border-color: var(--app-danger-text) !important;
+      }
+
+      .way-inspector-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: grid;
+        justify-items: end;
+        background: rgba(0, 0, 0, 0.45);
+      }
+
+      .way-inspector-overlay[hidden] {
+        display: none;
+      }
+
+      .way-inspector-backdrop {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        min-height: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+      }
+
+      .way-inspector-panel {
+        position: relative;
+        z-index: 1;
+        width: min(100%, 42rem);
+        height: 100%;
+        overflow: auto;
+        padding: 1rem;
+        border-left: 1px solid var(--app-border);
+        background: var(--app-surface);
+        color: var(--app-text);
+        box-shadow: -1rem 0 2rem rgba(0, 0, 0, 0.22);
+      }
+
+      .way-inspector-header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        padding-bottom: 0.75rem;
+        background: var(--app-surface);
+        border-bottom: 1px solid var(--app-border);
+      }
+
+      .way-hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 900px) {
+        .way-builder-grid,
+        .way-json-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .way-inspector-overlay {
+          align-items: end;
+        }
+
+        .way-inspector-panel {
+          width: 100%;
+          height: min(92vh, 56rem);
+          border-left: 0;
+          border-top: 1px solid var(--app-border);
+          border-radius: var(--pico-border-radius) var(--pico-border-radius) 0 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <button type="button" class="app-theme-toggle" id="theme-toggle" aria-pressed="false" aria-label="Switch to dark mode">
+      <svg class="app-theme-toggle__icon app-theme-toggle__icon--sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5a1 1 0 0 1-1-1V2a1 1 0 1 1 2 0v1.5a1 1 0 0 1-1 1Zm0 18.5a1 1 0 0 1-1-1v-1.5a1 1 0 1 1 2 0V22a1 1 0 0 1-1 1Zm8-11a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2h-1a1 1 0 0 1-1-1ZM2 13a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2H2Zm15.66-6.66a1 1 0 0 1 0-1.41l1.06-1.06a1 1 0 0 1 1.41 1.41l-1.06 1.06a1 1 0 0 1-1.41 0ZM3.87 20.13a1 1 0 0 1 0-1.41l1.06-1.06a1 1 0 0 1 1.41 1.41l-1.06 1.06a1 1 0 0 1-1.41 0Zm14.79 0-1.06-1.06a1 1 0 1 1 1.41-1.41l1.06 1.06a1 1 0 0 1-1.41 1.41ZM4.93 6.34 3.87 5.28a1 1 0 0 1 1.41-1.41l1.06 1.06a1 1 0 0 1-1.41 1.41ZM12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+      <svg class="app-theme-toggle__icon app-theme-toggle__icon--moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.58 15.79a1 1 0 0 1 .2 1.08A9.5 9.5 0 1 1 10.62 3.22a1 1 0 0 1 1.12 1.27 7.5 7.5 0 0 0 9.02 9.69 1 1 0 0 1 .82.61Zm-3.13 1.27A9.48 9.48 0 0 1 9.48 5.54a7.5 7.5 0 1 0 7.97 11.52Z"/></svg>
+      <span class="app-theme-toggle__label visually-hidden">Switch to dark mode</span>
+    </button>
+
+    <header class="app-header" role="banner">
+      <div class="app-header__inner">
+        <div class="app-identity">
+          <div class="app-official">Official County of Marin tool</div>
+          <div class="app-title-row">
+            <img src="./assets/logo.png" alt="County of Marin" class="app-logo">
+            <div>
+              <h1 class="app-title">Marin WayMaker</h1>
+              <p class="app-subtitle">Create clear decision guides and publish them as interactive web forms.</p>
+            </div>
+          </div>
+        </div>
+        <div class="app-header__actions">
+          <button type="button" class="app-menu-toggle secondary" id="menu-toggle" aria-expanded="false" aria-controls="app-nav">Menu</button>
+          <nav class="app-nav" id="app-nav" aria-label="Application navigation">
+            <a href="#builder" aria-current="page">Builder</a>
+            <a href="#test">Test</a>
+            <a href="#json">JSON</a>
+            <a href="#help">Help</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="container app-main" tabindex="-1">
+      <div id="app-status-message" role="status" aria-live="polite"></div>
+
+      <section id="builder" class="way-section">
+        <div class="way-hero">
+          <article class="app-card way-hero__primary">
+            <p class="app-kicker">Decision guide builder</p>
+            <h2>Map complex service paths into clear next steps</h2>
+            <p>Build question, task, notice, approval, and outcome nodes. Add branch logic, test the guide, then export a standalone web form.</p>
+          </article>
+          <article class="app-card">
+            <h3>Current workflow</h3>
+            <p><span id="workflow-status" class="app-status" data-status="open">Draft</span></p>
+            <p id="workflow-summary" class="app-help-text">0 nodes configured.</p>
+          </article>
+          <article class="app-card">
+            <h3>Core outputs</h3>
+            <ul>
+              <li>Workflow JSON</li>
+              <li>Interactive test runner</li>
+              <li>Standalone HTML web form</li>
+            </ul>
+          </article>
+        </div>
+
+        <article class="app-card way-diagram-card" id="diagram-card">
+          <div class="app-toolbar">
+            <div>
+              <p class="app-kicker">Flow diagram</p>
+              <h2>Click a node to edit it</h2>
+            </div>
+            <div class="app-actions">
+              <button id="toggle-diagram-width" type="button" class="secondary way-icon-button" aria-pressed="false" aria-label="Expand diagram" title="Expand diagram">
+                <svg class="way-icon way-icon--expand" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9H3V3h6v2H6.41l4.3 4.29-1.42 1.42L5 6.41V9Zm9.71 1.71-1.42-1.42L17.59 5H15V3h6v6h-2V6.41l-4.29 4.3ZM9.29 13.29l1.42 1.42L6.41 19H9v2H3v-6h2v2.59l4.29-4.3ZM19 17.59V15h2v6h-6v-2h2.59l-4.3-4.29 1.42-1.42 4.29 4.3Z"/></svg>
+                <svg class="way-icon way-icon--contract" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 3h2v6H5V7h2.59L3.29 2.71 4.71 1.29 9 5.59V3Zm5 0h2v2.59l4.29-4.3 1.42 1.42L17.41 7H20v2h-6V3ZM5 14h6v6H9v-2.59l-4.29 4.3-1.42-1.42L7.59 16H5v-2Zm9 0h6v2h-2.59l4.3 4.29-1.42 1.42L16 17.41V20h-2v-6Z"/></svg>
+                <span class="way-diagram-toggle-label visually-hidden">Expand diagram</span>
+              </button>
+            </div>
+          </div>
+          <div id="flow-diagram" class="way-diagram-wrap"></div>
+        </article>
+
+        <div class="way-builder-grid">
+          <section class="way-stack">
+            <article class="app-card">
+              <p class="app-kicker">Guide metadata</p>
+              <h2>Service information</h2>
+              <div class="app-field">
+                <label for="guide-title">Guide title <span class="app-required" aria-hidden="true">*</span></label>
+                <input id="guide-title" required aria-describedby="guide-title-error">
+                <p id="guide-title-error" class="app-error" hidden>Enter a guide title.</p>
+              </div>
+              <div class="app-field">
+                <label for="guide-description">Description</label>
+                <textarea id="guide-description" rows="3"></textarea>
+              </div>
+              <div class="app-field">
+                <label for="guide-before-start">Before you start</label>
+                <textarea id="guide-before-start" rows="4" placeholder="Eligibility, required documents, fees, or deadlines."></textarea>
+              </div>
+              <div class="app-field">
+                <label for="guide-help-contact">Help contact</label>
+                <input id="guide-help-contact" placeholder="Email, phone, or service desk">
+              </div>
+            </article>
+
+            <article class="app-card">
+              <div class="app-toolbar">
+                <div>
+                  <p class="app-kicker">Nodes</p>
+                  <h2>Workflow steps</h2>
+                </div>
+                <div class="app-actions">
+                  <button id="add-node" type="button">Add node</button>
+                </div>
+              </div>
+              <div id="node-list" class="way-node-list"></div>
+            </article>
+          </section>
+
+          <article class="app-card">
+            <p class="app-kicker">Validation</p>
+            <h2>Readiness checks</h2>
+            <div id="validation-output"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="test" class="way-section" hidden>
+        <article class="app-card way-runner-card">
+          <div class="app-toolbar">
+            <div>
+              <p class="app-kicker">Test runner</p>
+              <h2 id="runner-title">Preview the public guide</h2>
+            </div>
+            <div class="app-actions">
+              <button id="restart-runner" type="button" class="secondary">Restart test</button>
+            </div>
+          </div>
+          <div id="runner-before-start" class="app-alert app-alert--info" hidden></div>
+          <section id="runner-step" tabindex="-1"></section>
+        </article>
+        <article class="app-card">
+          <p class="app-kicker">Path</p>
+          <h2>Selected route</h2>
+          <div id="runner-path" class="way-path-list"></div>
+        </article>
+      </section>
+
+      <section id="json" class="way-section" hidden>
+        <div class="way-json-grid">
+          <article class="app-card">
+            <p class="app-kicker">Import and export</p>
+            <h2>Workflow JSON</h2>
+            <div class="app-actions">
+              <button id="download-json" type="button">Save workflow JSON</button>
+              <button id="export-html" type="button" class="secondary">Export web form</button>
+            </div>
+            <hr>
+            <div class="app-field">
+              <label for="import-file">Choose JSON file</label>
+              <input id="import-file" type="file" accept="application/json,.json">
+            </div>
+            <div class="app-field">
+              <label for="import-text">Or paste JSON</label>
+              <textarea id="import-text" rows="8"></textarea>
+            </div>
+            <div class="app-actions">
+              <button id="import-json" type="button">Import pasted JSON</button>
+              <button id="clear-import" type="button" class="secondary">Clear import</button>
+            </div>
+            <div id="import-error" class="app-alert app-alert--danger" role="alert" hidden></div>
+          </article>
+          <article class="app-card">
+            <div class="app-toolbar">
+              <div>
+                <p class="app-kicker">Live output</p>
+                <h2>Current workflow data</h2>
+              </div>
+              <span class="app-badge">Live</span>
+            </div>
+            <pre id="json-output" class="way-code"></pre>
+          </article>
+        </div>
+      </section>
+
+      <section id="help" class="way-section app-card" hidden>
+        <p class="app-kicker">Help</p>
+        <h2>Build and publish a decision guide</h2>
+        <h3>What you can do</h3>
+        <ul>
+          <li>Build a step-by-step workflow for staff or residents.</li>
+          <li>Add questions, branching paths, and outcome steps.</li>
+          <li>Test the full experience before publishing.</li>
+          <li>Export a standalone production-ready web form.</li>
+        </ul>
+        <h3>Getting started</h3>
+        <ol>
+          <li>Enter guide metadata and workflow steps in Builder.</li>
+          <li>Add branches from question nodes to route users to other nodes.</li>
+          <li>Use Test to walk through the experience.</li>
+          <li>Save workflow JSON or export the standalone web form from JSON.</li>
+        </ol>
+        <h3>Branch behavior</h3>
+        <p>Question branches can use operators such as equals, greater than, contains text, between, and else. The exported form evaluates branches in order and uses the first matching branch.</p>
+      </section>
+    </main>
+
+    <footer class="app-footer" role="contentinfo">
+      <div>
+        <strong>County of Marin</strong>
+        <p>Internal micro-app. For accessibility help or accommodation requests, contact the responsible department.</p>
+      </div>
+    </footer>
+
+    <div id="inspector-overlay" class="way-inspector-overlay" hidden>
+      <button id="inspector-backdrop" class="way-inspector-backdrop" type="button" aria-label="Close inspector"></button>
+      <section class="way-inspector-panel" role="dialog" aria-modal="true" aria-labelledby="inspector-title">
+        <div class="app-toolbar way-inspector-header">
+          <div>
+            <p class="app-kicker">Inspector</p>
+            <h2 id="inspector-title">Edit selected node</h2>
+          </div>
+          <button id="close-inspector" type="button" class="secondary">Close inspector</button>
+        </div>
+        <article id="node-editor"></article>
+      </section>
+    </div>
+
+    <script>
+      const starterFlow = {
+        meta: {
+          title: "County Procurement Decision Guide",
+          description: "Choose the right procurement path based on purchase details.",
+          beforeYouStart: "Confirm purchase scope, budget code, required documentation, and quote requirements before beginning.",
+          helpContact: "Procurement Support: procurement@marincounty.gov",
+          owner: "County of Marin",
+          version: "1.0.0"
+        },
+        startNodeId: "start",
+        nodes: {
+          start: {
+            id: "start",
+            type: "question",
+            title: "What is the estimated purchase amount?",
+            prompt: "Select the total estimated purchase value, including tax, shipping, and related costs.",
+            field: "purchaseAmount",
+            inputType: "number",
+            branches: [
+              { id: "under_10k_branch", label: "Under $10,000", condition: { field: "purchaseAmount", operator: "<", value: 10000 }, nextNodeId: "under_10k" },
+              { id: "between_10k_75k_branch", label: "$10,000 to $75,000", condition: { field: "purchaseAmount", operator: ">= && <=", value: [10000, 75000] }, nextNodeId: "quote_check" },
+              { id: "over_75k_branch", label: "Over $75,000", condition: { field: "purchaseAmount", operator: ">", value: 75000 }, nextNodeId: "formal" }
+            ]
+          },
+          under_10k: {
+            id: "under_10k",
+            type: "outcome",
+            title: "Low-value purchase path",
+            prompt: "Proceed using the appropriate departmental purchasing method. Retain backup documentation.",
+            endUserTodos: ["Save quote or pricing backup.", "Confirm budget code and internal approval."],
+            serviceProviderRequirements: ["Vendor name", "Itemized estimate", "Department contact"],
+            branches: []
+          },
+          quote_check: {
+            id: "quote_check",
+            type: "question",
+            title: "Are quotes required?",
+            prompt: "Determine whether informal quotes or additional documentation are required.",
+            field: "quotesRequired",
+            inputType: "boolean",
+            branches: [
+              { id: "quotes_yes", label: "Yes, quotes are required", condition: { field: "quotesRequired", operator: "==", value: true }, nextNodeId: "collect_quotes" },
+              { id: "quotes_no", label: "No or exception applies", condition: { field: "quotesRequired", operator: "==", value: false }, nextNodeId: "document_exception" }
+            ]
+          },
+          collect_quotes: { id: "collect_quotes", type: "task", title: "Collect and document quotes", prompt: "Collect required quote documentation, evaluate responsive vendors, and retain the procurement record.", branches: [] },
+          document_exception: { id: "document_exception", type: "task", title: "Document procurement exception", prompt: "Document the policy basis for the exception and obtain required approvals before proceeding.", branches: [] },
+          formal: { id: "formal", type: "outcome", title: "Formal procurement path", prompt: "Coordinate with Procurement for formal solicitation, evaluation, award, and contract routing.", branches: [] }
+        }
+      };
+
+      const statusMessage = document.querySelector("#app-status-message");
+      const themeToggleButton = document.querySelector("#theme-toggle");
+      const themeToggleLabel = document.querySelector(".app-theme-toggle__label");
+      const menuToggleButton = document.querySelector("#menu-toggle");
+      const appNav = document.querySelector("#app-nav");
+      const inspectorOverlay = document.querySelector("#inspector-overlay");
+      const closeInspectorButton = document.querySelector("#close-inspector");
+      const inspectorBackdrop = document.querySelector("#inspector-backdrop");
+      const diagramCard = document.querySelector("#diagram-card");
+      const toggleDiagramWidthButton = document.querySelector("#toggle-diagram-width");
+      const menuMediaQuery = window.matchMedia("(max-width: 720px)");
+      const themeStorageKey = "marinwaymaker-theme";
+      const workflowStorageKey = "marinwaymaker-workflow";
+
+      let flow = structuredClone(starterFlow);
+      let selectedNodeId = flow.startNodeId;
+      let runnerNodeId = flow.startNodeId;
+      let runnerHistory = [];
+      let runnerValues = {};
+      let isInspectorOpen = false;
+      let isDiagramExpanded = false;
+      let lastInspectorTrigger = null;
+
+      function announce(message) {
+        statusMessage.textContent = message;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function safeJsonParse(text) {
+        try {
+          return { ok: true, value: JSON.parse(text) };
+        } catch (error) {
+          return { ok: false, error: error.message };
+        }
+      }
+
+      function listToText(value) {
+        return Array.isArray(value) ? value.join("\n") : "";
+      }
+
+      function textToList(value) {
+        return String(value || "").split("\n").map((item) => item.trim()).filter(Boolean);
+      }
+
+      function parseConditionValue(value) {
+        const trimmed = String(value).trim();
+        if (trimmed === "true") return true;
+        if (trimmed === "false") return false;
+        if (trimmed === "null") return null;
+        if (trimmed !== "" && !Number.isNaN(Number(trimmed))) return Number(trimmed);
+        if ((trimmed.startsWith("[") && trimmed.endsWith("]")) || (trimmed.startsWith("{") && trimmed.endsWith("}"))) {
+          const parsed = safeJsonParse(trimmed);
+          if (parsed.ok) return parsed.value;
+        }
+        return value;
+      }
+
+      function conditionValueToInput(value) {
+        return Array.isArray(value) || (value && typeof value === "object") ? JSON.stringify(value) : String(value ?? "");
+      }
+
+      function persistFlow() {
+        try {
+          localStorage.setItem(workflowStorageKey, JSON.stringify(flow));
+        } catch {
+          return;
+        }
+      }
+
+      function loadStoredFlow() {
+        try {
+          const raw = localStorage.getItem(workflowStorageKey);
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.nodes && parsed.startNodeId) {
+            flow = parsed;
+            selectedNodeId = flow.startNodeId;
+          }
+        } catch {
+          return;
+        }
+      }
+
+      function getStoredTheme() {
+        try {
+          const value = localStorage.getItem(themeStorageKey);
+          return value === "dark" || value === "light" ? value : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function setTheme(theme, shouldAnnounce = false) {
+        const isDark = theme === "dark";
+        document.documentElement.dataset.theme = theme;
+        themeToggleButton.setAttribute("aria-pressed", isDark ? "true" : "false");
+        themeToggleButton.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+        themeToggleLabel.textContent = isDark ? "Switch to light mode" : "Switch to dark mode";
+        if (shouldAnnounce) announce(`${isDark ? "Dark" : "Light"} mode enabled.`);
+      }
+
+      function setMenuOpen(isOpen) {
+        menuToggleButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        if (isOpen) appNav.dataset.open = "true";
+        else appNav.removeAttribute("data-open");
+      }
+
+      function isMenuOpen() {
+        return menuToggleButton.getAttribute("aria-expanded") === "true";
+      }
+
+      function updateCurrentNavLink() {
+        const hash = window.location.hash || "#builder";
+        appNav.querySelectorAll("a").forEach((link) => {
+          if (link.getAttribute("href") === hash) link.setAttribute("aria-current", "page");
+          else link.removeAttribute("aria-current");
+        });
+      }
+
+      function showSectionFromHash() {
+        const hash = window.location.hash || "#builder";
+        document.querySelectorAll(".way-section").forEach((section) => {
+          section.hidden = `#${section.id}` !== hash;
+        });
+        if (hash === "#test") restartRunner(false);
+      }
+
+      function openInspector(trigger = null) {
+        isInspectorOpen = true;
+        lastInspectorTrigger = trigger;
+        inspectorOverlay.hidden = false;
+        renderNodeEditor();
+        requestAnimationFrame(() => {
+          closeInspectorButton.focus();
+        });
+        announce("Inspector opened.");
+      }
+
+      function closeInspector() {
+        if (!isInspectorOpen) return;
+        isInspectorOpen = false;
+        inspectorOverlay.hidden = true;
+        announce("Inspector closed.");
+        if (lastInspectorTrigger && typeof lastInspectorTrigger.focus === "function") {
+          lastInspectorTrigger.focus();
+        }
+        lastInspectorTrigger = null;
+      }
+
+      function setDiagramExpanded(isExpanded, shouldAnnounce = false) {
+        isDiagramExpanded = isExpanded;
+        diagramCard.classList.toggle("way-diagram-card--wide", isDiagramExpanded);
+        toggleDiagramWidthButton.setAttribute("aria-pressed", isDiagramExpanded ? "true" : "false");
+        const label = isDiagramExpanded ? "Return diagram to page width" : "Expand diagram";
+        toggleDiagramWidthButton.setAttribute("aria-label", label);
+        toggleDiagramWidthButton.title = label;
+        toggleDiagramWidthButton.querySelector(".way-diagram-toggle-label").textContent = label;
+        if (shouldAnnounce) announce(isDiagramExpanded ? "Flow diagram expanded to browser width." : "Flow diagram returned to page width.");
+      }
+
+      function trapInspectorFocus(event) {
+        if (!isInspectorOpen || event.key !== "Tab") return;
+        const focusable = Array.from(inspectorOverlay.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+
+      function validateFlow(candidate) {
+        const issues = [];
+        if (!candidate.meta?.title?.trim()) issues.push("Guide title is required.");
+        if (!candidate.startNodeId || !candidate.nodes[candidate.startNodeId]) issues.push("Start node must exist.");
+        Object.values(candidate.nodes || {}).forEach((node) => {
+          if (!node.id) issues.push("A node is missing an ID.");
+          if (!node.title?.trim()) issues.push(`Node ${node.id || "unknown"} needs a title.`);
+          if (!node.prompt?.trim()) issues.push(`Node ${node.id || "unknown"} needs prompt text.`);
+          if (node.type === "question" && !(node.branches || []).length) issues.push(`Question node ${node.id} needs at least one branch.`);
+          (node.branches || []).forEach((branch) => {
+            if (!branch.label?.trim()) issues.push(`A branch on ${node.id} needs a label.`);
+            if (branch.nextNodeId && !candidate.nodes[branch.nextNodeId]) issues.push(`Branch ${branch.id || branch.label} points to missing node ${branch.nextNodeId}.`);
+          });
+        });
+        return issues;
+      }
+
+      function renderMeta() {
+        document.querySelector("#guide-title").value = flow.meta.title || "";
+        document.querySelector("#guide-description").value = flow.meta.description || "";
+        document.querySelector("#guide-before-start").value = flow.meta.beforeYouStart || "";
+        document.querySelector("#guide-help-contact").value = flow.meta.helpContact || "";
+        document.querySelector("#workflow-summary").textContent = `${Object.keys(flow.nodes).length} nodes configured.`;
+      }
+
+      function nodeTypeStatus(type) {
+        if (type === "outcome") return "success";
+        if (type === "approval") return "warning";
+        if (type === "notice") return "open";
+        return "open";
+      }
+
+      function renderNodeList() {
+        document.querySelector("#node-list").innerHTML = Object.values(flow.nodes).map((node) => `
+          <button class="way-node-button" type="button" data-node-id="${escapeHtml(node.id)}" aria-current="${node.id === selectedNodeId ? "true" : "false"}">
+            <strong>${escapeHtml(node.title || node.id)}</strong>
+            <span class="way-node-meta">
+              <span class="app-status" data-status="${nodeTypeStatus(node.type)}">${escapeHtml(node.type)}</span>
+              ${node.id === flow.startNodeId ? '<span class="app-badge">Start</span>' : ""}
+              <span class="app-help-text">${escapeHtml(node.id)}</span>
+            </span>
+          </button>
+        `).join("");
+      }
+
+      function nodeOptions(selectedId = "") {
+        return ['<option value="">End here / not assigned</option>', ...Object.values(flow.nodes).map((node) => `<option value="${escapeHtml(node.id)}" ${node.id === selectedId ? "selected" : ""}>${escapeHtml(node.title)} (${escapeHtml(node.id)})</option>`)].join("");
+      }
+
+      function renderNodeEditor() {
+        const node = flow.nodes[selectedNodeId];
+        const editor = document.querySelector("#node-editor");
+        if (!node) {
+          selectedNodeId = flow.startNodeId;
+          return renderNodeEditor();
+        }
+        editor.innerHTML = `
+          <div class="app-toolbar">
+            <div>
+              <p class="app-kicker">Inspector</p>
+              <h2>Edit selected node</h2>
+            </div>
+            <div class="app-actions">
+              <button id="duplicate-node" type="button" class="secondary">Duplicate</button>
+              <button id="set-start-node" type="button" class="secondary">Set start</button>
+              <button id="delete-node" type="button" class="secondary">Delete</button>
+            </div>
+          </div>
+          <div class="app-form-grid">
+            <div class="app-field">
+              <label for="node-id">Node ID</label>
+              <input id="node-id" value="${escapeHtml(node.id)}" disabled>
+            </div>
+            <div class="app-field">
+              <label for="node-type">Node type</label>
+              <select id="node-type">
+                ${["question", "task", "outcome", "approval", "notice"].map((type) => `<option value="${type}" ${node.type === type ? "selected" : ""}>${type}</option>`).join("")}
+              </select>
+            </div>
+          </div>
+          <div class="app-field">
+            <label for="node-title">Title <span class="app-required" aria-hidden="true">*</span></label>
+            <input id="node-title" value="${escapeHtml(node.title)}">
+          </div>
+          <div class="app-field">
+            <label for="node-prompt">Prompt or instructions <span class="app-required" aria-hidden="true">*</span></label>
+            <textarea id="node-prompt" rows="4">${escapeHtml(node.prompt)}</textarea>
+          </div>
+          <div class="app-form-grid ${node.type === "question" ? "" : "way-hidden"}">
+            <div class="app-field">
+              <label for="node-field">Question field name</label>
+              <input id="node-field" value="${escapeHtml(node.field || "answer")}">
+            </div>
+            <div class="app-field">
+              <label for="node-input-type">Question input type</label>
+              <select id="node-input-type">
+                ${["text", "number", "boolean"].map((type) => `<option value="${type}" ${node.inputType === type ? "selected" : ""}>${type}</option>`).join("")}
+              </select>
+            </div>
+          </div>
+          <div class="app-form-grid">
+            <div class="app-field">
+              <label for="node-todos">End-user to-dos</label>
+              <textarea id="node-todos" rows="4">${escapeHtml(listToText(node.endUserTodos))}</textarea>
+            </div>
+            <div class="app-field">
+              <label for="node-requirements">Service provider requirements</label>
+              <textarea id="node-requirements" rows="4">${escapeHtml(listToText(node.serviceProviderRequirements))}</textarea>
+            </div>
+          </div>
+          <div class="app-toolbar">
+            <div>
+              <h3>Branches</h3>
+              <p class="app-help-text">Branches are evaluated in order. Else works as a fallback.</p>
+            </div>
+            <div class="app-actions">
+              <button id="add-branch" type="button">Add branch</button>
+            </div>
+          </div>
+          <div id="branch-list" class="way-branch-list"></div>
+        `;
+        renderBranchList();
+      }
+
+      function renderBranchList() {
+        const node = flow.nodes[selectedNodeId];
+        const branchList = document.querySelector("#branch-list");
+        if (!branchList) return;
+        if (!(node.branches || []).length) {
+          branchList.innerHTML = '<div class="app-empty">No branches yet.</div>';
+          return;
+        }
+        branchList.innerHTML = node.branches.map((branch, index) => {
+          const operator = branch.condition?.operator || "==";
+          return `
+            <article class="way-branch-card" data-branch-index="${index}">
+              <div class="app-form-grid">
+                <div class="app-field">
+                  <label for="branch-label-${index}">Label</label>
+                  <input id="branch-label-${index}" data-branch-field="label" value="${escapeHtml(branch.label)}">
+                </div>
+                <div class="app-field">
+                  <label for="branch-next-${index}">Then go to</label>
+                  <select id="branch-next-${index}" data-branch-field="nextNodeId">${nodeOptions(branch.nextNodeId)}</select>
+                </div>
+                <div class="app-field">
+                  <label for="branch-field-${index}">If field</label>
+                  <input id="branch-field-${index}" data-branch-field="field" value="${escapeHtml(branch.condition?.field || node.field || "answer")}">
+                </div>
+                <div class="app-field">
+                  <label for="branch-operator-${index}">Operator</label>
+                  <select id="branch-operator-${index}" data-branch-field="operator">
+                    ${["==", "!=", ">", ">=", "<", "<=", "includes", ">= && <=", "else"].map((item) => `<option value="${escapeHtml(item)}" ${operator === item ? "selected" : ""}>${escapeHtml(item)}</option>`).join("")}
+                  </select>
+                </div>
+                <div class="app-field">
+                  <label for="branch-value-${index}">Value</label>
+                  <input id="branch-value-${index}" data-branch-field="value" value="${escapeHtml(conditionValueToInput(branch.condition?.value))}" ${operator === "else" ? "disabled" : ""}>
+                </div>
+              </div>
+              <div class="way-branch-actions">
+                <button type="button" class="secondary" data-branch-action="move-up">Move up</button>
+                <button type="button" class="secondary" data-branch-action="move-down">Move down</button>
+                <button type="button" class="secondary" data-branch-action="remove">Remove branch</button>
+              </div>
+            </article>
+          `;
+        }).join("");
+      }
+
+      function renderDiagram() {
+        document.querySelector("#flow-diagram").innerHTML = `<div class="way-diagram">${Object.values(flow.nodes).map((node) => `
+          <button type="button" class="way-diagram-node" data-node-id="${escapeHtml(node.id)}" aria-current="${node.id === selectedNodeId ? "true" : "false"}">
+            <strong>${escapeHtml(node.title || node.id)}</strong>
+            <span class="way-node-meta"><span class="app-status" data-status="${nodeTypeStatus(node.type)}">${escapeHtml(node.type)}</span>${node.id === flow.startNodeId ? '<span class="app-badge">Start</span>' : ""}</span>
+            ${(node.branches || []).length ? `<div class="way-diagram-branches">${node.branches.map((branch) => `<p class="app-help-text"><strong>${escapeHtml(branch.label)}</strong> -> ${escapeHtml(branch.nextNodeId || "End")}</p>`).join("")}</div>` : ""}
+          </button>
+        `).join("")}</div>`;
+      }
+
+      function renderValidation() {
+        const issues = validateFlow(flow);
+        const output = document.querySelector("#validation-output");
+        document.querySelector("#workflow-status").dataset.status = issues.length ? "warning" : "success";
+        document.querySelector("#workflow-status").textContent = issues.length ? "Needs review" : "Ready";
+        if (!issues.length) {
+          output.innerHTML = '<div class="app-alert app-alert--success"><strong>Ready:</strong> No validation issues found.</div>';
+          return;
+        }
+        output.innerHTML = `<div class="app-alert app-alert--warning"><strong>Review needed:</strong><ul>${issues.map((issue) => `<li>${escapeHtml(issue)}</li>`).join("")}</ul></div>`;
+      }
+
+      function renderJson() {
+        document.querySelector("#json-output").textContent = JSON.stringify(flow, null, 2);
+      }
+
+      function renderAll() {
+        renderMeta();
+        renderNodeList();
+        if (isInspectorOpen) renderNodeEditor();
+        renderDiagram();
+        renderValidation();
+        renderJson();
+        persistFlow();
+      }
+
+      function renderPassive() {
+        renderNodeList();
+        renderDiagram();
+        renderValidation();
+        renderJson();
+        persistFlow();
+      }
+
+      function updateFlowFromMeta() {
+        flow.meta.title = document.querySelector("#guide-title").value;
+        flow.meta.description = document.querySelector("#guide-description").value;
+        flow.meta.beforeYouStart = document.querySelector("#guide-before-start").value;
+        flow.meta.helpContact = document.querySelector("#guide-help-contact").value;
+      }
+
+      function updateSelectedNodeFromEditor() {
+        const node = flow.nodes[selectedNodeId];
+        node.type = document.querySelector("#node-type").value;
+        node.title = document.querySelector("#node-title").value;
+        node.prompt = document.querySelector("#node-prompt").value;
+        node.field = document.querySelector("#node-field")?.value || node.field || "answer";
+        node.inputType = document.querySelector("#node-input-type")?.value || node.inputType || "text";
+        node.endUserTodos = textToList(document.querySelector("#node-todos").value);
+        node.serviceProviderRequirements = textToList(document.querySelector("#node-requirements").value);
+      }
+
+      function addNode() {
+        let count = Object.keys(flow.nodes).length + 1;
+        let id = `node_${count}`;
+        while (flow.nodes[id]) {
+          count += 1;
+          id = `node_${count}`;
+        }
+        flow.nodes[id] = { id, type: "question", title: "New question", prompt: "Enter the question or instruction.", field: "answer", inputType: "text", branches: [] };
+        selectedNodeId = id;
+        announce("Node added.");
+        renderAll();
+        openInspector(document.querySelector("#add-node"));
+      }
+
+      function duplicateNode() {
+        const source = flow.nodes[selectedNodeId];
+        const id = `${source.id}_copy_${Date.now().toString().slice(-4)}`;
+        flow.nodes[id] = structuredClone({ ...source, id, title: `${source.title} copy` });
+        selectedNodeId = id;
+        announce("Node duplicated.");
+        renderAll();
+      }
+
+      function deleteNode() {
+        if (Object.keys(flow.nodes).length <= 1) {
+          announce("At least one node is required.");
+          return;
+        }
+        const deleted = selectedNodeId;
+        delete flow.nodes[deleted];
+        Object.values(flow.nodes).forEach((node) => {
+          (node.branches || []).forEach((branch) => {
+            if (branch.nextNodeId === deleted) branch.nextNodeId = "";
+          });
+        });
+        if (flow.startNodeId === deleted) flow.startNodeId = Object.keys(flow.nodes)[0];
+        selectedNodeId = flow.startNodeId;
+        announce("Node deleted.");
+        renderAll();
+      }
+
+      function addBranch() {
+        const node = flow.nodes[selectedNodeId];
+        node.branches = node.branches || [];
+        node.branches.push({ id: `${node.id}_branch_${node.branches.length + 1}`, label: "New branch", condition: { field: node.field || "answer", operator: "==", value: "" }, nextNodeId: "" });
+        renderAll();
+      }
+
+      function matchesCondition(condition, values) {
+        if (!condition || condition.operator === "else") return true;
+        const actual = values[condition.field];
+        const expected = condition.value;
+        if (condition.operator === "==") return actual === expected;
+        if (condition.operator === "!=") return actual !== expected;
+        if (condition.operator === ">") return Number(actual) > Number(expected);
+        if (condition.operator === ">=") return Number(actual) >= Number(expected);
+        if (condition.operator === "<") return Number(actual) < Number(expected);
+        if (condition.operator === "<=") return Number(actual) <= Number(expected);
+        if (condition.operator === "includes") return String(actual || "").toLowerCase().includes(String(expected || "").toLowerCase());
+        if (condition.operator === ">= && <=") {
+          const range = Array.isArray(expected) ? expected : [expected, expected];
+          return Number(actual) >= Number(range[0]) && Number(actual) <= Number(range[1]);
+        }
+        return false;
+      }
+
+      function restartRunner(shouldAnnounce = true) {
+        runnerNodeId = flow.startNodeId;
+        runnerHistory = [];
+        runnerValues = {};
+        renderRunner();
+        if (shouldAnnounce) announce("Test runner restarted.");
+      }
+
+      function renderRunner() {
+        const node = flow.nodes[runnerNodeId];
+        const step = document.querySelector("#runner-step");
+        const beforeStart = document.querySelector("#runner-before-start");
+        document.querySelector("#runner-title").textContent = flow.meta.title || "Preview the public guide";
+        beforeStart.hidden = !flow.meta.beforeYouStart;
+        beforeStart.innerHTML = flow.meta.beforeYouStart ? `<strong>Before you start:</strong> ${escapeHtml(flow.meta.beforeYouStart)}` : "";
+        document.querySelector("#runner-path").innerHTML = runnerHistory.length ? runnerHistory.map((item) => `<div class="way-path-item"><strong>${escapeHtml(item.title)}</strong><p class="app-help-text">${escapeHtml(item.answer || "Visited")}</p></div>`).join("") : '<div class="app-empty">No selections yet.</div>';
+        if (!node) {
+          step.innerHTML = '<div class="app-alert app-alert--danger"><strong>Error:</strong> Start node is missing.</div>';
+          return;
+        }
+        if (node.type === "question") {
+          const field = node.field || "answer";
+          const inputType = node.inputType || "text";
+          const input = inputType === "boolean"
+            ? `<select id="runner-answer"><option value="true">Yes</option><option value="false">No</option></select>`
+            : `<input id="runner-answer" type="${inputType === "number" ? "number" : "text"}">`;
+          step.innerHTML = `
+            <p class="app-kicker">Question</p>
+            <h2>${escapeHtml(node.title)}</h2>
+            <p>${escapeHtml(node.prompt)}</p>
+            <div class="app-field">
+              <label for="runner-answer">Answer</label>
+              ${input}
+              <p id="runner-answer-error" class="app-error" hidden>Enter an answer to continue.</p>
+            </div>
+            <div class="app-actions"><button id="runner-continue" type="button">Continue</button></div>
+          `;
+          document.querySelector("#runner-continue").addEventListener("click", () => {
+            const answerInput = document.querySelector("#runner-answer");
+            const error = document.querySelector("#runner-answer-error");
+            if (answerInput.value === "") {
+              error.hidden = false;
+              answerInput.focus();
+              return;
+            }
+            error.hidden = true;
+            const value = inputType === "number" ? Number(answerInput.value) : inputType === "boolean" ? answerInput.value === "true" : answerInput.value;
+            runnerValues[field] = value;
+            const branch = (node.branches || []).find((candidate) => matchesCondition(candidate.condition, runnerValues));
+            runnerHistory.push({ title: node.title, answer: branch ? branch.label : String(value) });
+            runnerNodeId = branch?.nextNodeId || "";
+            renderRunner();
+          });
+          return;
+        }
+        const list = [...(node.endUserTodos || []), ...(node.serviceProviderRequirements || [])];
+        step.innerHTML = `
+          <p class="app-kicker">${escapeHtml(node.type)}</p>
+          <h2>${escapeHtml(node.title)}</h2>
+          <p>${escapeHtml(node.prompt)}</p>
+          ${list.length ? `<ul>${list.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
+          <div class="app-actions"><button id="runner-finish" type="button">Finish test</button></div>
+        `;
+        document.querySelector("#runner-finish").addEventListener("click", () => announce("Test path complete."));
+      }
+
+      function download(filename, content, type) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(new Blob([content], { type }));
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+
+      function buildExportHtml() {
+        const data = JSON.stringify(flow).replace(/</g, "\\u003c");
+        return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(flow.meta.title || "County decision guide")}</title><style>body{font-family:Arial,Verdana,sans-serif;line-height:1.5;margin:0;background:#f6f7f8;color:#1f1f1f}.wrap{max-width:760px;margin:0 auto;padding:1rem}.card{background:#fff;border:1px solid #d8dee4;border-radius:.5rem;padding:1rem;margin:1rem 0}.logo{max-width:180px;height:auto}@media(prefers-color-scheme:dark){body{background:#151b22;color:#f4f7fa}.card{background:#1d252e;border-color:#3b4652}.logo{filter:invert(1)}}button,input,select{font:inherit;min-height:44px}button{background:#0777cf;color:#fff;border:0;border-radius:.375rem;padding:.5rem .75rem}.error{color:#7f2d20;font-weight:700}</style></head><body><main class="wrap"><div class="card"><img class="logo" src="assets/logo.png" alt="County of Marin"><h1>${escapeHtml(flow.meta.title || "Decision guide")}</h1><p>${escapeHtml(flow.meta.description || "")}</p></div><section id="step" class="card"></section></main><script>const flow=${data};let nodeId=flow.startNodeId;let values={};function e(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}function m(c){if(!c||c.operator==="else")return true;const a=values[c.field],x=c.value;if(c.operator==="==")return a===x;if(c.operator==="!=")return a!==x;if(c.operator===">")return Number(a)>Number(x);if(c.operator===">=")return Number(a)>=Number(x);if(c.operator==="<")return Number(a)<Number(x);if(c.operator==="<=")return Number(a)<=Number(x);if(c.operator==="includes")return String(a||"").toLowerCase().includes(String(x||"").toLowerCase());if(c.operator===">= && <="){const r=Array.isArray(x)?x:[x,x];return Number(a)>=Number(r[0])&&Number(a)<=Number(r[1])}return false}function render(){const n=flow.nodes[nodeId],s=document.querySelector("#step");if(!n){s.innerHTML="<h2>Complete</h2><p>This guide path is complete.</p>";return}if(n.type==="question"){const f=n.field||"answer";s.innerHTML='<h2>'+e(n.title)+'</h2><p>'+e(n.prompt)+'</p><label for="answer">Answer</label>'+(n.inputType==="boolean"?'<select id="answer"><option value="true">Yes</option><option value="false">No</option></select>':'<input id="answer" type="'+(n.inputType==="number"?'number':'text')+'">')+'<p id="err" class="error" hidden>Enter an answer.</p><p><button id="next">Continue</button></p>';document.querySelector("#next").addEventListener("click",()=>{const i=document.querySelector("#answer");if(i.value===""){document.querySelector("#err").hidden=false;i.focus();return}values[f]=n.inputType==="number"?Number(i.value):n.inputType==="boolean"?i.value==="true":i.value;const b=(n.branches||[]).find(q=>m(q.condition));nodeId=b&&b.nextNodeId?b.nextNodeId:"";render()});return}s.innerHTML='<h2>'+e(n.title)+'</h2><p>'+e(n.prompt)+'</p><button id="done">Finish</button>';document.querySelector("#done").addEventListener("click",()=>{nodeId="";render()})}render();<\/script></body></html>`;
+      }
+
+      document.addEventListener("input", (event) => {
+        if (["guide-title", "guide-description", "guide-before-start", "guide-help-contact"].includes(event.target.id)) {
+          updateFlowFromMeta();
+          renderValidation();
+          renderJson();
+          persistFlow();
+        }
+        if (["node-type", "node-title", "node-prompt", "node-field", "node-input-type", "node-todos", "node-requirements"].includes(event.target.id)) {
+          updateSelectedNodeFromEditor();
+          renderPassive();
+        }
+        if (event.target.dataset.branchField) {
+          const card = event.target.closest(".way-branch-card");
+          const branch = flow.nodes[selectedNodeId].branches[Number(card.dataset.branchIndex)];
+          const field = event.target.dataset.branchField;
+          if (field === "label") branch.label = event.target.value;
+          if (field === "nextNodeId") branch.nextNodeId = event.target.value;
+          if (field === "field") branch.condition.field = event.target.value;
+          if (field === "operator") branch.condition.operator = event.target.value;
+          if (field === "value") branch.condition.value = parseConditionValue(event.target.value);
+          if (field === "operator") renderBranchList();
+          renderPassive();
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        const nodeButton = event.target.closest("[data-node-id]");
+        if (nodeButton) {
+          selectedNodeId = nodeButton.dataset.nodeId;
+          renderPassive();
+          openInspector(nodeButton);
+          return;
+        }
+        if (event.target.id === "add-node") addNode();
+        if (event.target.id === "toggle-diagram-width") setDiagramExpanded(!isDiagramExpanded, true);
+        if (event.target.id === "duplicate-node") duplicateNode();
+        if (event.target.id === "delete-node") deleteNode();
+        if (event.target.id === "set-start-node") {
+          flow.startNodeId = selectedNodeId;
+          renderAll();
+        }
+        if (event.target.id === "add-branch") addBranch();
+        if (event.target.dataset.branchAction) {
+          const node = flow.nodes[selectedNodeId];
+          const card = event.target.closest(".way-branch-card");
+          const index = Number(card.dataset.branchIndex);
+          if (event.target.dataset.branchAction === "remove") node.branches.splice(index, 1);
+          if (event.target.dataset.branchAction === "move-up" && index > 0) node.branches.splice(index - 1, 0, node.branches.splice(index, 1)[0]);
+          if (event.target.dataset.branchAction === "move-down" && index < node.branches.length - 1) node.branches.splice(index + 1, 0, node.branches.splice(index, 1)[0]);
+          renderAll();
+        }
+      });
+
+      document.querySelector("#restart-runner").addEventListener("click", () => restartRunner(true));
+      closeInspectorButton.addEventListener("click", closeInspector);
+      inspectorBackdrop.addEventListener("click", closeInspector);
+      document.querySelector("#download-json").addEventListener("click", () => download("marin-waymaker-workflow.json", JSON.stringify(flow, null, 2), "application/json"));
+      document.querySelector("#export-html").addEventListener("click", () => download("marin-waymaker-guide.html", buildExportHtml(), "text/html"));
+      document.querySelector("#import-json").addEventListener("click", () => {
+        const result = safeJsonParse(document.querySelector("#import-text").value);
+        const error = document.querySelector("#import-error");
+        if (!result.ok || validateFlow(result.value).some((issue) => issue.includes("Missing nodes") || issue.includes("Start node"))) {
+          error.hidden = false;
+          error.textContent = result.ok ? "Imported JSON is not a valid WayMaker workflow." : `Invalid JSON: ${result.error}`;
+          return;
+        }
+        error.hidden = true;
+        flow = result.value;
+        selectedNodeId = flow.startNodeId;
+        renderAll();
+        announce("Workflow imported.");
+      });
+      document.querySelector("#clear-import").addEventListener("click", () => {
+        document.querySelector("#import-text").value = "";
+        document.querySelector("#import-error").hidden = true;
+      });
+      document.querySelector("#import-file").addEventListener("change", (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          document.querySelector("#import-text").value = String(reader.result || "");
+        };
+        reader.readAsText(file);
+      });
+
+      themeToggleButton.addEventListener("click", () => {
+        const currentTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+        const nextTheme = currentTheme === "dark" ? "light" : "dark";
+        setTheme(nextTheme, true);
+        try { localStorage.setItem(themeStorageKey, nextTheme); } catch { return; }
+      });
+      menuToggleButton.addEventListener("click", () => setMenuOpen(!isMenuOpen()));
+      appNav.addEventListener("click", (event) => {
+        if (event.target instanceof HTMLAnchorElement && menuMediaQuery.matches) setMenuOpen(false);
+      });
+      document.addEventListener("keydown", (event) => {
+        trapInspectorFocus(event);
+        if (event.key === "Escape" && isInspectorOpen) {
+          closeInspector();
+          return;
+        }
+        if (event.key === "Escape" && isMenuOpen()) {
+          setMenuOpen(false);
+          menuToggleButton.focus();
+          return;
+        }
+        if (event.key === "Escape" && isDiagramExpanded) {
+          setDiagramExpanded(false, true);
+          toggleDiagramWidthButton.focus();
+        }
+      });
+      menuMediaQuery.addEventListener("change", (event) => {
+        if (!event.matches) setMenuOpen(false);
+      });
+      window.addEventListener("hashchange", () => {
+        updateCurrentNavLink();
+        showSectionFromHash();
+      });
+
+      loadStoredFlow();
+      setTheme(getStoredTheme() || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+      setDiagramExpanded(false);
+      renderAll();
+      restartRunner(false);
+      updateCurrentNavLink();
+      showSectionFromHash();
+    </script>
+  </body>
+</html>
