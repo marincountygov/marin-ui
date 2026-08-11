@@ -202,7 +202,7 @@ Normalize Pico's responsive root font scaling to `--pico-font-size: 100%` at all
 
 Use Futura only if an approved licensed County font file or official rendered logo/logotype asset is already available in the project. Do not fetch, embed, generate, or substitute unlicensed font files.
 
-Do not use all-caps headings for long text. All-caps may be used only for short labels, eyebrow text, or metadata, with adequate letter spacing.
+Use sentence case for headings, labels, navigation, metadata, and status text. Do not use CSS text transformation to force interface text into all caps. Preserve standard capitalization for acronyms and official names.
 
 ## Required app shell
 
@@ -210,42 +210,53 @@ Every micro-app must include:
 
 ```text
 skip link
-official County identifier
+MarinOS banner linking to the directory
 app title
 main landmark
-footer
-accessibility/help link or contact area
+text-only MarinOS footer
 visible focus styles
-user-facing fixed top-right light/dark mode toggle represented by accessible SVG sun/moon icons
+color mode that follows the user's operating-system preference through `prefers-color-scheme`
+text-only Feedback button
 ```
 
 Use this shell unless the user asks for something materially different:
 
 ```html
+<head>
+  ...
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%23000'/%3E%3Cg fill='none' stroke='%23e5b53b' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Crect x='27' y='9' width='12' height='12' rx='2'/%3E%3Crect x='9' y='27' width='12' height='12' rx='2'/%3E%3Crect x='27' y='27' width='12' height='12' rx='2'/%3E%3C/g%3E%3C/svg%3E">
+</head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
 
-  <button type="button" class="app-theme-toggle" aria-pressed="false" aria-label="Switch to dark mode">
-    <svg class="app-theme-toggle__icon app-theme-toggle__icon--sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <!-- sun icon path -->
-    </svg>
-    <svg class="app-theme-toggle__icon app-theme-toggle__icon--moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <!-- moon icon path -->
-    </svg>
-    <span class="app-theme-toggle__label visually-hidden">Switch to dark mode</span>
-  </button>
+  <div class="marinos-banner">
+    <div class="marinos-banner__inner">
+      <div class="menu marinos-menu">
+        <button type="button" class="menu-toggle marinos-menu__toggle" aria-expanded="false" aria-controls="marinos-menu-panel">
+          <span class="marinos-banner__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48"><rect x="7" y="7" width="13" height="13" rx="2"/><rect x="28" y="7" width="13" height="13" rx="2"/><rect x="7" y="28" width="13" height="13" rx="2"/><rect x="28" y="28" width="13" height="13" rx="2"/></svg>
+          </span>
+          MarinOS<sup>ALPHA</sup>
+          <svg class="menu-toggle__caret" aria-hidden="true" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+        <div id="marinos-menu-panel" class="menu-panel marinos-menu__panel" hidden>
+          <a href="https://marincountygov.github.io/marinmagic/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>MarinMagic</a>
+          <a href="https://marincountygov.github.io/marinwaymaker/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>Marin WayMaker</a>
+          <a href="https://marincountygov.github.io/marindocs/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>MarinDocs</a>
+          <a class="marinos-menu__all" href="https://marincountygov.github.io/marinos/">Browse all in MarinOS</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <header class="app-header" role="banner">
     <div class="app-header__inner">
       <div class="app-identity">
-        <div class="app-official">Official County of Marin tool</div>
         <div class="app-title-row">
-          <img
-            src="./assets/logo.png"
-            alt="County of Marin"
-            class="app-logo"
-          >
-          <div>
+          <span class="app-icon" aria-hidden="true">
+            <!-- simple product icon SVG -->
+          </span>
+          <div class="app-title-copy">
             <h1 class="app-title">App Name</h1>
             <p class="app-subtitle">Short description of what this app does.</p>
           </div>
@@ -268,21 +279,40 @@ Use this shell unless the user asks for something materially different:
   </main>
 
   <footer class="app-footer" role="contentinfo">
-    <div>
-      <strong>County of Marin</strong>
-      <p>Internal micro-app. For accessibility help or accommodation requests, contact the responsible department.</p>
-    </div>
+    <div class="app-footer__inner">MarinOS</div>
   </footer>
 
+  <a class="app-feedback" href="APPROVED_FEEDBACK_URL" target="_blank" rel="noreferrer">Feedback</a>
+
+  <script src="./shared/app-shell.js"></script>
   <script src="./app.js"></script>
 </body>
 ```
 
-If no approved logo asset exists, replace the logo image with accessible text:
+Use a simple, meaningful inline SVG icon in the header. Treat it as decorative with `aria-hidden="true"` because the adjacent app title supplies the accessible name. Do not use an app logotype block.
+
+The MarinOS banner uses the shared MarinOS icon (the four-square mark shown above) inline before the word "MarinOS", colored with `currentColor` so it always matches the banner text. Use the same mark as the site favicon via the inline SVG data URI shown in the shell example above; do not add a separate `.ico` or PNG favicon file. The banner currently carries an `<sup>ALPHA</sup>` release marker; remove it only when the program formally exits alpha status.
+
+The banner control is a click-to-open dropdown (the `.menu` component described below), not a plain link. Clicking "MarinOS" opens a small panel listing every current MarinOS app and docs product with its icon, plus a "Browse all in MarinOS" link to the full directory. Keep this list in sync with `marinos/catalog.json` and `marinos/index.html` when a product is added or retired.
+
+### The `.menu` disclosure component
+
+`.menu` / `.menu-toggle` / `.menu-panel` is the shared pattern for any click-to-open dropdown: the MarinOS banner above, and grouped document actions (Share, Download) described in the accessibility section below. It is a disclosure pattern (a toggle button plus a hidden panel), not a full ARIA `menu`/`menuitem` widget — that keeps keyboard support simple (Tab reaches the toggle and, once open, the panel's real links/buttons in order; Escape closes and returns focus to the toggle) and avoids the roving-tabindex and arrow-key requirements that `role="menu"` would demand.
 
 ```html
-<div class="app-logotype" aria-label="County of Marin">County of Marin</div>
+<div class="menu">
+  <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="example-panel">
+    Label
+    <svg class="menu-toggle__caret" aria-hidden="true" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>
+  </button>
+  <div id="example-panel" class="menu-panel" hidden>
+    <a href="...">Option one</a>
+    <button type="button">Option two</button>
+  </div>
+</div>
 ```
+
+`app-shell.js` wires up every `.menu` on the page generically: click toggles the panel (and closes any other open menu), clicking a link/button inside the panel closes it, clicking outside closes it, and Escape closes it and returns focus to the toggle. No per-page JavaScript is needed beyond that shared behavior. Give the toggle a second class (`marinos-menu__toggle`, or `doc-action` for a pill-styled action button) to skin it for its context — `.menu-toggle` itself only supplies layout, not visual style.
 
 ## Required shared CSS classes
 
@@ -292,19 +322,19 @@ Build agents should use these shared classes before inventing new visual pattern
 skip-link
 app-header
 app-header__inner
-app-official
 app-identity
 app-logo
-app-logotype
+app-icon
+app-card__icon
 app-title
 app-subtitle
+app-title-copy
 app-menu-toggle
 app-nav
-app-theme-toggle
 app-main
 app-footer
+app-feedback
 app-page-heading
-app-kicker
 app-card
 app-toolbar
 app-actions
@@ -322,343 +352,19 @@ app-field
 app-required
 app-error
 app-help-text
+heading-anchor
+docs-toc
 ```
 
-## Base `app-brand.css`
+Directory cards place a meaningful icon before their content and make the card's `h3` text the destination link. Do not add a second “Open …” link.
 
-Use this as the starting point:
+Documentation pages add hover/focus anchor links to content headings and use `aria-current="location"` to highlight the section currently in view in the “On this page” navigation.
 
-```css
-:root {
-  --marin-black: #000000;
-  --marin-gold: #e5b53b;
-  --marin-blue: #0777cf;
-  --marin-dark-gray: #6f6f6f;
-  --marin-light-gray: #a9a9a9;
-  --marin-green: #73784a;
-  --marin-brown: #a2662b;
-  --marin-red: #b45340;
+## Shared CSS implementation
 
-  --app-bg: #ffffff;
-  --app-bg-soft: #f6f7f8;
-  --app-surface: #ffffff;
-  --app-text: #1f1f1f;
-  --app-muted: #4b5563;
-  --app-border: #d8dee4;
-  --app-focus: #0777cf;
+`shared/app-brand.css` is the executable source of truth. Do not copy a second CSS implementation into this specification. Consumers must vendor the complete versioned bundle and record the installed release in `BRAND_VERSION`.
 
-  --app-brand: var(--marin-black);
-  --app-accent: var(--marin-blue);
-  --app-warning: var(--marin-gold);
-  --app-danger: var(--marin-red);
-  --app-success: #4f5f2f;
-
-  --pico-font-family-sans-serif:
-    Arial,
-    Verdana,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
-  --pico-primary: var(--marin-blue);
-  --pico-primary-hover: #005ea8;
-  --pico-primary-focus: rgba(7, 119, 207, 0.25);
-  --pico-border-radius: 0.375rem;
-  --pico-font-size: 100%;
-}
-
-@media (min-width: 576px) {
-  :host,
-  :root {
-    --pico-font-size: 100%;
-  }
-}
-
-@media (min-width: 768px) {
-  :host,
-  :root {
-    --pico-font-size: 100%;
-  }
-}
-
-@media (min-width: 1024px) {
-  :host,
-  :root {
-    --pico-font-size: 100%;
-  }
-}
-
-@media (min-width: 1280px) {
-  :host,
-  :root {
-    --pico-font-size: 100%;
-  }
-}
-
-@media (min-width: 1536px) {
-  :host,
-  :root {
-    --pico-font-size: 100%;
-  }
-}
-
-html {
-  color-scheme: light;
-}
-
-body {
-  background: var(--app-bg-soft);
-  color: var(--app-text);
-}
-
-.skip-link {
-  position: absolute;
-  left: 1rem;
-  top: 0;
-  transform: translateY(-120%);
-  z-index: 999;
-  padding: 0.75rem 1rem;
-  background: var(--marin-black);
-  color: #ffffff;
-  border-radius: 0 0 0.375rem 0.375rem;
-}
-
-.skip-link:focus {
-  transform: translateY(0);
-}
-
-:focus-visible {
-  outline: 3px solid var(--app-focus);
-  outline-offset: 3px;
-}
-
-.app-header {
-  background: #ffffff;
-  border-bottom: 1px solid var(--app-border);
-}
-
-.app-header__inner {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-
-.app-official {
-  color: var(--app-muted);
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-}
-
-.app-title-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.app-logo {
-  width: auto;
-  max-width: 180px;
-  max-height: 56px;
-}
-
-.app-logotype {
-  font-weight: 700;
-  letter-spacing: 0.03em;
-}
-
-.app-title {
-  margin: 0;
-  font-size: clamp(1.35rem, 2vw, 1.75rem);
-  line-height: 1.2;
-}
-
-.app-subtitle {
-  margin: 0.25rem 0 0;
-  color: var(--app-muted);
-}
-
-.app-nav {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.app-nav a {
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--pico-border-radius);
-  text-decoration: none;
-}
-
-.app-nav a[aria-current="page"],
-.app-nav a:hover {
-  background: #eef6fd;
-  color: #004f8f;
-}
-
-.app-main {
-  padding-top: 2rem;
-  padding-bottom: 3rem;
-}
-
-.app-page-heading {
-  margin-bottom: 1.5rem;
-}
-
-.app-kicker {
-  margin-bottom: 0.25rem;
-  color: #005ea8;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.app-card {
-  background: var(--app-surface);
-  border: 1px solid var(--app-border);
-  border-radius: var(--pico-border-radius);
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
-}
-
-.app-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-
-.app-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.app-alert {
-  padding: 0.875rem 1rem;
-  border: 1px solid var(--app-border);
-  border-left: 0.375rem solid var(--app-accent);
-  background: #ffffff;
-  border-radius: var(--pico-border-radius);
-}
-
-.app-alert--success {
-  border-left-color: var(--app-success);
-}
-
-.app-alert--warning {
-  border-left-color: var(--app-warning);
-}
-
-.app-alert--danger {
-  border-left-color: var(--app-danger);
-}
-
-.app-badge,
-.app-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  min-height: 1.5rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.app-status[data-status="open"] {
-  background: #eef6fd;
-  color: #004f8f;
-}
-
-.app-status[data-status="done"],
-.app-status[data-status="complete"],
-.app-status[data-status="success"] {
-  background: #eef4e6;
-  color: #34451d;
-}
-
-.app-status[data-status="warning"] {
-  background: #fff6d8;
-  color: #4d3900;
-}
-
-.app-status[data-status="error"],
-.app-status[data-status="danger"] {
-  background: #fbecea;
-  color: #7f2d20;
-}
-
-.app-empty {
-  padding: 2rem;
-  text-align: center;
-  color: var(--app-muted);
-  background: #ffffff;
-  border: 1px dashed var(--app-border);
-  border-radius: var(--pico-border-radius);
-}
-
-.app-table-wrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.app-form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-  gap: 1rem;
-}
-
-.app-required {
-  color: #7f2d20;
-  font-weight: 700;
-}
-
-.app-error {
-  color: #7f2d20;
-  font-weight: 700;
-}
-
-.app-help-text {
-  color: var(--app-muted);
-  font-size: 0.9375rem;
-}
-
-.app-footer {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 2rem;
-  color: var(--app-muted);
-}
-
-@media (max-width: 720px) {
-  .app-header__inner {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .app-title-row {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .app-nav {
-    flex-direction: column;
-  }
-
-  .app-nav a {
-    width: 100%;
-  }
-}
-```
+The shared CSS must include OS-controlled light and dark tokens, the MarinOS banner, icon/title treatment, gold title-copy border, cards, text-only feedback button, Docs heading anchors, active table-of-contents state, responsive behavior, print behavior, visible focus, and reduced-motion handling.
 
 ## Accessibility standard
 
@@ -873,6 +579,33 @@ Set document language:
 
 Use plain, task-focused text.
 
+Write card, list, and page descriptions (the short body text under a title, and `<meta name="description">`) as one sentence in plain language at roughly a 9th-grade reading level: short sentence, common words, no jargon, acronyms, or internal system names the reader wouldn't already know. Do not restate the title or pad the sentence with filler like "This page describes...".
+
+Write every heading — page titles (`h1`), section and document headings (`h2`, `h3`, ...), card and directory-entry titles (`.card h2`, `.app-card h3`) — in AP-style sentence case. This applies to the whole heading hierarchy of a page, not just card titles: a document's `h1`, its `h2` section headings, and any `h3` step or sub-item headings underneath all follow the same rule.
+
+- Use sentence case, not title case.
+- Capitalize the first word and proper nouns.
+- Capitalize acronyms and official names according to their standard usage.
+- Do not capitalize ordinary words merely because they appear in a heading.
+- Do not end headings with a period.
+- Keep headings concise and descriptive.
+- Apply the same capitalization rules at every heading level.
+
+```text
+Good: County services and programs
+Good: How to apply for a permit
+Good: Working with Marin County departments
+Good: ADA accessibility requirements
+Good: Next steps
+Bad:  County Services and Programs
+Bad:  How to Apply for a Permit
+Bad:  Working With Marin County Departments
+Bad:  Next Steps
+Bad:  COUNTY SERVICES AND PROGRAMS (all caps)
+```
+
+If a document's headings are also used as node/section titles in another view of the same content (for example, a Flow view built from the same source data), keep that title text in sync with the heading — don't let one view show one capitalization style and another show a different one for what's meant to be the same title.
+
 Button text must describe the action:
 
 Bad:
@@ -972,9 +705,9 @@ Build this as a County of Marin micro-app.
 
 Use semantic HTML, Pico.css, shared/app-brand.css, and vanilla JavaScript. Use Alpine.js only if it materially simplifies repetitive DOM state. Use Dexie.js only if the app needs IndexedDB-backed record storage.
 
-Branding must be derived from www.marincounty.gov and the County of Marin identity guidance. Use the approved County logo asset if available. Do not recreate or alter the logo. Use County palette tokens from app-brand.css. Maintain a County-style app shell with skip link, official County identifier, app title, main landmark, and footer.
+Branding must be derived from www.marincounty.gov and the County of Marin identity guidance. Do not recreate or alter the County logo. Use County palette tokens from app-brand.css. Maintain the MarinOS shell with a skip link, MarinOS banner, product icon, app title, main landmark, MarinOS footer, and text-only Feedback button.
 
-Use Jost for heading fonts from a local bundled font file with accessible sans-serif fallbacks, and always include a user-facing fixed top-right light/dark mode toggle represented by accessible SVG sun/moon icons.
+Use Jost for heading fonts from a local bundled font file with accessible sans-serif fallbacks. Use sentence case throughout the interface. Follow the user's operating-system light/dark preference with CSS `prefers-color-scheme`; do not add a theme toggle or store a theme preference.
 
 Collapse the main menu on narrow viewports with a keyboard-operable button that uses `aria-expanded` and `aria-controls`.
 
@@ -1002,7 +735,7 @@ app-brand.css is used for County-specific styling.
 The app has a skip link.
 The app has one main landmark.
 Jost is used for heading fonts from a local bundled font file with accessible fallbacks.
-The app has a user-facing fixed top-right light/dark mode toggle represented by accessible SVG sun/moon icons.
+Light and dark colors follow the operating-system preference through `prefers-color-scheme`; no theme toggle or stored override is present.
 The main menu collapses on narrow viewports with correct `aria-expanded` and `aria-controls` state.
 Heading order is logical.
 All controls have visible labels.
@@ -1018,6 +751,16 @@ Tables use proper headers and scope.
 Touch/click targets are adequately sized.
 Reduced motion is respected.
 Logo artwork is not recreated or distorted.
-The footer identifies County of Marin and includes accessibility/help language.
+The footer contains only the text MarinOS.
+The text-only Feedback button is present and has no icon.
+Interface headings and labels use sentence case rather than forced all caps.
+Directory card titles are the links; duplicate “Open” links are absent.
+WAVE testing is run from an HTTP URL, or local-file access is enabled for the extension.
 Local data has export/import if meaningful.
 ```
+
+## WAVE browser-extension testing
+
+Prefer testing a locally served HTTP URL such as `http://localhost:8000/` instead of opening the page with `file://`. If a local file must be tested, enable local-page access for the WAVE extension in Firefox's extension settings. A page that stays gray after WAVE is selected usually indicates that the extension cannot evaluate the local page, not that the site intentionally added an overlay.
+
+Do not claim that a page “passes WAVE.” Record automated findings and complete keyboard, zoom/reflow, contrast, and assistive-technology checks separately.

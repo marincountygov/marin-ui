@@ -6,12 +6,9 @@ const emptyStateButton = document.querySelector("#empty-state-action");
 const dialog = document.querySelector("#demo-dialog");
 const openDialogButton = document.querySelector("#open-dialog");
 const closeDialogButton = document.querySelector("#close-dialog");
-const themeToggleButton = document.querySelector("#theme-toggle");
-const themeToggleLabel = document.querySelector(".app-theme-toggle__label");
 const menuToggleButton = document.querySelector("#menu-toggle");
 const appNav = document.querySelector("#app-nav");
 
-const themeStorageKey = "marin-demo-theme";
 const menuMediaQuery = window.matchMedia("(max-width: 720px)");
 
 let dialogOpener = null;
@@ -22,52 +19,6 @@ function announce(message) {
   }
 
   statusMessage.textContent = message;
-}
-
-function getStoredTheme() {
-  try {
-    const value = localStorage.getItem(themeStorageKey);
-    return value === "dark" || value === "light" ? value : null;
-  } catch {
-    return null;
-  }
-}
-
-function storeTheme(theme) {
-  try {
-    localStorage.setItem(themeStorageKey, theme);
-  } catch {
-    // The toggle still works for the current page when storage is unavailable.
-  }
-}
-
-function getPreferredTheme() {
-  const storedTheme = getStoredTheme();
-
-  if (storedTheme) {
-    return storedTheme;
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
-function setTheme(theme, shouldAnnounce = false) {
-  const isDark = theme === "dark";
-
-  document.documentElement.dataset.theme = theme;
-
-  if (themeToggleButton) {
-    themeToggleButton.setAttribute("aria-pressed", isDark ? "true" : "false");
-    themeToggleButton.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
-  }
-
-  if (themeToggleLabel) {
-    themeToggleLabel.textContent = isDark ? "Switch to light mode" : "Switch to dark mode";
-  }
-
-  if (shouldAnnounce) {
-    announce(`${isDark ? "Dark" : "Light"} mode enabled.`);
-  }
 }
 
 function setFieldError(control, errorElement, hasError) {
@@ -212,18 +163,6 @@ if (dialog && openDialogButton && closeDialogButton) {
     if (dialogOpener) {
       dialogOpener.focus();
     }
-  });
-}
-
-if (themeToggleButton) {
-  setTheme(getPreferredTheme());
-
-  themeToggleButton.addEventListener("click", () => {
-    const currentTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
-    const nextTheme = currentTheme === "dark" ? "light" : "dark";
-
-    setTheme(nextTheme, true);
-    storeTheme(nextTheme);
   });
 }
 
