@@ -1,6 +1,6 @@
-# County of Marin Micro-App
+# MarinOS app and docs brand system
 
-This project is a standalone demo and starter for County of Marin micro-apps. It shows how to build small, durable County tools with semantic HTML, Pico.css, shared County branding, vanilla JavaScript, and WCAG 2.2 Level AA accessibility patterns.
+This project is the versioned UI source of truth for MarinOS apps and documentation. It provides App and Docs shells built with semantic HTML, Pico.css, shared County branding, vanilla JavaScript, and WCAG 2.2 Level AA accessibility patterns.
 
 ## Purpose
 
@@ -11,22 +11,28 @@ Use this codebase as a reference for small internal tools, local-first utilities
 ```text
 index.html
 app.js
-assets/
-  logo.png
+BRAND_VERSION
+CHANGELOG.md
+templates/
+  app/index.html
+  docs/index.html
 vendor/
   pico.min.css
   fonts/
     Jost-wght.ttf
 shared/
   app-brand.css
+  app-shell.js
 SPEC.md
 README.md
 ```
 
 - `index.html`: Demo page showing the required app shell and shared UI components.
 - `app.js`: Vanilla JavaScript for form validation, live announcements, dialog focus handling, hash navigation state, and light/dark mode.
-- `assets/logo.png`: Official County of Marin logo stored locally.
+- `templates/app/index.html`: Generic task-focused application shell.
+- `templates/docs/index.html`: Generic documentation shell with breadcrumbs and table of contents.
 - `shared/app-brand.css`: County-specific branding layer, design tokens, accessibility styles, layout utilities, and component classes.
+- `shared/app-shell.js`: Reusable responsive-menu, Docs heading-anchor, and active table-of-contents behavior.
 - `vendor/pico.min.css`: Local Pico.css base stylesheet.
 - `vendor/fonts/Jost-wght.ttf`: Local Jost variable font used for headings.
 - `SPEC.md`: Full County of Marin micro-app standard and review checklist.
@@ -43,11 +49,13 @@ You can also serve the folder with any static web server. A local server is reco
 
 ## Included Demo Components
 
-- County-style app shell with skip link, header, navigation, main landmark, and footer.
+- Text-only MarinOS banner, County identity header, main landmark, and MarinOS-only footer.
+- Separate generic App and Docs shells.
 - Collapsible main menu on narrow viewports with accessible expanded/collapsed state.
-- Official County logo loaded from the local `assets/logo.png` file.
+- Product icons with a gold-bordered title and subtitle area.
 - Jost heading typography loaded from a local bundled font file with accessible sans-serif fallbacks.
-- Fixed top-right light/dark mode toggle using SVG sun/moon icons.
+- Light/dark colors that follow the user's operating-system setting.
+- Text-only Feedback button.
 - Cards, toolbars, alerts, badges, and status pills.
 - Accessible demo form with text input, select, radio buttons, checkboxes, textarea, help text, and validation errors.
 - Responsive data table with scoped row hover styles.
@@ -59,13 +67,23 @@ You can also serve the folder with any static web server. A local server is reco
 
 The demo is designed around WCAG 2.2 Level AA expectations. It includes semantic landmarks, logical heading order, visible labels, visible focus states, keyboard-operable controls, non-color-only status indicators, reduced-motion support, accessible form errors, table headers with scope, and live status messages.
 
-The light/dark mode toggle stores a small user preference in `localStorage` and falls back to `prefers-color-scheme` when no saved preference exists.
+Light/dark mode follows `prefers-color-scheme`. The shell does not provide a manual toggle or store a theme preference.
 
 ## Branding
 
 Pico.css provides the base UI layer. `shared/app-brand.css` provides the County-specific layer, including Marin color tokens, shell styles, component classes, focus styles, and light/dark theme tokens.
 
-The official County logo is stored locally at `assets/logo.png`. Do not recreate, recolor, stretch, distort, or approximate the logo artwork. If an approved logo asset is not available in a future project, use accessible text branding instead.
+Use a simple product icon beside the app title rather than an app logotype block. If approved County logo art is used elsewhere, do not recreate, recolor, stretch, distort, or approximate it.
+
+Use sentence case for interface text. Directory cards link their heading text rather than adding separate “Open” links.
+
+## WAVE testing
+
+Serve the project over local HTTP before activating the WAVE Firefox extension. If testing a `file://` page, enable local-page access for WAVE in Firefox's extension settings. See `SPEC.md` for the full accessibility-testing expectations.
+
+## Consumer updates
+
+Consumers vendor a complete release and record it in `BRAND_VERSION`. Copy `shared/`, required `vendor/` files, and `BRAND_VERSION` together. See `SYNCING.md` for the update and verification procedure.
 
 ## Development Notes
 
