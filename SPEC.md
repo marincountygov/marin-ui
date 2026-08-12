@@ -581,32 +581,7 @@ Set document language:
 
 Use plain, task-focused text.
 
-Write card, list, and page descriptions (the short body text under a title, and `<meta name="description">`) as one sentence in plain language at roughly a 9th-grade reading level: short sentence, common words, no jargon, acronyms, or internal system names the reader wouldn't already know. Do not restate the title or pad the sentence with filler like "This page describes...".
-
-Write every heading — page titles (`h1`), section and document headings (`h2`, `h3`, ...), card and directory-entry titles (`.card h2`, `.app-card h3`) — in AP-style sentence case. This applies to the whole heading hierarchy of a page, not just card titles: a document's `h1`, its `h2` section headings, and any `h3` step or sub-item headings underneath all follow the same rule.
-
-- Use sentence case, not title case.
-- Capitalize the first word and proper nouns.
-- Capitalize acronyms and official names according to their standard usage.
-- Do not capitalize ordinary words merely because they appear in a heading.
-- Do not end headings with a period.
-- Keep headings concise and descriptive.
-- Apply the same capitalization rules at every heading level.
-
-```text
-Good: County services and programs
-Good: How to apply for a permit
-Good: Working with Marin County departments
-Good: ADA accessibility requirements
-Good: Next steps
-Bad:  County Services and Programs
-Bad:  How to Apply for a Permit
-Bad:  Working With Marin County Departments
-Bad:  Next Steps
-Bad:  COUNTY SERVICES AND PROGRAMS (all caps)
-```
-
-If a document's headings are also used as node/section titles in another view of the same content (for example, a Flow view built from the same source data), keep that title text in sync with the heading — don't let one view show one capitalization style and another show a different one for what's meant to be the same title.
+Heading case and card/page description rules are canonical in [marin-digital-standards/content-design/interface-writing.md](https://github.com/marincountygov/marin-digital-standards/blob/main/content-design/interface-writing.md) — AP-style sentence case at every heading level, one plain-language description sentence per card/page. This content moved out of marin-ui since it's a content-design rule, not a frontend implementation detail; apply it the same way regardless of what's rendering the heading.
 
 Button text must describe the action:
 
