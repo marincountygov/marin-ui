@@ -279,7 +279,7 @@ Use this shell unless the user asks for something materially different:
   </main>
 
   <footer class="app-footer" role="contentinfo">
-    <div class="app-footer__inner">MarinOS</div>
+    <div class="app-footer__inner"><a href="https://marincountygov.github.io/marinos/">MarinOS</a></div>
   </footer>
 
   <a class="app-feedback" href="APPROVED_FEEDBACK_URL" target="_blank" rel="noreferrer">Feedback</a>
@@ -751,7 +751,7 @@ Tables use proper headers and scope.
 Touch/click targets are adequately sized.
 Reduced motion is respected.
 Logo artwork is not recreated or distorted.
-The footer contains only the text MarinOS.
+The footer contains only the text MarinOS, linked to https://marincountygov.github.io/marinos/.
 The text-only Feedback button is present and has no icon.
 Interface headings and labels use sentence case rather than forced all caps.
 Directory card titles are the links; duplicate “Open” links are absent.

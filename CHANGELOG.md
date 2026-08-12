@@ -1,5 +1,10 @@
 # MarinOS brand bundle changelog
 
+## 1.4.1 — 2026-08-12
+
+- Fix `.app-feedback` to use the same pill shape (`border-radius: 999px`) as every other action button (`.doc-action`, `.menu-toggle`, `.view-toggle`) instead of Pico's smaller default corner radius.
+- Link the "MarinOS" text in the standard footer (`.app-footer__inner`) to `https://marincountygov.github.io/marinos/`, styled to match the surrounding footer text with an accent color on hover.
+
 ## 1.4.0 — 2026-08-07
 
 - Add the shared `.menu` disclosure-dropdown component (toggle button + panel, generic open/close/outside-click/Escape behavior in `app-shell.js`).
