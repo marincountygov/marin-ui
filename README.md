@@ -1,6 +1,10 @@
-# MarinOS app and docs brand system
+# Marin UI
 
-This project is the versioned UI source of truth for MarinOS apps and documentation. It provides App and Docs shells built with semantic HTML, Pico.css, shared County branding, vanilla JavaScript, and WCAG 2.2 Level AA accessibility patterns.
+This project is the versioned UI source of truth for MarinOS apps and documentation — the implemented interface system for Marin digital products. It provides App and Docs shells built with semantic HTML, Pico.css, shared County branding, vanilla JavaScript, and WCAG 2.2 Level AA accessibility patterns.
+
+Policy and standards this implements (plain language, accessibility requirements, brand identity, product design principles) live in [marin-digital-standards](https://github.com/marincountygov/marin-digital-standards), not here. This repo is implementation only — see that repo's README for the ownership boundary.
+
+> This repo was seeded from `marinappsbrand`, which remains live for now and will be archived once every consumer has migrated to `marin-ui`. See `marin-repo-architecture-plan.md` in the top-level `marin/` working directory for the full migration plan.
 
 ## Purpose
 

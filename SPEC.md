@@ -1,4 +1,4 @@
-# Spec: County of Marin Micro-App
+# Spec: Marin UI
 
 ## Purpose
 
