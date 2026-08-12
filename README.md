@@ -27,6 +27,12 @@ vendor/
 shared/
   app-brand.css
   app-shell.js
+docs/
+  architecture.md
+  foundations.md
+  components.md
+  app-shell.md
+  accessibility-implementation.md
 SPEC.md
 README.md
 ```
@@ -39,7 +45,8 @@ README.md
 - `shared/app-shell.js`: Reusable responsive-menu, Docs heading-anchor, and active table-of-contents behavior.
 - `vendor/pico.min.css`: Local Pico.css base stylesheet.
 - `vendor/fonts/Jost-wght.ttf`: Local Jost variable font used for headings.
-- `SPEC.md`: Full County of Marin micro-app standard and review checklist.
+- `docs/`: the spec, split by topic — architecture, foundations (color/type), components, app shell, accessibility implementation.
+- `SPEC.md`: Index into `docs/`, plus the AI code-agent prompt and review checklist.
 
 ## How To Run
 
@@ -79,11 +86,11 @@ Pico.css provides the base UI layer. `shared/app-brand.css` provides the County-
 
 Use a simple product icon beside the app title rather than an app logotype block. If approved County logo art is used elsewhere, do not recreate, recolor, stretch, distort, or approximate it.
 
-Use sentence case for interface text. Directory cards link their heading text rather than adding separate “Open” links.
+Interface copy case is canonical in [marin-digital-standards/content-design/interface-writing.md](https://github.com/marincountygov/marin-digital-standards/blob/main/content-design/interface-writing.md). Directory cards link their heading text rather than adding separate "Open" links.
 
 ## WAVE testing
 
-Serve the project over local HTTP before activating the WAVE Firefox extension. If testing a `file://` page, enable local-page access for WAVE in Firefox's extension settings. See `SPEC.md` for the full accessibility-testing expectations.
+Serve the project over local HTTP before activating the WAVE Firefox extension. If testing a `file://` page, enable local-page access for WAVE in Firefox's extension settings. See `docs/accessibility-implementation.md` for the full accessibility-testing expectations.
 
 ## Consumer updates
 
@@ -96,4 +103,4 @@ Consumers vendor a complete release and record it in `BRAND_VERSION`. Copy `shar
 - Prefer semantic HTML and native controls before custom JavaScript behavior.
 - Keep apps standalone-friendly and able to run from a basic static host or local file path.
 - Use `shared/app-brand.css` classes before creating new visual patterns.
-- Refer to `SPEC.md` before extending the starter or creating a new County micro-app.
+- Refer to `SPEC.md` and `docs/` before extending the starter or creating a new County micro-app.
