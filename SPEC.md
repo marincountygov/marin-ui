@@ -91,37 +91,9 @@ For multi-screen apps, still prefer a single HTML file with hash-based navigatio
 
 ## Branding source of truth
 
-Branding must be derived from the public County of Marin website and official County identity guidance.
+Branding must be derived from the public County of Marin website and official County identity guidance. The logo hierarchy, non-negotiable rules (never recreate/distort/redraw/recolor), and light/dark variant selection are canonical in [marin-digital-standards/brand/logo.md](https://github.com/marincountygov/marin-digital-standards/blob/main/brand/logo.md), including the official logo source file location — this section doesn't restate them.
 
-The official County logo is available from:
-
-```text
-https://www.marincounty.gov/themes/custom/marin_county/logo.png
-```
-
-Store approved logo artwork locally in the codebase, such as `assets/logo.png`, and reference the local file from the app.
-
-Use these principles:
-
-1. Identify the app as an official County of Marin tool.
-2. Use a County-style header and footer.
-3. Use the approved County logo artwork when available.
-4. Do not recreate, distort, redraw, recolor, stretch, or approximate the County logo.
-5. Prefer the County Primary Logo where there is adequate space.
-6. Use the County Secondary Logo where space is constrained.
-7. Use black logo artwork on light backgrounds.
-8. Use reversed white logo artwork only on dark backgrounds.
-9. Maintain clear breathing room around logo artwork.
-10. Do not overlap logos with text, icons, lines, decorative marks, or controls.
-
-If approved County logo assets are not available in the project, render text branding as:
-
-```text
-Official County of Marin website
-County of Marin
-```
-
-Do not generate fake logo art.
+Identify the app as an official County of Marin tool, with a County-style header and footer.
 
 ## County color tokens
 
@@ -202,7 +174,7 @@ Normalize Pico's responsive root font scaling to `--pico-font-size: 100%` at all
 
 Use Futura only if an approved licensed County font file or official rendered logo/logotype asset is already available in the project. Do not fetch, embed, generate, or substitute unlicensed font files.
 
-Use sentence case for headings, labels, navigation, metadata, and status text. Do not use CSS text transformation to force interface text into all caps. Preserve standard capitalization for acronyms and official names.
+Heading and interface-copy case (sentence case, no forced all-caps) is canonical in `marin-digital-standards/content-design/interface-writing.md` — see that document rather than this one.
 
 ## Required app shell
 
@@ -674,6 +646,8 @@ Any app that stores meaningful local data must include an export path.
 Do not treat browser storage as the only durable copy of official records.
 
 ## Standard AI Code Agent prompt
+
+> Per the marin-digital-standards migration plan, this prompt and the review checklist below are slated to become `marin-skills/marin-app-builder` in a later phase (consulting both `marin-digital-standards` and `marin-ui` rather than embedding a copy of both here). Not extracted yet — still current and authoritative in the meantime.
 
 Use this prompt when asking AI coding agents to build a County micro-app:
 
