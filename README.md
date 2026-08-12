@@ -46,7 +46,7 @@ README.md
 - `vendor/pico.min.css`: Local Pico.css base stylesheet.
 - `vendor/fonts/Jost-wght.ttf`: Local Jost variable font used for headings.
 - `docs/`: the spec, split by topic — architecture, foundations (color/type), components, app shell, accessibility implementation.
-- `SPEC.md`: Index into `docs/`, plus the AI code-agent prompt and review checklist.
+- `SPEC.md`: Index into `docs/`. The build workflow and review checklist for AI-generated apps live in `marin-skills/marin-app-builder`.
 
 ## How To Run
 
