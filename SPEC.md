@@ -368,6 +368,8 @@ The shared CSS must include OS-controlled light and dark tokens, the MarinOS ban
 
 ## Accessibility standard
 
+> The underlying *requirements* below are now canonically defined in [marin-digital-standards/accessibility](https://github.com/marincountygov/marin-digital-standards/tree/main/accessibility) (mapped to WCAG 2.2 success criteria). What follows here is the corresponding **implementation** — the actual markup, CSS, and JS patterns Marin UI provides to satisfy those requirements. If the two ever disagree, `marin-digital-standards` is the source of truth for what's required; this section is the source of truth for how Marin UI currently implements it.
+
 All generated apps must conform to WCAG 2.2 Level AA.
 
 This is not optional. Treat accessibility as an implementation requirement, not a cleanup task.
