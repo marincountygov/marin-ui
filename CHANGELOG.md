@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.4.2 — 2026-08-12
+
+- Add `margin-bottom: 1rem` to `.app-card` and `margin: 1rem 0` to `.app-alert` so stacked cards/alerts in normal page flow (a form workflow, a stack of program sections) get vertical separation without page-specific CSS. Neutralized in the two known grid contexts that already provide spacing via `gap` (`.docs-grid > .app-card`, `.demo-grid > .app-card`, `.demo-stack > .app-alert`), so directory-card grids and the marin-ui demo page are unaffected.
+
 ## 1.4.1 — 2026-08-12
 
 - Fix `.app-feedback` to use the same pill shape (`border-radius: 999px`) as every other action button (`.doc-action`, `.menu-toggle`, `.view-toggle`) instead of Pico's smaller default corner radius.
