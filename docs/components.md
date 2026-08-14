@@ -137,6 +137,30 @@ Any `button[data-action="share"]` copies `window.location.href` on click and rep
 </div>
 ```
 
+## Inspector panel
+
+An off-canvas panel for editing one item's detail without losing the list behind it — a list stays on screen, a click opens the item's fields in a slide-over panel instead of navigating to a separate page or replacing the list in place. `app-brand.css` provides the shared classes; unlike the patterns above, the open/close/edit behavior stays app-owned because it's coupled to app-specific data (which item, what fields), so there's no generic JavaScript for this one. Promoted from `marin-waymaker`'s node editor — see that app's `index.html` for a complete reference implementation.
+
+```html
+<div id="inspector-overlay" class="app-inspector-overlay" hidden>
+  <button id="inspector-backdrop" class="app-inspector-backdrop" type="button" aria-label="Close inspector"></button>
+  <section class="app-inspector-panel" role="dialog" aria-modal="true" aria-labelledby="inspector-title">
+    <div class="app-toolbar app-inspector-header">
+      <div><h2 id="inspector-title">Edit selected item</h2></div>
+      <button id="close-inspector" type="button" class="secondary">Close inspector</button>
+    </div>
+    <article id="item-editor"><!-- render the selected item's fields here --></article>
+  </section>
+</div>
+```
+
+`.app-inspector-panel` slides in from the right on wide viewports and collapses to a bottom sheet under 850px — CSS only, no JS needed for the responsive behavior. The JS the consuming app must supply:
+
+- On open: set `hidden = false`, render the item's fields into the editor, move focus into the panel (the close button is a safe default), and record whatever element triggered the open so focus can return to it on close.
+- On close (backdrop click, the close button, or <kbd>Escape</kbd>): set `hidden = true` and return focus to the trigger element recorded on open.
+- Trap <kbd>Tab</kbd> focus inside the panel while it's open — cycle from the last focusable element back to the first (and Shift+Tab from the first back to the last) rather than letting focus escape to the page underneath.
+- Announce open/close through the page's status region (`#app-status-message` or equivalent) for screen-reader users who won't see the panel animate in.
+
 ## Tab sections
 
 Elements sharing a `data-tab-section="name"` value show together and hide together, one group at a time, matched against the URL hash — no per-page JavaScript needed:
