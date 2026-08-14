@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.13.0 — 2026-08-14
+
+- Add the "Inspector panel" pattern (`.app-inspector-overlay`/`.app-inspector-backdrop`/`.app-inspector-panel`/`.app-inspector-header`), promoted from `marin-waymaker`'s node editor: an off-canvas panel for editing one item without losing the list behind it, sliding in from the right on wide viewports and collapsing to a bottom sheet under 850px. Only the CSS is shared — open/close/focus-trap/render stays app-owned since it's coupled to app-specific data. Documented in `docs/components.md` with the full JS behavior contract (focus management, Escape, backdrop click, live-region announcements).
+
 ## 1.12.0 — 2026-08-14
 
 - Collapse the Updates section back to one description instead of two: `[data-updates-repo]` sections can now add `data-app-name="App Name"`, and `app-shell.js` uses it to settle the status line on "App Name release notes." once commits finish loading, replacing the generic "Latest commits loaded." Removed the separate static description paragraph added in 1.10.0/1.11.0 from all seven consumers now that the status line carries it.
