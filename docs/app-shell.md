@@ -34,10 +34,10 @@ Use this shell unless the user asks for something materially different:
           <svg class="menu-toggle__caret" aria-hidden="true" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>
         </button>
         <div id="marinos-menu-panel" class="menu-panel marinos-menu__panel" hidden>
-          <a href="https://marincountygov.github.io/marinmagic/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>MarinMagic</a>
-          <a href="https://marincountygov.github.io/marinwaymaker/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>Marin WayMaker</a>
-          <a href="https://marincountygov.github.io/marindocs/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>MarinDocs</a>
-          <a class="marinos-menu__all" href="https://marincountygov.github.io/marinos/">Browse all in MarinOS</a>
+          <a href="https://marincountygov.github.io/marin-magic/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>MarinMagic</a>
+          <a href="https://marincountygov.github.io/marin-waymaker/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>Marin WayMaker</a>
+          <a href="https://marincountygov.github.io/marin-docs/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>MarinDocs</a>
+          <a class="marinos-menu__all" href="https://marincountygov.github.io/marin-os/">Browse all in MarinOS</a>
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@ Use this shell unless the user asks for something materially different:
   </main>
 
   <footer class="app-footer" role="contentinfo">
-    <div class="app-footer__inner"><a href="https://marincountygov.github.io/marinos/">MarinOS</a></div>
+    <div class="app-footer__inner"><a href="https://marincountygov.github.io/marin-os/">MarinOS</a></div>
   </footer>
 
   <a class="app-feedback" href="APPROVED_FEEDBACK_URL" target="_blank" rel="noreferrer">Feedback</a>
@@ -118,7 +118,7 @@ A document or reference page (a documentation collection, a lookup/reference too
     <aside class="toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#overview">Overview</a></li></ul></aside>
   </div>
 </main>
-<footer class="site-footer" role="contentinfo"><div class="footer-inner"><a href="https://marincountygov.github.io/marinos/">MarinOS</a></div></footer>
+<footer class="site-footer" role="contentinfo"><div class="footer-inner"><a href="https://marincountygov.github.io/marin-os/">MarinOS</a></div></footer>
 ```
 
 `app-shell.js` wires the Share button (`[data-action="share"]`, copies the current URL, reports through the nearest `.doc-actions .doc-action-status`), the "On this page" active-section tracking (`.toc`, same behavior as `.docs-toc`), and heading anchors (`.content`, same as `.docs-content`) generically — no per-page JavaScript needed for any of that.
