@@ -1,0 +1,15 @@
+schema: 1
+
+project:
+  name: marin-ui
+  repo: marin-ui
+  type: library
+  owner: County of Marin
+  audience: developers
+  status: active
+
+platform:
+  version: 1.12.0
+
+deployment:
+  target: none
