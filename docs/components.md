@@ -137,6 +137,69 @@ Any `button[data-action="share"]` copies `window.location.href` on click and rep
 </div>
 ```
 
+## Tab sections
+
+Elements sharing a `data-tab-section="name"` value show together and hide together, one group at a time, matched against the URL hash — no per-page JavaScript needed:
+
+```html
+<nav class="app-nav" id="app-nav" aria-label="Application navigation">
+  <a href="#estimate" aria-current="page">Estimate</a>
+  <a href="#about">About</a>
+</nav>
+<section id="estimate" data-tab-section="estimate">…default view…</section>
+<section id="about" class="app-card" data-tab-section="about" hidden>…</section>
+```
+
+`app-shell.js` shows whichever group's name matches the current hash, or the first name it finds in the page if the hash is empty or doesn't match anything — so there's no need for an explicit "Home"/default nav tab (see "No Home" below). It also keeps `#app-nav`'s `aria-current="page"` in sync with whichever tab is active, if a `#app-nav` is present. A group can span more than one element (give each the same `data-tab-section` value) when the default view is built from several sibling sections, like a directory page's separate "Apps" and "Docs" grids.
+
+Give every non-default section `hidden` in the static markup — without JavaScript, only the default group is reachable, matching how these are inherently JS-dependent single-page tools already (this is the same tradeoff `marin-magic`'s and `marin-waymaker`'s own hash-routing already made, not a new one). A docs-shell page that's meant to work fully without JavaScript (see `marin-docs`'s SOP pages) shouldn't use this pattern — those stay as ordinary always-visible sections.
+
+## Updates feed
+
+Any `[data-updates-repo="repo"]` section lazy-loads that repo's recent commits from the GitHub API the first time it becomes visible, and renders them as `.app-card` entries — no per-page JavaScript needed:
+
+```html
+<section id="updates" class="app-card" data-tab-section="updates" data-updates-repo="marin-magic" data-app-name="MarinMagic" hidden>
+  <h2>Updates</h2>
+  <p data-updates-status class="app-help-text" role="status" aria-live="polite" aria-atomic="true">Select the Updates tab to load recent commits.</p>
+  <div data-updates-list></div>
+</section>
+```
+
+The heading is always literally "Updates." There's a single description line, not two: `data-app-name="App Name"` on the same element as `data-updates-repo` tells `app-shell.js` to settle the status line on "App Name release notes." once commits finish loading, instead of the generic "Latest commits loaded." Without `data-app-name`, it falls back to the generic text.
+
+`app-shell.js` detects visibility by watching the section's `hidden` attribute change, so it works with the tab-sections pattern above, any other tab/hash-routing a page has, or none: a section that's never `hidden` loads immediately. It fetches 15 commits and filters out merge-PR commits (`Merge pull request #N from …` — noise, not a real change) before showing up to 10; a multi-line commit body renders as a `<ul>` list rather than one run-together paragraph, since commit bodies are often already a bullet list. A bare repo name (`data-updates-repo="marin-magic"`) is assumed to be `marincountygov/<repo>`; pass `owner/repo` to point elsewhere. The GitHub API call is unauthenticated — fine for occasional use, but subject to GitHub's 60-requests-per-hour-per-IP unauthenticated rate limit, shared across everyone hitting the page from the same network.
+
+## Standard app nav: About and Updates
+
+Every app-shell app's `#app-nav` should include an Updates tab and an About tab. Whether it also needs an explicit "Home" link depends on whether the default view already has its own named tab:
+
+```html
+<!-- Default view has no task-specific tab of its own (e.g. a directory or lookup landing page) -->
+<nav class="app-nav" id="app-nav" aria-label="Application navigation">
+  <a href="#<default-view-hash>" aria-current="page">Home</a>
+  <a href="#about">About</a>
+  <a href="#updates">Updates</a>
+</nav>
+
+<!-- Default view is itself a named task tab (e.g. "Estimate", "Start", "Builder") -->
+<nav class="app-nav" id="app-nav" aria-label="Application navigation">
+  <a href="#<task>" aria-current="page">…task-specific tab(s)…</a>
+  <a href="#about">About</a>
+  <a href="#updates">Updates</a>
+</nav>
+```
+
+Don't add both — a "Home" link and a task tab that point at the exact same content is a duplicate, not a convenience.
+
+**Use "About" — not "Help" — for the app's second, non-task tab, everywhere.** This is a single fixed label, not a per-app judgment call: usage instructions, "what this tool is," source/disclaimer content, and anything else that isn't the task itself all belong under one "About" tab and heading. The nav link text and the section's own heading must say the same thing ("About" in both). Structure: a plain `<section id="about" class="app-card" data-tab-section="about" hidden>`.
+
+**The default view must be immediately functional.** Whatever tab is shown with no hash (the task itself) should be the working tool — inputs, actions, results — not explanatory copy, source metadata, or how-to instructions sitting above or beside it. Move anything that isn't part of operating the tool into About, even if it's a small block like "where this data comes from" or a topic-link list. A group can span more than one non-adjacent element (give each the same `data-tab-section="about"` value) when About needs to combine usage instructions with metadata like this.
+
+If the app has a genuine default/landing view distinct from its other tabs (not just "the first tab happens to be named something task-specific"), give it both an explicit "Home" link in `#app-nav` (see above) and a clickable logo: wrap the header's `.app-title-row` in `<a href="#default-view-hash" class="app-title-row">`. `a.app-title-row` is already styled to inherit color and drop the underline.
+
+For a docs-shell page (no `#app-nav`), About and Updates are ordinary always-visible sections in `.content` instead of hidden tabs — see `marin-docs`/`marin-expense`/`marin-os` for the pattern: a small `.app-nav`-styled link row next to the breadcrumb in `.header-inner`, pointing at `#about`/`#updates` sections further down the same page.
+
 ## The `doc-updated` line
 
 `<p class="doc-updated">Updated August 13, 2026</p>` shows when a document or tool page's content last changed. This should reflect the page's actual last-commit date, not a value typed once and left stale — see each consumer's own tooling for how it keeps this in sync (for example, a `scripts/stamp-updated-dates.js` that derives the date from `git log`, run before committing and checked in CI). `marin-ui` only owns the class's styling here, not a syncing mechanism, since that depends on each consumer's own content/build process.
