@@ -1,5 +1,29 @@
 # MarinOS brand bundle changelog
 
+## 1.7.2 — 2026-08-13
+
+- Fix: the MarinOS banner's catalog cache key wasn't versioned, so a browser that had already cached `catalog.json` before the 1.7.1 `icon` field was added kept serving icon-less entries for up to 6 hours (the TTL never noticed the shape changed). Bumped the cache key to invalidate immediately; documented bumping it again alongside any future catalog shape/rendering change.
+
+## 1.7.1 — 2026-08-13
+
+- Render the per-app icon (`{viewBox, markup}`) in dynamically-rendered MarinOS banner menu entries, matching `marinos/catalog.json`'s new `icon` field. Closes the "text-only, no icon" gap from 1.7.0 — verified byte-for-byte identical output to the existing static fallback markup for all three current entries.
+
+## 1.7.0 — 2026-08-13
+
+- The MarinOS banner menu now refreshes itself from `marinos/catalog.json` at load (cached in `localStorage` for 6 hours), instead of every app hardcoding the same static list of links. A new app added to `catalog.json` now appears in every other app's banner automatically — no more hand-editing every consumer repo. Falls back untouched to the page's static links if the fetch fails, times out (4s), or the page can't reach `marincountygov.github.io` (e.g. local `file://` testing) — confirmed GitHub Pages serves `catalog.json` with `access-control-allow-origin: *`, so the cross-origin fetch itself is unrestricted. The current page excludes itself from its own rendered menu.
+
+## 1.6.0 — 2026-08-13
+
+- Add the "Docs shell, alternate header/footer" pattern (`.site-header`/`.site-footer`/`.header-inner`/`.footer-inner`/`.docs-brand-icon`/`.breadcrumb-nav`/`.doc-title`/`.doc-description`/`.doc-actions`/`.doc-action`/`.doc-action-status`/`.details`/`.topic-filters`/`.topic-links`/`.page`/`.toc`/`.hero`/`.lede`/`.meta`), promoted from CSS that `marindocs` and `marin-expense` each independently duplicated in full (~90 identical lines in each). `templates/docs/index.html` now uses this pattern, since it's the one real MarinOS documentation products actually use — kept alongside the original `app-header`-based Docs shell rather than replacing it.
+- Alias `.content`/`.section`/`.details` to the existing `.docs-content`/`.docs-section`/`.docs-details` rules, since the two Docs shell variants styled them identically under different names.
+- Add generic Share-button behavior (`button[data-action="share"]` copies the page URL, reports through `.doc-actions .doc-action-status`) to `app-shell.js`, promoted from identical per-page code in both consumers.
+
+## 1.5.0 — 2026-08-13
+
+- Add generic sortable table columns: a `<thead>` `.sort-button[data-sort-key]` sorts `<tbody>` rows by their matching `data-sort-*` attribute, no per-page JavaScript needed. Promoted out of `marin-expense`'s page-specific implementation.
+- Add generic copy-to-clipboard buttons: any `button[data-copy-value]` copies and shows feedback, announcing through `#app-status-message` or a page-supplied `[data-copy-status]`. Also promoted out of `marin-expense`.
+- Add the `.doc-updated` class (styling only — each consumer owns keeping its date in sync). Previously duplicated as page-specific CSS in `marindocs` and `marin-expense`.
+
 ## 1.4.2 — 2026-08-12
 
 - Add `margin-bottom: 1rem` to `.app-card` and `margin: 1rem 0` to `.app-alert` so stacked cards/alerts in normal page flow (a form workflow, a stack of program sections) get vertical separation without page-specific CSS. Neutralized in the two known grid contexts that already provide spacing via `gap` (`.docs-grid > .app-card`, `.demo-grid > .app-card`, `.demo-stack > .app-alert`), so directory-card grids and the marin-ui demo page are unaffected.
