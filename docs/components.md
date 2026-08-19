@@ -226,7 +226,9 @@ For a docs-shell page (no `#app-nav`), About and Updates are ordinary always-vis
 
 ## The `doc-updated` line
 
-`<p class="doc-updated">Updated August 13, 2026</p>` shows when a document or tool page's content last changed. This should reflect the page's actual last-commit date, not a value typed once and left stale — see each consumer's own tooling for how it keeps this in sync (for example, a `scripts/stamp-updated-dates.js` that derives the date from `git log`, run before committing and checked in CI). `marin-ui` only owns the class's styling here, not a syncing mechanism, since that depends on each consumer's own content/build process.
+`<p class="doc-updated">Updated August 18, 2026 at 5:15 PM PDT</p>` shows when a document or tool page's content last changed. This should reflect the page's actual last-commit date and time, not a value typed once and left stale — see each consumer's own tooling for how it keeps this in sync (for example, a `scripts/stamp-updated-dates.js` that derives the value from `git log`, run before committing and checked in CI). `marin-ui` only owns the class's styling here, not a syncing mechanism, since that depends on each consumer's own content/build process — `marin-docs` and `marin-expense` currently carry the canonical copy of that script; copy from one of them rather than reinventing it.
+
+Pin `America/Los_Angeles` explicitly (County of Marin is a Pacific-time organization) with `timeZoneName: "short"` so PST/PDT render correctly across the DST boundary — don't hardcode "PT". Including minutes trades a small amount of CI reliability for real precision: a "dirty" (uncommitted) file is stamped with the moment the script runs, but a "clean" (already-committed) file is checked against its actual commit timestamp, so if more than about a minute passes between running the script and finishing `git commit`, the two can disagree by a minute and fail the CI check. Recovery is the same either way: re-run the script and recommit. Run the script as the very last step before committing to minimize this gap.
 
 ## Shared CSS implementation
 

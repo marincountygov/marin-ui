@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.14.0 — 2026-08-18
+
+- Document the current `doc-updated` convention: date and time, pinned to `America/Los_Angeles` with `timeZoneName: "short"` (not a hardcoded "PT") so it renders PST/PDT correctly across the DST boundary. `marin-docs` and `marin-expense` are the two consumers using it today — this doesn't affect the Updates feed's live commit timestamps, which correctly render in each visitor's own browser timezone instead and were left alone.
+
 ## 1.13.0 — 2026-08-14
 
 - Add the "Inspector panel" pattern (`.app-inspector-overlay`/`.app-inspector-backdrop`/`.app-inspector-panel`/`.app-inspector-header`), promoted from `marin-waymaker`'s node editor: an off-canvas panel for editing one item without losing the list behind it, sliding in from the right on wide viewports and collapsing to a bottom sheet under 850px. Only the CSS is shared — open/close/focus-trap/render stays app-owned since it's coupled to app-specific data. Documented in `docs/components.md` with the full JS behavior contract (focus management, Escape, backdrop click, live-region announcements).
