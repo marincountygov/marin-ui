@@ -35,7 +35,7 @@ Use this shell unless the user asks for something materially different:
         </button>
         <div id="marinos-menu-panel" class="menu-panel marinos-menu__panel" hidden>
           <a href="https://marincountygov.github.io/marin-magic/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>MarinMagic</a>
-          <a href="https://marincountygov.github.io/marin-waymaker/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>Marin WayMaker</a>
+          <a href="https://marincountygov.github.io/marin-decision-maker/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>Marin Decision Maker</a>
           <a href="https://marincountygov.github.io/marin-docs/"><span class="marinos-menu__icon" aria-hidden="true"><!-- app icon --></span>MarinDocs</a>
           <a class="marinos-menu__all" href="https://marincountygov.github.io/marin-os/">Browse all in MarinOS</a>
         </div>

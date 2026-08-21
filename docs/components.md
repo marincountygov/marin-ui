@@ -139,7 +139,7 @@ Any `button[data-action="share"]` copies `window.location.href` on click and rep
 
 ## Inspector panel
 
-An off-canvas panel for editing one item's detail without losing the list behind it — a list stays on screen, a click opens the item's fields in a slide-over panel instead of navigating to a separate page or replacing the list in place. `app-brand.css` provides the shared classes; unlike the patterns above, the open/close/edit behavior stays app-owned because it's coupled to app-specific data (which item, what fields), so there's no generic JavaScript for this one. Promoted from `marin-waymaker`'s node editor — see that app's `index.html` for a complete reference implementation.
+An off-canvas panel for editing one item's detail without losing the list behind it — a list stays on screen, a click opens the item's fields in a slide-over panel instead of navigating to a separate page or replacing the list in place. `app-brand.css` provides the shared classes; unlike the patterns above, the open/close/edit behavior stays app-owned because it's coupled to app-specific data (which item, what fields), so there's no generic JavaScript for this one. Promoted from `marin-decision-maker`'s node editor — see that app's `index.html` for a complete reference implementation.
 
 ```html
 <div id="inspector-overlay" class="app-inspector-overlay" hidden>
@@ -176,7 +176,7 @@ Elements sharing a `data-tab-section="name"` value show together and hide togeth
 
 `app-shell.js` shows whichever group's name matches the current hash, or the first name it finds in the page if the hash is empty or doesn't match anything — so there's no need for an explicit "Home"/default nav tab (see "No Home" below). It also keeps `#app-nav`'s `aria-current="page"` in sync with whichever tab is active, if a `#app-nav` is present. A group can span more than one element (give each the same `data-tab-section` value) when the default view is built from several sibling sections, like a directory page's separate "Apps" and "Docs" grids.
 
-Give every non-default section `hidden` in the static markup — without JavaScript, only the default group is reachable, matching how these are inherently JS-dependent single-page tools already (this is the same tradeoff `marin-magic`'s and `marin-waymaker`'s own hash-routing already made, not a new one). A docs-shell page that's meant to work fully without JavaScript (see `marin-docs`'s SOP pages) shouldn't use this pattern — those stay as ordinary always-visible sections.
+Give every non-default section `hidden` in the static markup — without JavaScript, only the default group is reachable, matching how these are inherently JS-dependent single-page tools already (this is the same tradeoff `marin-magic`'s and `marin-decision-maker`'s own hash-routing already made, not a new one). A docs-shell page that's meant to work fully without JavaScript (see `marin-docs`'s SOP pages) shouldn't use this pattern — those stay as ordinary always-visible sections.
 
 ## Updates feed
 

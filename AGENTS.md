@@ -16,7 +16,7 @@ After bumping the version, run `scripts/sync-consumer.sh ../<repo>` for every co
 
 ## Consumer apps
 
-marin-magic, marin-waymaker, marin-docs, marin-os, marin-app-template, marin-expense, marin-cupa-fees — see each one's own `marin.yml` for the version it currently has installed.
+marin-magic, marin-decision-maker, marin-docs, marin-os, marin-app-template, marin-expense, marin-cupa-fees — see each one's own `marin.yml` for the version it currently has installed.
 
 ## References
 
