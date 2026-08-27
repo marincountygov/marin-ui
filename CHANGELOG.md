@@ -1,5 +1,12 @@
 # MarinOS brand bundle changelog
 
+## 1.15.0 — 2026-08-26
+
+- Remove `position: sticky` from `.site-header` — no page-level header or nav should pin to the viewport while scrolling. `.toc`'s sticky offset drops from `top: 5.5rem` (tuned to clear the old sticky header) to `top: 1rem`, matching `.docs-toc`; the sidebar TOC itself stays sticky, a different pattern from a persistent top bar. Documented as a hard rule in `docs/app-shell.md` and `marin-digital-standards/product-design/responsive-design.md`.
+- Fix `.app-main` to size itself from the shared `--app-max-width` token instead of Pico's own breakpoint-based `.container` class (510/700/950/1200/1450px) — header, banner, footer, and content were never actually sharing one width or alignment. `--app-max-width` also moves from 1120px to 1280px for more usable content width. (`body`'s background and `.app-card`'s shadow were both experimented with during this change — tried `--app-bg`, then no property, then a flat `#ffffff`; and the card shadow was removed — but both landed back on their original values, `--app-bg-soft` and the `0 1px 2px` shadow, so there's no net change to either.)
+- Document that `--marin-gold` is background/decorative-border only (1.91:1 as a foreground against white — fails even the 3:1 non-text minimum) — traced from a live WAVE contrast report against the SOP flow chart's decision-gateway marker, which used gold as a border and icon fill. Fixed in `marin-docs/sop/styles.css` (swapped to `--app-accent`) and added to `marin-app-builder`'s review checklist so it doesn't ship unnoticed again.
+- Drop `font-weight: 700` from `.app-feedback` — the text-only Feedback button reads at normal weight now, platform-wide.
+
 ## 1.14.0 — 2026-08-18
 
 - Document the current `doc-updated` convention: date and time, pinned to `America/Los_Angeles` with `timeZoneName: "short"` (not a hardcoded "PT") so it renders PST/PDT correctly across the DST boundary. `marin-docs` and `marin-expense` are the two consumers using it today — this doesn't affect the Updates feed's live commit timestamps, which correctly render in each visitor's own browser timezone instead and were left alone.

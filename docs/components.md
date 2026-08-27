@@ -235,3 +235,5 @@ Pin `America/Los_Angeles` explicitly (County of Marin is a Pacific-time organiza
 `shared/app-brand.css` is the executable source of truth. Do not copy a second CSS implementation into this specification. Consumers must vendor the complete versioned bundle and record the installed release in `BRAND_VERSION`.
 
 The shared CSS must include OS-controlled light and dark tokens, the MarinOS banner, icon/title treatment, gold title-copy border, cards, text-only feedback button, Docs heading anchors, active table-of-contents state, responsive behavior, print behavior, visible focus, and reduced-motion handling.
+
+`--marin-gold` fails contrast as a foreground color (1.91:1 against white) — it's a background/decorative-border accent only (the title-copy border and `.callout`-style left-border stripes above are the sanctioned uses), never text, an icon fill, or a border implying meaning on its own. Use `--app-accent` for anything that needs to read as interactive or semantically meaningful. See `marin-digital-standards/brand/color.md`.
