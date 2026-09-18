@@ -4,7 +4,7 @@ Consumer repositories vendor the brand bundle so they remain deployable independ
 
 ## Bundle files
 
-Copy these files together from one `marinappsbrand` release:
+Copy these files together from one `marin-ui` release:
 
 ```text
 BRAND_VERSION
@@ -12,7 +12,11 @@ shared/app-brand.css
 shared/app-shell.js
 vendor/pico.min.css
 vendor/fonts/Jost-wght.ttf
+vendor/fonts/open-sans/OpenSans-VariableFont_wdth,wght.woff2
+vendor/fonts/open-sans/OFL.txt
 ```
+
+Copy `vendor/icons/lucide/` too if the consumer uses (or is adding) any vendored icon — see `docs/components.md` for the per-app icon convention.
 
 Copy optional libraries such as `vendor/xlsx.full.min.js` only when the product uses them.
 
@@ -27,4 +31,4 @@ Copy optional libraries such as `vendor/xlsx.full.min.js` only when the product 
 7. Test keyboard navigation, focus, menu behavior, OS-controlled color mode, reflow, contrast, and product workflows.
 8. Commit the bundle update and regression evidence together.
 
-Do not update one shared file independently or edit vendored shared files in a consumer. Make reusable fixes in `marinappsbrand`, release them, and then update consumers.
+Do not update one shared file independently or edit vendored shared files in a consumer. Make reusable fixes in `marin-ui`, release them, and then update consumers.

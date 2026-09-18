@@ -63,7 +63,8 @@ Use accessible system fonts by default.
     "Segoe UI",
     sans-serif;
 
-  --app-font-sans:
+  --app-font-body:
+    "Open Sans",
     Arial,
     Verdana,
     system-ui,
@@ -79,7 +80,7 @@ Use accessible system fonts by default.
 }
 ```
 
-Use Arial/Verdana-compatible typography for body copy.
+Use Open Sans (https://fonts.google.com/specimen/Open+Sans) for body and interface copy — paragraphs, form controls, buttons, labels, tables, and other routine interface text. Include the variable font file in the codebase at `vendor/fonts/open-sans/OpenSans-VariableFont_wdth,wght.woff2` (with its `OFL.txt` license alongside) and load it with `@font-face`, the same as Jost; do not require external font calls from the document `<head>`. Arial/Verdana remain the named fallback per `marin-digital-standards/brand/typography.md`.
 
 Use Jost (https://fonts.google.com/specimen/Jost) for heading fonts. Include the Jost font file in the codebase and load it with `@font-face`; do not require external font calls from the document `<head>`. Provide accessible sans-serif fallbacks.
 
