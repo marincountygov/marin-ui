@@ -1,5 +1,11 @@
 # MarinOS brand bundle changelog
 
+## 1.16.0 — 2026-09-18
+
+- Finish the Open Sans rollout: `shared/app-brand.css` already vendored the font file but never loaded it — add its `@font-face`, a new `--app-font-body` token, and point `--pico-font-family-sans-serif` at it so body/UI text actually renders in Open Sans instead of the system-font-only stack it fell back to. Jost is unaffected and stays the heading font. Matches the standard already stated in `marin-digital-standards/brand/typography.md`, which this bundle wasn't actually implementing yet.
+- Adopt Lucide as the icon system, self-hosted the same way as fonts (see `marin-digital-standards/brand/iconography.md`). Add `vendor/icons/lucide/` with the first five icons in use (`radar`, `chevron-down`, `copy`, `check`, `link`) plus Lucide's ISC `LICENSE`; redraw `.menu-toggle__caret` and the documented copy-button icons in `docs/components.md` using the real Lucide path data instead of the previous hand-drawn approximations. Documented the new "one icon, three places" convention (header `.app-icon`, favicon, `marin-os/catalog.json`) in `docs/components.md`'s new "App icon" section — no more generic-favicon-but-distinctive-nav-icon split.
+- Update `SYNCING.md`'s bundle file list to include the new `vendor/fonts/open-sans/` files and `vendor/icons/lucide/`, and fix its stale references to the archived `marinappsbrand` repo (now `marin-ui`).
+
 ## 1.15.0 — 2026-08-26
 
 - Remove `position: sticky` from `.site-header` — no page-level header or nav should pin to the viewport while scrolling. `.toc`'s sticky offset drops from `top: 5.5rem` (tuned to clear the old sticky header) to `top: 1rem`, matching `.docs-toc`; the sidebar TOC itself stays sticky, a different pattern from a persistent top bar. Documented as a hard rule in `docs/app-shell.md` and `marin-digital-standards/product-design/responsive-design.md`.

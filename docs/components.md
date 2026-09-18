@@ -74,6 +74,18 @@ Directory cards place a meaningful icon before their content and make the card's
 
 Documentation pages add hover/focus anchor links to content headings and use `aria-current="location"` to highlight the section currently in view in the "On this page" navigation.
 
+## App icon
+
+Every app has exactly one icon, defined once and reused in three places — not a generic default in some of them and something distinctive in others:
+
+1. The header `.app-icon` (next to the app title).
+2. The favicon, inlined as a `data:image/svg+xml` URI on `<link rel="icon">` — same shape as `.app-icon`'s `<svg>`, wrapped in the standard rounded black square with the gold stroke used across every app today.
+3. `marin-os/catalog.json`'s `icon` field for that app (`{ "viewBox": ..., "markup": ... }`), which feeds the cross-app nav dropdown and the marin-os directory page.
+
+Icons are drawn from the vendored Lucide set at `vendor/icons/lucide/` (see `SYNCING.md` for what to copy) — pick the closest stock Lucide icon for what the app does, rather than commissioning a bespoke shape. Use Lucide's own SVG conventions: `viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`, one `<svg>` per icon, `<path>`/`<circle>`/`<rect>` children copied verbatim from the vendored file. Never load Lucide from a CDN (`unpkg`, `jsdelivr`, `cdnjs`) — see `marin-digital-standards/product-design/runtime-dependencies.md`, which forbids that for any icon library the same way it forbids it for fonts.
+
+If `vendor/icons/lucide/` doesn't yet have the icon an app needs, add that one SVG file (sourced from lucide.dev, ISC-licensed) to `marin-ui`'s vendor folder as part of that app's update — don't mirror the whole Lucide library speculatively, and don't inline a one-off icon that skips the shared vendor folder.
+
 ## The `.menu` disclosure component
 
 `.menu` / `.menu-toggle` / `.menu-panel` is the shared pattern for any click-to-open dropdown: the MarinOS banner (see `app-shell.md`), and grouped document actions (Share, Download) described in `accessibility-implementation.md`. It is a disclosure pattern (a toggle button plus a hidden panel), not a full ARIA `menu`/`menuitem` widget — that keeps keyboard support simple (Tab reaches the toggle and, once open, the panel's real links/buttons in order; Escape closes and returns focus to the toggle) and avoids the roving-tabindex and arrow-key requirements that `role="menu"` would demand.
@@ -116,8 +128,8 @@ Any `button[data-copy-value]` copies that value on click and shows brief feedbac
 
 ```html
 <button type="button" class="copy-button" data-copy-value="411030" aria-label="Copy 411030">
-  <svg class="copy-icon" aria-hidden="true" viewBox="0 0 16 16"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M3.5 10.5h-1a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v1"/></svg>
-  <svg class="copy-check-icon" aria-hidden="true" viewBox="0 0 16 16"><path d="M2.5 8.5l3 3 8-8"/></svg>
+  <svg class="copy-icon" aria-hidden="true" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+  <svg class="copy-check-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
 </button>
 ```
 
@@ -130,7 +142,7 @@ Any `button[data-action="share"]` copies `window.location.href` on click and rep
 ```html
 <div class="doc-actions">
   <div class="menu">
-    <button type="button" class="doc-action menu-toggle" aria-expanded="false" aria-controls="share-menu-panel">Share<svg class="menu-toggle__caret" aria-hidden="true" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></button>
+    <button type="button" class="doc-action menu-toggle" aria-expanded="false" aria-controls="share-menu-panel">Share<svg class="menu-toggle__caret" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
     <div id="share-menu-panel" class="menu-panel" hidden><button type="button" data-action="share">Copy link</button></div>
   </div>
   <span class="doc-action-status" role="status" aria-live="polite"></span>
