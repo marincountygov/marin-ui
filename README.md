@@ -24,6 +24,13 @@ vendor/
   pico.min.css
   fonts/
     Jost-wght.ttf
+    open-sans/
+      OpenSans-VariableFont_wdth,wght.woff2
+      OFL.txt
+  icons/
+    lucide/
+      *.svg
+      LICENSE
 shared/
   app-brand.css
   app-shell.js
@@ -45,6 +52,8 @@ README.md
 - `shared/app-shell.js`: Reusable responsive-menu, Docs heading-anchor, and active table-of-contents behavior.
 - `vendor/pico.min.css`: Local Pico.css base stylesheet.
 - `vendor/fonts/Jost-wght.ttf`: Local Jost variable font used for headings.
+- `vendor/fonts/open-sans/`: Local Open Sans variable font used for body/UI text, with its OFL license.
+- `vendor/icons/lucide/`: Vendored Lucide icons (SVG, one file per icon) — a curated subset, not the full library; grows as apps need new icons. See `docs/components.md`, "App icon."
 - `docs/`: the spec, split by topic — architecture, foundations (color/type), components, app shell, accessibility implementation.
 - `SPEC.md`: Index into `docs/`. The build workflow and review checklist for AI-generated apps live in `marin-skills/marin-app-builder`.
 
@@ -64,7 +73,7 @@ You can also serve the folder with any static web server. A local server is reco
 - Separate generic App and Docs shells.
 - Collapsible main menu on narrow viewports with accessible expanded/collapsed state.
 - Product icons with a gold-bordered title and subtitle area.
-- Jost heading typography loaded from a local bundled font file with accessible sans-serif fallbacks.
+- Jost heading typography and Open Sans body/UI typography, both loaded from local bundled font files with accessible sans-serif fallbacks.
 - Light/dark colors that follow the user's operating-system setting.
 - Text-only Feedback button.
 - Cards, toolbars, alerts, badges, and status pills.
