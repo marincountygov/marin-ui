@@ -26,7 +26,7 @@ Copy optional libraries such as `vendor/xlsx.full.min.js` only when the product 
 2. Copy the complete bundle from one tagged release or commit.
 3. Review the changelog and the resulting diff.
 4. Open the product from `file://` when that mode is supported.
-5. Serve it locally and verify pages and local resources return successfully.
+5. Serve it locally and verify pages and local resources return successfully. Specifically check computed styles, not just that files loaded: confirm `body` actually computes to Open Sans and headings to Jost (a font token can be defined and still never render if nothing applies it to a selector — this shipped once in 1.16.0, fixed in 1.16.1). If the consumer is registered in `marin-os/catalog.json`, diff its `icon.markup` against the consumer's own current header/favicon icon — that file lives in a separate repo and drifts silently when an icon is redrawn later.
 6. Run WAVE against the HTTP URL. If `file://` testing is required, first enable local-page access in the extension settings.
 7. Test keyboard navigation, focus, menu behavior, OS-controlled color mode, reflow, contrast, and product workflows.
 8. Commit the bundle update and regression evidence together.
