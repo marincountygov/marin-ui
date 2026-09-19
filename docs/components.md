@@ -94,7 +94,7 @@ If `vendor/icons/lucide/` doesn't yet have the icon an app needs, add that one S
 <div class="menu">
   <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="example-panel">
     Label
-    <svg class="menu-toggle__caret" aria-hidden="true" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>
+    <svg class="menu-toggle__caret" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
   </button>
   <div id="example-panel" class="menu-panel" hidden>
     <a href="...">Option one</a>
