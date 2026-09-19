@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.16.2 — 2026-09-19
+
+- Make the MarinOS nav-dropdown's `catalog.json` cache stale-while-revalidate instead of cache-instead-of-fetch: previously, once a browser had a cached copy, it never fetched again until the 6-hour TTL expired, so a `catalog.json` fix (like the 1.16.1 MarinDocs icon) could take up to 6 hours to reach a returning visitor with no way to tell it was stale. Now the cache still renders instantly, but a background fetch always runs and re-renders if the result differs, so fixes land on next load.
+
 ## 1.16.1 — 2026-09-18
 
 - Fix the Open Sans rollout from 1.16.0: pointing `--pico-font-family-sans-serif` at `--app-font-body` did nothing because the vendored `pico.min.css` build never reads that variable — Pico's own `body` rule sets no `font-family` at all, so body text was silently still falling back to the browser default rather than Open Sans (or the documented Arial/Verdana fallback chain). Add `font-family: var(--app-font-body);` directly to `app-brand.css`'s own `body` rule, which is the rule that's actually in effect. No visual change to headings (still Jost via `h1`–`h6`/`.app-title`).
