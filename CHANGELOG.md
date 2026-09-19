@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.16.1 — 2026-09-18
+
+- Fix the Open Sans rollout from 1.16.0: pointing `--pico-font-family-sans-serif` at `--app-font-body` did nothing because the vendored `pico.min.css` build never reads that variable — Pico's own `body` rule sets no `font-family` at all, so body text was silently still falling back to the browser default rather than Open Sans (or the documented Arial/Verdana fallback chain). Add `font-family: var(--app-font-body);` directly to `app-brand.css`'s own `body` rule, which is the rule that's actually in effect. No visual change to headings (still Jost via `h1`–`h6`/`.app-title`).
+
 ## 1.16.0 — 2026-09-18
 
 - Finish the Open Sans rollout: `shared/app-brand.css` already vendored the font file but never loaded it — add its `@font-face`, a new `--app-font-body` token, and point `--pico-font-family-sans-serif` at it so body/UI text actually renders in Open Sans instead of the system-font-only stack it fell back to. Jost is unaffected and stays the heading font. Matches the standard already stated in `marin-digital-standards/brand/typography.md`, which this bundle wasn't actually implementing yet.
