@@ -1,5 +1,10 @@
 # MarinOS brand bundle changelog
 
+## 1.16.3 — 2026-09-22
+
+- Vendor Chart.js (`vendor/chart.min.js`, `chart.js@4.5.1`'s UMD build, MIT licensed, license alongside at `vendor/CHART_LICENSE.md`) — first consumer is `marin-mentions`' Stats tab. Unlike the font/Pico/icon files, this one is opt-in per app: only copy it into a consumer if that app actually renders charts, not as part of every routine brand-bundle sync.
+- Document the Chart.js canvas pattern in `docs/components.md` (`role="img"` plus a data-driven `aria-label` recomputed on every render, not a static caption — canvas has no accessible content of its own) and, in "Tab sections," how to handle a control that sits visually among tabs without following the tabs pattern (`aria-pressed`, not `role="tab"`/`aria-selected`) — both drawn directly from `marin-mentions`' Stats implementation.
+
 ## 1.16.2 — 2026-09-19
 
 - Make the MarinOS nav-dropdown's `catalog.json` cache stale-while-revalidate instead of cache-instead-of-fetch: previously, once a browser had a cached copy, it never fetched again until the 6-hour TTL expired, so a `catalog.json` fix (like the 1.16.1 MarinDocs icon) could take up to 6 hours to reach a returning visitor with no way to tell it was stale. Now the cache still renders instantly, but a background fetch always runs and re-renders if the result differs, so fixes land on next load.
