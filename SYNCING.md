@@ -18,7 +18,7 @@ vendor/fonts/open-sans/OFL.txt
 
 Copy `vendor/icons/lucide/` too if the consumer uses (or is adding) any vendored icon — see `docs/components.md` for the per-app icon convention.
 
-Copy optional libraries such as `vendor/xlsx.full.min.js` only when the product uses them.
+Copy optional libraries such as `vendor/xlsx.full.min.js` or `vendor/chart.min.js` (+ `vendor/CHART_LICENSE.md`) only when the product uses them.
 
 ## Update procedure
 

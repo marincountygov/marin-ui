@@ -186,9 +186,39 @@ Elements sharing a `data-tab-section="name"` value show together and hide togeth
 <section id="about" class="app-card" data-tab-section="about" hidden>…</section>
 ```
 
-`app-shell.js` shows whichever group's name matches the current hash, or the first name it finds in the page if the hash is empty or doesn't match anything — so there's no need for an explicit "Home"/default nav tab (see "No Home" below). It also keeps `#app-nav`'s `aria-current="page"` in sync with whichever tab is active, if a `#app-nav` is present. A group can span more than one element (give each the same `data-tab-section` value) when the default view is built from several sibling sections, like a directory page's separate "Apps" and "Docs" grids.
+`app-shell.js` shows whichever group's name matches the current hash, or the first name it finds in the page if the hash is empty or doesn't match anything — so there's no need for an explicit "Home"/default nav tab (see "Standard app nav: About and Updates" below). It also keeps `#app-nav`'s `aria-current="page"` in sync with whichever tab is active, if a `#app-nav` is present. A group can span more than one element (give each the same `data-tab-section` value) when the default view is built from several sibling sections, like a directory page's separate "Apps" and "Docs" grids.
 
 Give every non-default section `hidden` in the static markup — without JavaScript, only the default group is reachable, matching how these are inherently JS-dependent single-page tools already (this is the same tradeoff `marin-magic`'s and `marin-decision-maker`'s own hash-routing already made, not a new one). A docs-shell page that's meant to work fully without JavaScript (see `marin-docs`'s SOP pages) shouldn't use this pattern — those stay as ordinary always-visible sections.
+
+**A control that needs to sit visually among a row of real tabs but doesn't behave like one** (a view toggle rather than a filter/section switch — `marin-mentions`' Stats button, which swaps a list for a set of charts in place, positioned next to its content-type tabs) doesn't get `role="tab"`/`aria-selected` just because of where it sits. Give it `aria-pressed` instead — real toggle-button semantics — and style `[aria-pressed="true"]` the same as `[aria-selected="true"]` for a consistent active look without claiming a keyboard pattern (arrow-key navigation between tabs) the control doesn't implement.
+
+## Charts (canvas)
+
+Chart.js is vendored at `vendor/chart.min.js` (`marin-ui`'s bundle — opt-in, like `vendor/xlsx.full.min.js`; only copy it into a consumer that actually renders charts). Load it before the app's own script:
+
+```html
+<script src="shared/app-shell.js"></script>
+<script src="vendor/chart.min.js"></script>
+<script src="assets/app.js"></script>
+```
+
+A `<canvas>` has no inherent accessible content — a screen reader sees an empty image unless told otherwise. Give every chart canvas `role="img"` and a `data-chart-title` (the static heading, matching the visible `<h3>` next to it), then set a real `aria-label` from actual data on every render, not just once at creation:
+
+```html
+<canvas id="chart" role="img" data-chart-title="Top sources"></canvas>
+```
+
+```js
+function describeChart(canvas, summary) {
+  const title = canvas.dataset.chartTitle || "Chart";
+  canvas.setAttribute("aria-label", summary ? `${title}. ${summary}` : title);
+}
+// e.g. describeChart(canvas, `Top: ${topLabel} with ${topCount}, of ${entries.length} shown.`);
+```
+
+State the actual result (top value, total, peak point), not a generic caption — see `marin-digital-standards/accessibility/standard.md`'s "Components and interaction patterns" for the underlying requirement. Recompute the label every time the chart's data changes (filter change, refresh), the same way the chart itself redraws — a label frozen at creation goes stale the first time the underlying data updates.
+
+Chart.js sizes a canvas at creation time. If a chart can be created while its container is `hidden` (behind a tab or toggle that starts closed), call `.resize()` on the `Chart` instance the first time it becomes visible, or it renders at 0×0 and looks blank.
 
 ## Updates feed
 
@@ -213,7 +243,7 @@ Every app-shell app's `#app-nav` should include an Updates tab and an About tab.
 ```html
 <!-- Default view has no task-specific tab of its own (e.g. a directory or lookup landing page) -->
 <nav class="app-nav" id="app-nav" aria-label="Application navigation">
-  <a href="#<default-view-hash>" aria-current="page">Home</a>
+  <a href="./">Home</a>
   <a href="#about">About</a>
   <a href="#updates">Updates</a>
 </nav>
@@ -228,11 +258,13 @@ Every app-shell app's `#app-nav` should include an Updates tab and an About tab.
 
 Don't add both — a "Home" link and a task tab that point at the exact same content is a duplicate, not a convenience.
 
+**Home links to `./` (the app's own root URL), not a `#<hash>`.** A hash link to the tab that's already showing doesn't do anything if you're on it but scrolled down — no hashchange fires for a same-hash click, so the page just stays wherever it was scrolled, and clicking "Home" looks like it silently failed. `./` is a real navigation to a clean URL every time, which resets scroll on arrival the way "go home" should actually behave. Because `app-shell.js`'s tab-sync only tracks `a[href^="#"]` links (see "Tab sections" above), a `./` Home link is intentionally outside that system — don't hardcode `aria-current="page"` on it; that status belongs to whichever hash-tab is genuinely active, and `./` isn't one. This only applies to a standalone "Home" link (the first example above) — a task tab serving as the default view (the second example, "Start"/"Estimate"/etc.) keeps its normal `#<task>` hash and `aria-current`, since it's a real hash-tracked tab, just also the default one.
+
 **Use "About" — not "Help" — for the app's second, non-task tab, everywhere.** This is a single fixed label, not a per-app judgment call: usage instructions, "what this tool is," source/disclaimer content, and anything else that isn't the task itself all belong under one "About" tab and heading. The nav link text and the section's own heading must say the same thing ("About" in both). Structure: a plain `<section id="about" class="app-card" data-tab-section="about" hidden>`.
 
 **The default view must be immediately functional.** Whatever tab is shown with no hash (the task itself) should be the working tool — inputs, actions, results — not explanatory copy, source metadata, or how-to instructions sitting above or beside it. Move anything that isn't part of operating the tool into About, even if it's a small block like "where this data comes from" or a topic-link list. A group can span more than one non-adjacent element (give each the same `data-tab-section="about"` value) when About needs to combine usage instructions with metadata like this.
 
-If the app has a genuine default/landing view distinct from its other tabs (not just "the first tab happens to be named something task-specific"), give it both an explicit "Home" link in `#app-nav` (see above) and a clickable logo: wrap the header's `.app-title-row` in `<a href="#default-view-hash" class="app-title-row">`. `a.app-title-row` is already styled to inherit color and drop the underline.
+If the app has a genuine default/landing view distinct from its other tabs (not just "the first tab happens to be named something task-specific"), give it both an explicit "Home" link in `#app-nav` (see above) and a clickable logo: wrap the header's `.app-title-row` in `<a href="./" class="app-title-row">`. `a.app-title-row` is already styled to inherit color and drop the underline.
 
 For a docs-shell page (no `#app-nav`), About and Updates are ordinary always-visible sections in `.content` instead of hidden tabs — see `marin-docs`/`marin-expense`/`marin-os` for the pattern: a small `.app-nav`-styled link row next to the breadcrumb in `.header-inner`, pointing at `#about`/`#updates` sections further down the same page.
 

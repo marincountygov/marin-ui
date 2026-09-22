@@ -62,7 +62,7 @@ Use this shell unless the user asks for something materially different:
       </button>
 
       <nav id="app-nav" class="app-nav" aria-label="Application navigation">
-        <a href="#home" aria-current="page">Home</a>
+        <a href="./">Home</a>
         <a href="#settings">Settings</a>
       </nav>
     </div>
