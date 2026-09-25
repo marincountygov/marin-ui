@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.17.0 — 2026-09-25
+
+- `shared/app-shell.js`'s Updates feature: strip a leading Conventional Commits-style prefix (`fix:`, `feat(scope):`, etc.) from each commit title before display, so raw commit-message convention doesn't leak to a non-technical reader — this is text cleanup, not real plain-language rewriting, since a static client-side page has no way to genuinely rewrite arbitrary text at view time. Also add a Copy button to each update entry, reusing the existing `[data-copy-value]` mechanism and copy-button markup already documented in `docs/components.md`.
+
 ## 1.16.3 — 2026-09-22
 
 - Vendor Chart.js (`vendor/chart.min.js`, `chart.js@4.5.1`'s UMD build, MIT licensed, license alongside at `vendor/CHART_LICENSE.md`) — first consumer is `marin-mentions`' Stats tab. Unlike the font/Pico/icon files, this one is opt-in per app: only copy it into a consumer if that app actually renders charts, not as part of every routine brand-bundle sync.
