@@ -46,7 +46,7 @@ Use this shell unless the user asks for something materially different:
   <header class="app-header" role="banner">
     <div class="app-header__inner">
       <div class="app-identity">
-        <div class="app-title-row">
+        <a href="./" class="app-title-row">
           <span class="app-icon" aria-hidden="true">
             <!-- simple product icon SVG -->
           </span>
@@ -54,7 +54,7 @@ Use this shell unless the user asks for something materially different:
             <h1 class="app-title">App Name</h1>
             <p class="app-subtitle">Short description of what this app does.</p>
           </div>
-        </div>
+        </a>
       </div>
 
       <button type="button" class="app-menu-toggle" aria-expanded="false" aria-controls="app-nav">
@@ -62,7 +62,6 @@ Use this shell unless the user asks for something materially different:
       </button>
 
       <nav id="app-nav" class="app-nav" aria-label="Application navigation">
-        <a href="./">Home</a>
         <a href="#settings">Settings</a>
       </nav>
     </div>
@@ -84,6 +83,8 @@ Use this shell unless the user asks for something materially different:
 ```
 
 Use a simple, meaningful inline SVG icon in the header. Treat it as decorative with `aria-hidden="true"` because the adjacent app title supplies the accessible name. Do not use an app logotype block.
+
+The `.app-identity` block (icon, title, subtitle) is always the `href="./"` link shown above — a real, plain link to the app's own root, not a hash. This is what makes the icon/title double as "home," so `#app-nav` never needs its own Home/Start tab pointing at the same place — don't add one. `./` specifically, not a `data-tab-section` hash like `#start`/`#latest`/`#directory`: a plain link means a full page load back to a clean, reset state, which is simpler to reason about than relying on the shared tab-routing JS's hash-fallback behavior for something that should always mean "start over."
 
 The MarinOS banner uses the shared MarinOS icon (the four-square mark shown above) inline before the word "MarinOS", colored with `currentColor` so it always matches the banner text. Use the same mark as the site favicon via the inline SVG data URI shown in the shell example above; do not add a separate `.ico` or PNG favicon file. The banner currently carries an `<sup>ALPHA</sup>` release marker; remove it only when the program formally exits alpha status.
 
