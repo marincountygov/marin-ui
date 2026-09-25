@@ -238,33 +238,31 @@ The heading is always literally "Updates." There's a single description line, no
 
 ## Standard app nav: About and Updates
 
-Every app-shell app's `#app-nav` should include an Updates tab and an About tab. Whether it also needs an explicit "Home" link depends on whether the default view already has its own named tab:
+`#app-nav` never includes a link to the app's own default/home view, whether or not that view has its own task-specific name — the header icon/title link (`.app-title-row`, see "App shell" in `app-shell.md`) is the only way back to it. `#app-nav` lists just what's left: About, Updates, and any additional non-default task tabs the app genuinely has (e.g. a multi-step app with Preview/Publish steps beyond its default Build step).
 
 ```html
 <!-- Default view has no task-specific tab of its own (e.g. a directory or lookup landing page) -->
 <nav class="app-nav" id="app-nav" aria-label="Application navigation">
-  <a href="./">Home</a>
   <a href="#about">About</a>
   <a href="#updates">Updates</a>
 </nav>
 
-<!-- Default view is itself a named task tab (e.g. "Estimate", "Start", "Builder") -->
+<!-- Default view is itself a named task tab (e.g. "Estimate", "Start", "Builder") — the tab's
+     data-tab-section still exists and still loads by default via hash-fallback, it just isn't
+     also duplicated as its own #app-nav entry -->
 <nav class="app-nav" id="app-nav" aria-label="Application navigation">
-  <a href="#<task>" aria-current="page">…task-specific tab(s)…</a>
   <a href="#about">About</a>
   <a href="#updates">Updates</a>
 </nav>
 ```
 
-Don't add both — a "Home" link and a task tab that point at the exact same content is a duplicate, not a convenience.
+Don't add a "Home"/"Start" nav link pointing at the same view the header icon/title already links to — that's a duplicate, not a convenience.
 
-**Home links to `./` (the app's own root URL), not a `#<hash>`.** A hash link to the tab that's already showing doesn't do anything if you're on it but scrolled down — no hashchange fires for a same-hash click, so the page just stays wherever it was scrolled, and clicking "Home" looks like it silently failed. `./` is a real navigation to a clean URL every time, which resets scroll on arrival the way "go home" should actually behave. Because `app-shell.js`'s tab-sync only tracks `a[href^="#"]` links (see "Tab sections" above), a `./` Home link is intentionally outside that system — don't hardcode `aria-current="page"` on it; that status belongs to whichever hash-tab is genuinely active, and `./` isn't one. This only applies to a standalone "Home" link (the first example above) — a task tab serving as the default view (the second example, "Start"/"Estimate"/etc.) keeps its normal `#<task>` hash and `aria-current`, since it's a real hash-tracked tab, just also the default one.
+**The header icon/title links to `./` (the app's own root URL), not a `#<hash>`.** A hash link to the tab that's already showing doesn't do anything if you're on it but scrolled down — no hashchange fires for a same-hash click, so the page just stays wherever it was scrolled, and clicking it looks like it silently failed. `./` is a real navigation to a clean URL every time, which resets scroll (and all in-page state) on arrival the way "go home" should actually behave. Because `app-shell.js`'s tab-sync only tracks `a[href^="#"]` links (see "Tab sections" above), a `./` link is intentionally outside that system — don't hardcode `aria-current="page"` on it; that status belongs to whichever hash-tab is genuinely active, and `./` isn't one.
 
 **Use "About" — not "Help" — for the app's second, non-task tab, everywhere.** This is a single fixed label, not a per-app judgment call: usage instructions, "what this tool is," source/disclaimer content, and anything else that isn't the task itself all belong under one "About" tab and heading. The nav link text and the section's own heading must say the same thing ("About" in both). Structure: a plain `<section id="about" class="app-card" data-tab-section="about" hidden>`.
 
 **The default view must be immediately functional.** Whatever tab is shown with no hash (the task itself) should be the working tool — inputs, actions, results — not explanatory copy, source metadata, or how-to instructions sitting above or beside it. Move anything that isn't part of operating the tool into About, even if it's a small block like "where this data comes from" or a topic-link list. A group can span more than one non-adjacent element (give each the same `data-tab-section="about"` value) when About needs to combine usage instructions with metadata like this.
-
-If the app has a genuine default/landing view distinct from its other tabs (not just "the first tab happens to be named something task-specific"), give it both an explicit "Home" link in `#app-nav` (see above) and a clickable logo: wrap the header's `.app-title-row` in `<a href="./" class="app-title-row">`. `a.app-title-row` is already styled to inherit color and drop the underline.
 
 For a docs-shell page (no `#app-nav`), About and Updates are ordinary always-visible sections in `.content` instead of hidden tabs — see `marin-docs`/`marin-expense`/`marin-os` for the pattern: a small `.app-nav`-styled link row next to the breadcrumb in `.header-inner`, pointing at `#about`/`#updates` sections further down the same page.
 
