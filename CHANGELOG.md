@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.17.1 — 2026-09-25
+
+- Fix Marin Zipper's icon: `vendor/icons/lucide/zipper.svg` was a mislabeled copy of Lucide's real `file-archive` icon (verified against the actual published icon — same path data) — renamed to `file-archive.svg`. It also carried a customized `stroke-width="1"`, different from Lucide's real default of `2` and every other vendored icon in this bundle; fixed to `2`. Every consumer previously worked around the old file's thin weight with a per-instance override (`style="stroke-width:1"` on the `<svg>`, or a wrapping `<g stroke-width="1">`) — those overrides are no longer needed and were removed, so the icon now renders at the same standard weight as every other icon, matching its real appearance on lucide.dev.
+
 ## 1.17.0 — 2026-09-25
 
 - `shared/app-shell.js`'s Updates feature: strip a leading Conventional Commits-style prefix (`fix:`, `feat(scope):`, etc.) from each commit title before display, so raw commit-message convention doesn't leak to a non-technical reader — this is text cleanup, not real plain-language rewriting, since a static client-side page has no way to genuinely rewrite arbitrary text at view time. Also add a Copy button to each update entry, reusing the existing `[data-copy-value]` mechanism and copy-button markup already documented in `docs/components.md`.
