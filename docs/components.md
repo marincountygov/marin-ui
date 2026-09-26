@@ -236,9 +236,24 @@ The heading is always literally "Updates." There's a single description line, no
 
 `app-shell.js` detects visibility by watching the section's `hidden` attribute change, so it works with the tab-sections pattern above, any other tab/hash-routing a page has, or none: a section that's never `hidden` loads immediately. It fetches 15 commits and filters out merge-PR commits (`Merge pull request #N from …` — noise, not a real change) before showing up to 10; a multi-line commit body renders as a `<ul>` list rather than one run-together paragraph, since commit bodies are often already a bullet list. A bare repo name (`data-updates-repo="marin-magic"`) is assumed to be `marincountygov/<repo>`; pass `owner/repo` to point elsewhere. The GitHub API call is unauthenticated — fine for occasional use, but subject to GitHub's 60-requests-per-hour-per-IP unauthenticated rate limit, shared across everyone hitting the page from the same network.
 
+## Security page
+
+Any `[data-security-json="security.json"]` section lazy-loads that file (same origin, same repo — no cross-repo call, unlike Updates) the first time it becomes visible and renders only the `publicSecurity` block from it: profile, last-reviewed date, controls, and data declarations. It never renders the rest of the document, so internal configuration (exceptions, CSP directives, monitoring detail) stays out of the public page.
+
+```html
+<section id="security" class="app-card" data-tab-section="security" data-security-json="security.json" hidden>
+  <h2>Security</h2>
+  <h3>Application security</h3>
+  <p data-security-status class="app-help-text" role="status" aria-live="polite" aria-atomic="true">Loading security information&hellip;</p>
+  <div data-security-content></div>
+</section>
+```
+
+Both `[data-security-status]` and `[data-security-content]` are required inside the section. An app with no `security.json` yet gets a plain "not yet published" status, not an error. Visibility is detected the same way as Updates (the section's `hidden` attribute), so it works with the tab-sections pattern or any custom hash routing. Link to files with **relative** paths (`.well-known/security.txt`, `security.json`), never root-absolute ones: apps are GitHub Pages project sites under `/<repo>/`, so `/.well-known/…` resolves to the org root and 404s.
+
 ## Standard app nav: About and Updates
 
-`#app-nav` never includes a link to the app's own default/home view, whether or not that view has its own task-specific name — the header icon/title link (`.app-title-row`, see "App shell" in `app-shell.md`) is the only way back to it. `#app-nav` lists just what's left: About, Updates, and any additional non-default task tabs the app genuinely has (e.g. a multi-step app with Preview/Publish steps beyond its default Build step).
+`#app-nav` never includes a link to the app's own default/home view, whether or not that view has its own task-specific name — the header icon/title link (`.app-title-row`, see "App shell" in `app-shell.md`) is the only way back to it. `#app-nav` lists just what's left: About, Updates, Security, and any additional non-default task tabs the app genuinely has (e.g. a multi-step app with Preview/Publish steps beyond its default Build step).
 
 ```html
 <!-- Default view has no task-specific tab of its own (e.g. a directory or lookup landing page) -->
