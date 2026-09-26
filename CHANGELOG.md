@@ -1,5 +1,12 @@
 # MarinOS brand bundle changelog
 
+## 1.18.0 — 2026-09-26
+
+- Add a Security section renderer to `shared/app-shell.js`. Any `[data-security-json="path"]` section lazy-loads that same-origin `security.json` the first time it becomes visible and renders only its `publicSecurity` block (profile, last-reviewed date, controls, data declarations) — never the full document. A 404 shows "No security information has been published for this application yet" instead of an error, and all values are HTML-escaped. Documented in `docs/components.md` under "Security page."
+- The `internal` profile is labelled "For County staff" in the renderer's fallback label map.
+- These changes shipped in 1.17.4's files without a version bump, so consumers' recorded `BRAND_VERSION` understated what they actually contained. This release brings the recorded version in line with the shipped files; consumers only need `BRAND_VERSION` and `marin.yml`'s `platform.marin-ui` updated.
+- Sync note: `scripts/sync-consumer.sh` also overwrites `vendor/pico.min.css`, and `marin-anonymizer` deliberately ships a custom, pruned one — for that consumer copy only `BRAND_VERSION`, `shared/app-brand.css`, and `shared/app-shell.js`.
+
 ## 1.17.4 — 2026-09-25
 
 - Fix the Updates feature's per-entry Copy button rendering as a bare text link in some consumer apps (reported on marin-magic's live site): the scoped fix that restyled it into a real button (padding, border, background) had only ever been added to marin-mentions' own local stylesheet, not the shared bundle, so every other consumer never got it. Moved the fix into `shared/app-brand.css` itself, scoped to `#updates .copy-button` (so every other, genuinely icon-only use of `.copy-button` elsewhere on a page is unaffected), and removed marin-mentions' now-redundant local copy. Rebuilt it to use only this bundle's own `--app-*`/`--pico-border-radius` tokens rather than a consumer's Pico theme variables (`--pico-secondary-*`) — those aren't defined in every consumer's vendored base stylesheet (marin-anonymizer's is a pruned custom stylesheet, not real Pico), so the old marin-mentions-only version would have rendered unstyled there too even if copied over as-is.
