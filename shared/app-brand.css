@@ -35,7 +35,7 @@
   --app-danger-text: #7f2d20;
   --app-table-row-hover: #e6f2fb;
   --app-max-width: 1280px;
-  --docs-max-width: 1180px;
+  --docs-max-width: var(--app-max-width);
 
   --app-brand: var(--marin-black);
   --app-accent: var(--marin-blue);

@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.18.1 — 2026-09-30
+
+- Fix `--docs-max-width` (1180px) not matching `--app-max-width` (1280px): the MarinOS banner (`.marinos-banner__inner`) always uses `--app-max-width`, but every docs-shell container (`.header-inner`/`.footer-inner`, `.page`, `.docs-main`) used the narrower `--docs-max-width`, so on any docs-shell page (breadcrumb-only header, not the full app-header) the black banner's left edge never lined up with the breadcrumb/content below it — visible on brand sub-pages (marincountygov/brand) and any SOP/guide/search page in marin-docs. `--docs-max-width` now reads `var(--app-max-width)` directly so the two stay identical by definition instead of two numbers someone has to remember to keep in sync.
+
 ## 1.18.0 — 2026-09-26
 
 - Add a Security section renderer to `shared/app-shell.js`. Any `[data-security-json="path"]` section lazy-loads that same-origin `security.json` the first time it becomes visible and renders only its `publicSecurity` block (profile, last-reviewed date, controls, data declarations) — never the full document. A 404 shows "No security information has been published for this application yet" instead of an error, and all values are HTML-escaped. Documented in `docs/components.md` under "Security page."
