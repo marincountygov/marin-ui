@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.18.2 — 2026-09-30
+
+- Restore the `.app-footer__local`/`.app-footer__app-name`/`.app-footer__nav`/`.app-footer__platform` rules (plus their `max-width: 720px` mobile overrides) that `marin-app-template` 1.2.1 introduced for the expanded footer (app name + About/Security/Accessibility/Updates on one line). That template's CHANGELOG said these were added to `shared/app-brand.css`, but they were only ever added to the template's own vendored copy, never brought into this repo — so `shared/app-brand.css` still had the old single-link footer rules (including a `font-weight: 600` on the whole footer, not just the MarinOS platform link). Consumers that vendored the bundle before the template existed, or resynced from here since, got a footer that fell back to unstyled block stacking with everything bold. Caught via `marincountygov/marin-brand`, whose footer regressed to exactly that the moment it synced this bundle's (until now, wrong) copy.
+
 ## 1.18.1 — 2026-09-30
 
 - Fix `--docs-max-width` (1180px) not matching `--app-max-width` (1280px): the MarinOS banner (`.marinos-banner__inner`) always uses `--app-max-width`, but every docs-shell container (`.header-inner`/`.footer-inner`, `.page`, `.docs-main`) used the narrower `--docs-max-width`, so on any docs-shell page (breadcrumb-only header, not the full app-header) the black banner's left edge never lined up with the breadcrumb/content below it — visible on brand sub-pages (marincountygov/brand) and any SOP/guide/search page in marin-docs. `--docs-max-width` now reads `var(--app-max-width)` directly so the two stay identical by definition instead of two numbers someone has to remember to keep in sync.
