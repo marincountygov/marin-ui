@@ -3,51 +3,37 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>County of Marin Micro-App Demo</title><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%23000'/%3E%3Cg fill='none' stroke='%23e5b53b' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round' transform='translate(9,9) scale(1.25)'%3E%3Crect width='7' height='7' x='3' y='3' rx='1'/%3E%3Crect width='7' height='7' x='14' y='3' rx='1'/%3E%3Crect width='7' height='7' x='14' y='14' rx='1'/%3E%3Crect width='7' height='7' x='3' y='14' rx='1'/%3E%3C/g%3E%3C/svg%3E">
+    <title>County of Marin Micro-App Demo</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%23000'/%3E%3Cg fill='none' stroke='%23e5b53b' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round' transform='translate(9,9) scale(1.25)'%3E%3Crect width='7' height='7' x='3' y='3' rx='1'/%3E%3Crect width='7' height='7' x='14' y='3' rx='1'/%3E%3Crect width='7' height='7' x='14' y='14' rx='1'/%3E%3Crect width='7' height='7' x='3' y='14' rx='1'/%3E%3C/g%3E%3C/svg%3E">
     <meta
       name="description"
       content="A standalone County of Marin micro-app starter demonstrating accessible branded components."
     >
-    <link rel="stylesheet" href="./vendor/pico.min.css">
-    <link rel="stylesheet" href="./shared/app-brand.css">
+    <link rel="stylesheet" href="vendor/marinos/marinos.css">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="vendor/marinos/marinos.js" defer></script>
+    <script src="assets/app.js" defer></script>
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to main content</a>
+    <marin-os-banner></marin-os-banner>
 
-    <div class="marinos-banner">
-      <div class="marinos-banner__inner"><div class="menu marinos-menu"><button type="button" class="menu-toggle marinos-menu__toggle" aria-expanded="false" aria-controls="marinos-menu-panel"><span class="marinos-banner__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span>MarinOS<sup>ALPHA</sup><svg class="menu-toggle__caret" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><div id="marinos-menu-panel" class="menu-panel marinos-menu__panel" hidden><a href="https://marincountygov.github.io/marin-magic/"><span class="marinos-menu__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span>MarinMagic</a><a href="https://marincountygov.github.io/marin-decision-maker/"><span class="marinos-menu__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg></span>Marin Decision Maker</a><a href="https://marincountygov.github.io/marin-docs/"><span class="marinos-menu__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>MarinDocs</a><a class="marinos-menu__all" href="https://marincountygov.github.io/marin-os/">Browse all in MarinOS</a></div></div></div>
-    </div>
+    <marin-app-header
+      app-name="County of Marin Micro-App"
+      app-description="A durable starter for small County web tools using semantic HTML, Pico.css, County branding, and vanilla JavaScript."
+    >
+      <template data-icon>
+        <svg viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+      </template>
+      <template data-navigation>
+        <a href="#overview" aria-current="page">Overview</a>
+        <a href="#components">Components</a>
+        <a href="#forms">Forms</a>
+        <a href="#data">Data</a>
+        <a href="#about">About</a>
+      </template>
+    </marin-app-header>
 
-    <header class="app-header" role="banner">
-      <div class="app-header__inner">
-        <div class="app-identity">
-          <div class="app-title-row">
-            <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span>
-            <div class="app-title-copy">
-              <h1 class="app-title">County of Marin Micro-App</h1>
-              <p class="app-subtitle">A durable starter for small County web tools using semantic HTML, Pico.css, County branding, and vanilla JavaScript.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="app-header__actions">
-          <button type="button" class="app-menu-toggle secondary" id="menu-toggle" aria-expanded="false" aria-controls="app-nav">
-            Menu
-          </button>
-
-          <nav class="app-nav" id="app-nav" aria-label="Application navigation">
-            <a href="#overview" aria-current="page">Overview</a>
-            <a href="#components">Components</a>
-            <a href="#forms">Forms</a>
-            <a href="#data">Data</a>
-          </nav>
-        </div>
-      </div>
-    </header>
-
-    <main id="main" class="container app-main" tabindex="-1">
-      <div id="app-status-message" role="status" aria-live="polite"></div>
-
+    <main id="main" class="container app-main">
       <section id="overview" class="app-page-heading" aria-labelledby="overview-heading">
         <h2 id="overview-heading">Build small County tools without a build step</h2>
         <p>
@@ -55,48 +41,48 @@
           It is intended for local-first utilities, internal review apps, data cleanup workflows, dashboards,
           and other focused tools that should run from a basic static host or directly from <code>file:///</code>.
         </p>
-      </section>
 
-      <section class="demo-grid" aria-label="Project summary">
-        <article class="app-card">
-          <h3>Required stack</h3>
-          <ul>
-            <li>Semantic HTML</li>
-            <li>Pico.css base styles</li>
-            <li><code>shared/app-brand.css</code> County branding</li>
-            <li>Vanilla JavaScript in <code>app.js</code></li>
-            <li>Jost heading typography with accessible fallbacks</li>
+        <div class="demo-grid" aria-label="Project summary" style="margin-top: 1.5rem;">
+          <article class="app-card">
+            <h3>Required stack</h3>
+            <ul>
+              <li>Semantic HTML</li>
+              <li>Pico.css base styles</li>
+              <li>County branding</li>
+              <li>Vanilla JavaScript in <code>app.js</code></li>
+              <li>Jost heading typography with accessible fallbacks</li>
+            </ul>
+          </article>
+
+          <article class="app-card">
+            <h3>Accessibility baseline</h3>
+            <p>
+              The shell includes a skip link, one main landmark, visible focus styles, labeled controls,
+              non-color-only status labels, and a light/dark mode toggle aligned with WCAG 2.2 Level AA.
+            </p>
+          </article>
+
+          <article class="app-card">
+            <h3>Branding approach</h3>
+            <p>
+              The demo uses the official County logo stored locally in the codebase. Logo artwork should not be recreated,
+              recolored, stretched, or approximated.
+            </p>
+          </article>
+        </div>
+
+        <div class="demo-section" aria-labelledby="tokens-heading" style="margin-top: 2rem;">
+          <h3 id="tokens-heading">County color tokens</h3>
+          <p>Use Marin colors as accents and UI indicators while preserving readable text contrast.</p>
+          <ul class="demo-token-list">
+            <li><span class="demo-swatch" style="background: #000000"></span>Black</li>
+            <li><span class="demo-swatch" style="background: #e5b53b"></span>Gold</li>
+            <li><span class="demo-swatch" style="background: #0777cf"></span>Blue</li>
+            <li><span class="demo-swatch" style="background: #73784a"></span>Green</li>
+            <li><span class="demo-swatch" style="background: #a2662b"></span>Brown</li>
+            <li><span class="demo-swatch" style="background: #b45340"></span>Red</li>
           </ul>
-        </article>
-
-        <article class="app-card">
-          <h3>Accessibility baseline</h3>
-          <p>
-            The shell includes a skip link, one main landmark, visible focus styles, labeled controls,
-            non-color-only status labels, and a light/dark mode toggle aligned with WCAG 2.2 Level AA.
-          </p>
-        </article>
-
-        <article class="app-card">
-          <h3>Branding approach</h3>
-          <p>
-            The demo uses the official County logo stored locally in the codebase. Logo artwork should not be recreated,
-            recolored, stretched, or approximated.
-          </p>
-        </article>
-      </section>
-
-      <section class="demo-section" aria-labelledby="tokens-heading">
-        <h2 id="tokens-heading">County color tokens</h2>
-        <p>Use Marin colors as accents and UI indicators while preserving readable text contrast.</p>
-        <ul class="demo-token-list">
-          <li><span class="demo-swatch" style="background: #000000"></span>Black</li>
-          <li><span class="demo-swatch" style="background: #e5b53b"></span>Gold</li>
-          <li><span class="demo-swatch" style="background: #0777cf"></span>Blue</li>
-          <li><span class="demo-swatch" style="background: #73784a"></span>Green</li>
-          <li><span class="demo-swatch" style="background: #a2662b"></span>Brown</li>
-          <li><span class="demo-swatch" style="background: #b45340"></span>Red</li>
-        </ul>
+        </div>
       </section>
 
       <section id="components" class="demo-section" aria-labelledby="components-heading">
@@ -125,7 +111,7 @@
           </div>
         </div>
 
-        <article class="app-card">
+        <article class="app-card" style="margin-top: 1rem;">
           <h3>Status labels and badges</h3>
           <p>
             <span class="app-badge">Demo component</span>
@@ -256,17 +242,36 @@
           </table>
         </div>
 
-        <div class="app-empty" aria-label="Empty state example">
+        <div class="app-empty" aria-label="Empty state example" style="margin-top: 1.5rem;">
           <h3>No imported records</h3>
           <p>Use an empty state when a workflow has no records yet and explain the next useful action.</p>
           <button type="button" id="empty-state-action">Show empty state guidance</button>
         </div>
       </section>
+
+      <marin-app-info
+        app-name="County of Marin Micro-App"
+        repo="marin-ui"
+        security-src="security.json"
+      >
+        <template data-about>
+          <p>
+            This project is the versioned UI source of truth for MarinOS apps and documentation — the implemented interface system for Marin digital products.
+            It provides App and Docs shells built with semantic HTML, Pico.css, shared County branding, vanilla JavaScript, and WCAG 2.2 Level AA accessibility patterns.
+          </p>
+        </template>
+        <template data-accessibility>
+          <p>
+            The demo is designed around WCAG 2.2 Level AA expectations. It includes semantic landmarks, logical heading order, visible labels,
+            visible focus states, keyboard-operable controls, non-color-only status indicators, reduced-motion support, accessible form errors,
+            table headers with scope, and live status messages.
+          </p>
+        </template>
+      </marin-app-info>
     </main>
 
-    <footer class="app-footer" role="contentinfo"><div class="app-footer__inner"><a href="https://marincountygov.github.io/marin-os/">MarinOS</a></div></footer>
-
-    <a class="app-feedback" href="https://form.asana.com/?k=qVUT83d5DBmlDiIyi-WAyQ&amp;d=23133298259496" target="_blank" rel="noreferrer">Feedback</a>
+    <marin-app-footer app-name="County of Marin Micro-App"></marin-app-footer>
+    <marin-app-feedback></marin-app-feedback>
 
     <dialog id="demo-dialog" class="demo-dialog" aria-labelledby="dialog-title">
       <article>
@@ -279,7 +284,5 @@
         </footer>
       </article>
     </dialog>
-
-    <script src="./app.js"></script>
   </body>
 </html>

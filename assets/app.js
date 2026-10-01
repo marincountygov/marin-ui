@@ -6,10 +6,6 @@ const emptyStateButton = document.querySelector("#empty-state-action");
 const dialog = document.querySelector("#demo-dialog");
 const openDialogButton = document.querySelector("#open-dialog");
 const closeDialogButton = document.querySelector("#close-dialog");
-const menuToggleButton = document.querySelector("#menu-toggle");
-const appNav = document.querySelector("#app-nav");
-
-const menuMediaQuery = window.matchMedia("(max-width: 720px)");
 
 let dialogOpener = null;
 
@@ -84,37 +80,6 @@ function clearFormErrors() {
   });
 }
 
-function updateCurrentNavLink() {
-  const links = Array.from(document.querySelectorAll(".app-nav a"));
-  const currentHash = window.location.hash || "#overview";
-
-  links.forEach((link) => {
-    if (link.getAttribute("href") === currentHash) {
-      link.setAttribute("aria-current", "page");
-    } else {
-      link.removeAttribute("aria-current");
-    }
-  });
-}
-
-function setMenuOpen(isOpen) {
-  if (!menuToggleButton || !appNav) {
-    return;
-  }
-
-  menuToggleButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
-
-  if (isOpen) {
-    appNav.dataset.open = "true";
-  } else {
-    appNav.removeAttribute("data-open");
-  }
-}
-
-function isMenuOpen() {
-  return menuToggleButton?.getAttribute("aria-expanded") === "true";
-}
-
 if (demoForm) {
   demoForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -166,30 +131,42 @@ if (dialog && openDialogButton && closeDialogButton) {
   });
 }
 
-if (menuToggleButton && appNav) {
-  menuToggleButton.addEventListener("click", () => {
-    setMenuOpen(!isMenuOpen());
+// Dual layout routing:
+// - #overview, #components, #forms, #data are shown together and scrollable.
+// - #about, #security, #accessibility, #updates are shown exclusively as single info pages.
+function updateViewMode() {
+  const hash = window.location.hash.slice(1) || "overview";
+  const mainSectionIds = ["overview", "components", "forms", "data"];
+  const infoSectionIds = ["about", "security", "accessibility", "updates"];
+
+  const isMainSection = mainSectionIds.includes(hash) || !window.location.hash;
+
+  mainSectionIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.hidden = !isMainSection;
   });
 
-  appNav.addEventListener("click", (event) => {
-    if (event.target instanceof HTMLAnchorElement && menuMediaQuery.matches) {
-      setMenuOpen(false);
+  infoSectionIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.hidden = (id !== hash);
+  });
+
+  if (isMainSection && window.location.hash) {
+    const target = document.getElementById(hash);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
     }
-  });
+  }
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && isMenuOpen()) {
-      setMenuOpen(false);
-      menuToggleButton.focus();
-    }
-  });
-
-  menuMediaQuery.addEventListener("change", (event) => {
-    if (!event.matches) {
-      setMenuOpen(false);
+  document.querySelectorAll(".app-nav a").forEach((link) => {
+    const href = link.getAttribute("href");
+    if (href === `#${hash}` || (!window.location.hash && href === "#overview")) {
+      link.setAttribute("aria-current", "page");
+    } else {
+      link.removeAttribute("aria-current");
     }
   });
 }
 
-window.addEventListener("hashchange", updateCurrentNavLink);
-updateCurrentNavLink();
+window.addEventListener("hashchange", updateViewMode);
+window.addEventListener("DOMContentLoaded", updateViewMode);
