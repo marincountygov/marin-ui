@@ -192,6 +192,17 @@ Give every non-default section `hidden` in the static markup — without JavaScr
 
 **A control that needs to sit visually among a row of real tabs but doesn't behave like one** (a view toggle rather than a filter/section switch — `marin-mentions`' Stats button, which swaps a list for a set of charts in place, positioned next to its content-type tabs) doesn't get `role="tab"`/`aria-selected` just because of where it sits. Give it `aria-pressed` instead — real toggle-button semantics — and style `[aria-pressed="true"]` the same as `[aria-selected="true"]` for a consistent active look without claiming a keyboard pattern (arrow-key navigation between tabs) the control doesn't implement.
 
+## Accessibility score gauge
+
+`.app-score` shows a Google Lighthouse accessibility score (0-100) as a ring with the number inside and the band word beside it. Build it with `marinScoreGauge(score, { large })` from `shared/app-shell.js` (also on `window`) rather than writing the SVG by hand:
+
+```js
+cell.append(marinScoreGauge(96));                  // table-size
+panel.append(marinScoreGauge(96, { large: true })); // stacked, bigger
+```
+
+Bands follow Lighthouse: good 90-100, needs improvement 50-89, poor 0-49. Color is never the only signal: the number and band word are always printed, and the ring is `aria-hidden` with "Accessibility score 96 out of 100: Good" in visually hidden text. Don't show a gauge for a failed scan or a missing score, and don't describe a score as WCAG conformance; it is automated testing only. `[data-accessibility-scores]` sections already use this for an app's own score.
+
 ## Charts (canvas)
 
 Chart.js is vendored at `vendor/chart.min.js` (`marin-ui`'s bundle — opt-in, like `vendor/xlsx.full.min.js`; only copy it into a consumer that actually renders charts). Load it before the app's own script:
