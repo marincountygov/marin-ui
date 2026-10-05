@@ -1,5 +1,15 @@
 # MarinOS brand bundle changelog
 
+## 1.21.0 — 2026-10-05
+
+- Add the `.app-score` accessibility score gauge (with `.app-score--large`): a ring whose arc is the Lighthouse accessibility score, the number inside, and the band word beside it. Bands match Lighthouse's own: good 90-100, needs improvement 50-89, poor 0-49. New `--app-score-good` / `--app-score-needs-improvement` / `--app-score-poor` tokens with dark-mode values, all at 4.5:1 or better on the card surface in both themes, and forced-colors support. Color is never the only signal: the number and band word are always printed.
+- `shared/app-shell.js` exposes `window.marinScoreGauge(score, { large })` to build the gauge, and the `[data-accessibility-scores]` loader now uses it for an app's own score instead of plain text, with a "Lighthouse results" link to PageSpeed Insights' own report for the tested address.
+
+## 1.20.0 — 2026-10-05
+
+- `shared/app-shell.js` gains a `[data-accessibility-scores]` section loader: it reads MarinOS's shared Google Lighthouse results (`data/lighthouse.json`, keyed by catalog id) the first time the section becomes visible and shows that app's score and test date in `[data-accessibility-content]`, with progress in `[data-accessibility-status]`. The app is found by `data-accessibility-app-id` on the section or `<body data-app-id>`.
+- A failed scan is never shown as a low score: the last successful result stays visible with its date, an old result is marked out of date, and an app with no score says so.
+
 ## 1.19.0 — 2026-10-02
 
 - Add three new `.app-status[data-status="..."]` variants — `alpha`, `beta`, `live` — for MarinOS's new app-maturity status (see `marin-os`'s `#status` page). Unlike the existing variants (hardcoded hex, light-mode only), these are built from this bundle's own `--app-warning`/`--app-accent`/`--app-success` tokens, so they're the first `.app-status` set that actually adapts to dark mode. Contrast was checked numerically (WCAG relative-luminance formula) against the real token values in both themes, not eyeballed: raw `--app-warning`/`--app-accent` at the chosen background tint land at 4.3:1/3.8:1 in light mode, short of AA's 4.5:1, so `alpha`/`beta` darken their light-mode text procedurally (`color-mix(... black)`) to 6.7:1/5.0:1; both revert to the raw token in dark mode (`shared/app-brand.css`'s dark `@media` block), where the token's own dark-mode value already clears AA (5.3:1/6.5:1) as plain text color. `live`'s `--app-success` token needed no adjustment or override in either theme (5.3:1 light, 6.1:1 dark).
