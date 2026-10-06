@@ -1,5 +1,13 @@
 # MarinOS brand bundle changelog
 
+## 1.22.0 — 2026-10-06
+
+- `shared/app-shell.js` gives every `[role="tablist"]` the ARIA tabs keyboard pattern with no per-page JavaScript: one tab in the Tab order at a time (the selected one, or the first), Left/Right (Up/Down for `aria-orientation="vertical"`) with wrap, Home/End, and selection on focus. An app that handles those keys itself calls `preventDefault()` and the shared handler stands down.
+- Lighten `--app-bg-soft` (the page background behind cards) from `#f6f7f8` to `#fdfdfe` in light mode. Accent-blue links directly on the page background, outside a card, were 4.30:1, short of AA's 4.5:1; they are now 4.54:1. Cards stay distinct from the page through their border. Dark mode is unchanged.
+- New `scripts/check-contrast.js`: checks the real color-token pairs (text, links, tints, status badges, focus ring, score ring) in both light and dark mode and exits non-zero on a miss. Run it against `shared/app-brand.css` or any bundle with the same tokens. Runs in CI (`.github/workflows/check-contrast.yml`).
+
+- Fix low-contrast accent text on accent-tinted backgrounds: the current header-nav link (`.app-nav a[aria-current="page"]` / hover), hovered or focused menu items (`.menu-panel`), the hovered Updates "Copy" button, and the current `.topic-filters` link used raw `--app-accent` on a 8-14% tint of itself, only ~3.6-4.2:1 in light mode (AA needs 4.5:1; a Lighthouse color-contrast failure). They now use the new `--app-accent-on-tint` token: a darker blue in light mode (~6.2-6.6:1) and the unchanged accent in dark mode (~7.3:1).
+
 ## 1.21.0 — 2026-10-05
 
 - Add the `.app-score` accessibility score gauge (with `.app-score--large`): a ring whose arc is the Lighthouse accessibility score, the number inside, and the band word beside it. Bands match Lighthouse's own: good 90-100, needs improvement 50-89, poor 0-49. New `--app-score-good` / `--app-score-needs-improvement` / `--app-score-poor` tokens with dark-mode values, all at 4.5:1 or better on the card surface in both themes, and forced-colors support. Color is never the only signal: the number and band word are always printed.

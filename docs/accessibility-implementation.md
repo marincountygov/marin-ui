@@ -44,6 +44,31 @@ no keyboard traps
 focused content is not hidden behind sticky headers or overlays
 ```
 
+### Tabs
+
+Elements with `role="tab"` follow the full ARIA tabs pattern, not just the roles. `shared/app-shell.js` (and the App Shell) provides the keyboard behavior for any `[role="tablist"]` with no per-page JavaScript, so an app only needs the correct markup and its own click handling:
+
+```text
+the tablist contains only role="tab" children
+one tab is in the Tab order (tabindex="0"): the selected tab, or the first if none is selected
+the other tabs have tabindex="-1"
+Left/Right arrows move between tabs and wrap around
+Home/End move to the first/last tab
+moving to a tab selects it when switching is cheap (a filter); otherwise Enter/Space selects
+```
+
+A view toggle or link that sits next to the tabs for layout (a "Stats" button) goes beside the `role="tablist"` element, inside a wrapper that carries the row's layout, never inside the tablist itself. Give it `aria-pressed`, not `role="tab"`. See `components.md` ("Tab sections") and `marin-mentions`' `#content-tab-row` for a working example.
+
+### Hidden file inputs
+
+A file input hidden behind a styled button still needs an accessible name, and should stay out of the Tab order so the visible button is the only stop:
+
+```html
+<button type="button" id="choose-files-button">Choose files</button>
+<input id="file-input" class="visually-hidden" type="file" multiple
+       tabindex="-1" aria-label="Choose files to add">
+```
+
 ## WCAG 2.2-specific interaction requirements
 
 Build agents must account for WCAG 2.2 additions, especially:
@@ -83,7 +108,16 @@ meaningful UI components and graphical objects: 3:1
 focus indicators: 3:1 against adjacent colors
 ```
 
-Never convey status by color alone. Pair color with text, icon, shape, or label.
+Never convey status by color alone. Pair color with text, icon, shape, or label. The `.app-score` gauge always prints its number and band word for this reason.
+
+Check color pairs in both themes; Lighthouse only tests light mode. Accent text on an accent-tinted background (a current nav link, a hovered menu item) uses `--app-accent-on-tint`, never the raw `--app-accent`: the raw accent on its own 8-14% tint is only about 3.6-4.2:1 in light mode. In dark mode the token is the unchanged accent.
+
+```css
+.app-nav a[aria-current="page"] {
+  background: color-mix(in srgb, var(--app-accent) 14%, transparent);
+  color: var(--app-accent-on-tint);
+}
+```
 
 Bad:
 
@@ -127,6 +161,8 @@ Example:
 ```
 
 Do not use placeholder text as the only label.
+
+`aria-label` / `aria-labelledby` are only valid on elements whose role allows a name. A plain `<div>` can't carry one: give the container a role that does (`role="list"` with `role="listitem"` rows, or `role="group"`), or use a native element.
 
 ## Tables
 
@@ -271,5 +307,7 @@ Do not overuse `role="alert"`.
 ## WAVE browser-extension testing
 
 Prefer testing a locally served HTTP URL such as `http://localhost:8000/` instead of opening the page with `file://`. If a local file must be tested, enable local-page access for the WAVE extension in Firefox's extension settings. A page that stays gray after WAVE is selected usually indicates that the extension cannot evaluate the local page, not that the site intentionally added an overlay.
+
+Lighthouse accessibility scores for every MarinOS app run weekly through the PageSpeed Insights API and are shown in each app's Accessibility section (from `marin-os`'s `data/lighthouse.json`). Lighthouse tests the live site in light mode only, so check dark mode separately. A score is automated testing and not a conformance claim.
 
 Do not claim that a page "passes WAVE." Record automated findings and complete keyboard, zoom/reflow, contrast, and assistive-technology checks separately.

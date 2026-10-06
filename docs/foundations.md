@@ -24,7 +24,7 @@ Use the official County palette as the brand source. Define tokens in `app-brand
   --marin-red: #b45340;
 
   --app-bg: #ffffff;
-  --app-bg-soft: #f6f7f8;
+  --app-bg-soft: #fdfdfe;
   --app-surface: #ffffff;
   --app-text: #1f1f1f;
   --app-muted: #555f66;
