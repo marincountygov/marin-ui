@@ -9,7 +9,12 @@ project:
   status: active
 
 platform:
-  shell: 1.7.0
+  shell: 1.10.0
 
 deployment:
   target: none
+
+ai:
+  used: false
+
+services: none
