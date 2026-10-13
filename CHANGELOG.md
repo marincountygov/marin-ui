@@ -1,5 +1,10 @@
 # MarinOS brand bundle changelog
 
+## 1.23.0 — 2026-10-13
+
+- Form control borders now reach 3:1 contrast. Text inputs, date inputs, selects, checkboxes and radio buttons had a border of about 1.4:1 in light mode (Pico's default `#cfd5e2`) and 1.2 to 2.7:1 in dark mode, below the 3:1 WCAG 1.4.11 asks for the edge of a control. A new `--app-control-border` token (`#737d8c` light, `#7a8896` dark, 4.1:1 and up on every surface) now feeds `--pico-form-element-border-color` in both themes. `--app-border` stays the light divider for cards and tables.
+- `scripts/check-contrast.js` checks the control border against the page, soft page and card in both themes.
+
 ## 1.22.0 — 2026-10-06
 
 - `shared/app-shell.js` gives every `[role="tablist"]` the ARIA tabs keyboard pattern with no per-page JavaScript: one tab in the Tab order at a time (the selected one, or the first), Left/Right (Up/Down for `aria-orientation="vertical"`) with wrap, Home/End, and selection on focus. An app that handles those keys itself calls `preventDefault()` and the shared handler stands down.
