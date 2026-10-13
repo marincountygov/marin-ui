@@ -34,6 +34,11 @@
   --app-text: #1f1f1f;
   --app-muted: #4b5563;
   --app-border: #d8dee4;
+  /* The edge of a form control (text input, date input, select, checkbox, radio).
+     --app-border is a decorative divider (about 1.4:1); a control's boundary must
+     reach 3:1 against what it sits on (WCAG 1.4.11). #737d8c is 4.1-4.2:1 on the
+     page, soft page and card. Pico's own default (#cfd5e2) is only 1.4:1. */
+  --app-control-border: #737d8c;
   --app-focus: #0777cf;
   --app-danger-text: #7f2d20;
   --app-table-row-hover: #e6f2fb;
@@ -93,6 +98,13 @@
   --pico-font-size: 100%;
 }
 
+/* Pico sets its form border color on :root:not([data-theme=dark]) (and, in dark
+   mode, :root:not([data-theme])), which outranks a plain :root rule, so these
+   repeat Pico's selectors to win by source order. */
+:root:not([data-theme=dark]) {
+  --pico-form-element-border-color: var(--app-control-border);
+}
+
 @media (min-width: 576px) {
   :host,
   :root {
@@ -136,6 +148,8 @@
     --app-text: #f4f7fa;
     --app-muted: #c5ced8;
     --app-border: #3b4652;
+    /* 4.3-5.1:1 on the dark page, soft page, card and input background. */
+    --app-control-border: #7a8896;
     --app-focus: #8fcaff;
     --app-accent: #8fcaff;
     --app-success: #b8d18b;
@@ -154,11 +168,15 @@
     --pico-card-background-color: var(--app-surface);
     --pico-card-border-color: var(--app-border);
     --pico-form-element-background-color: #101820;
-    --pico-form-element-border-color: #5b6876;
+    --pico-form-element-border-color: var(--app-control-border);
     --pico-form-element-color: var(--app-text);
     --pico-primary: #8fcaff;
     --pico-primary-hover: #b9dcff;
     --pico-primary-focus: rgba(143, 202, 255, 0.35);
+  }
+
+  :root:not([data-theme]) {
+    --pico-form-element-border-color: var(--app-control-border);
   }
 
   /* alpha: raw --app-warning (marin-gold, #e5b53b) is unchanged between

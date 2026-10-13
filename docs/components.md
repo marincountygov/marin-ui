@@ -231,6 +231,12 @@ State the actual result (top value, total, peak point), not a generic caption �
 
 Chart.js sizes a canvas at creation time. If a chart can be created while its container is `hidden` (behind a tab or toggle that starts closed), call `.resize()` on the `Chart` instance the first time it becomes visible, or it renders at 0×0 and looks blank.
 
+Chart.js draws its own text and grid and ignores page colors, so its default dark grey text is nearly invisible in dark mode. Before creating a chart, set `Chart.defaults.color` to the page's text color and `Chart.defaults.borderColor` to a card's border color (read both with `getComputedStyle`), and destroy and rebuild charts when `prefers-color-scheme` changes (existing charts do not pick up new defaults). Keep the bar or line color at 3:1 or better on the card in both themes. Give each chart a visually hidden data table with the same numbers, wrapped in a `visually-hidden` `<div>` (the class does not clip a `<table>` element by itself, and an unwrapped table can cause sideways scrolling on narrow screens). When exporting a chart as PNG, draw it onto a canvas filled with the card's background color first, so light-on-dark text stays readable on any paper or slide.
+
+## Form control borders
+
+Text inputs, date inputs, selects, checkboxes and radio buttons take their border from `--app-control-border` (through Pico's `--pico-form-element-border-color`), which keeps the edge of a control at 3:1 or better in both themes (WCAG 1.4.11). Do not use `--app-border` for a control; it is the light divider for cards and tables. `node scripts/check-contrast.js` checks the pair.
+
 ## Updates feed
 
 Any `[data-updates-repo="repo"]` section lazy-loads that repo's recent commits from the GitHub API the first time it becomes visible, and renders them as `.app-card` entries — no per-page JavaScript needed:
