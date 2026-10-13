@@ -3,6 +3,7 @@
 ## 1.24.0 — 2026-10-13
 
 - The Alpha status badge in dark mode now uses the County-approved black text on a solid gold background (about 11:1) instead of gold text on a gold-tinted dark surface. Marin App Shell had been carrying this as its own override since 1.2.2; adopting it here lets the shell drop that override when it refreshes its Marin UI baseline. Light mode is unchanged.
+- Fix the dark-mode Alpha and Beta badge overrides, which never took effect: they sat earlier in the file than the base `.app-status` rules with the same specificity, so light mode's colors were used in dark mode. They now sit after the base rules. The Beta badge in dark mode now uses the lighter blue `--app-accent` text the contrast check already assumed (6.5:1) instead of light mode's darkened blue.
 - `scripts/check-contrast.js` can now take a different background per theme, and checks the Alpha badge pair that way.
 
 ## 1.23.0 — 2026-10-13
