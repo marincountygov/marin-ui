@@ -1,5 +1,10 @@
 # MarinOS brand bundle changelog
 
+## 1.24.0 — 2026-10-13
+
+- The Alpha status badge in dark mode now uses the County-approved black text on a solid gold background (about 11:1) instead of gold text on a gold-tinted dark surface. Marin App Shell had been carrying this as its own override since 1.2.2; adopting it here lets the shell drop that override when it refreshes its Marin UI baseline. Light mode is unchanged.
+- `scripts/check-contrast.js` can now take a different background per theme, and checks the Alpha badge pair that way.
+
 ## 1.23.0 — 2026-10-13
 
 - Form control borders now reach 3:1 contrast. Text inputs, date inputs, selects, checkboxes and radio buttons had a border of about 1.4:1 in light mode (Pico's default `#cfd5e2`) and 1.2 to 2.7:1 in dark mode, below the 3:1 WCAG 1.4.11 asks for the edge of a control. A new `--app-control-border` token (`#737d8c` light, `#7a8896` dark, 4.1:1 and up on every surface) now feeds `--pico-form-element-border-color` in both themes. `--app-border` stays the light divider for cards and tables.

@@ -153,7 +153,7 @@ const PAIRS = [
   ["accent-on-tint on 14% tint (soft page)", "var(--app-accent-on-tint)", TINT("var(--app-accent)", 14, "var(--app-bg-soft)"), TEXT],
   ["accent-on-tint on 8% tint (card)", "var(--app-accent-on-tint)", TINT("var(--app-accent)", 8, "var(--app-surface)"), TEXT],
   ["danger text on card", "var(--app-danger-text)", "var(--app-surface)", TEXT],
-  ["status alpha", { light: "color-mix(in srgb, var(--app-warning) 45%, black)", dark: "var(--app-warning)" }, TINT("var(--app-warning)", 20, "var(--app-surface)"), TEXT],
+  ["status alpha", { light: "color-mix(in srgb, var(--app-warning) 45%, black)", dark: "var(--marin-black)" }, { light: TINT("var(--app-warning)", 20, "var(--app-surface)"), dark: "var(--app-warning)" }, TEXT],
   ["status beta", { light: "color-mix(in srgb, var(--app-accent) 85%, black)", dark: "var(--app-accent)" }, TINT("var(--app-accent)", 14, "var(--app-surface)"), TEXT],
   ["status live", "var(--app-success)", TINT("var(--app-success)", 18, "var(--app-surface)"), TEXT],
   ["score ring: good", "var(--app-score-good)", "var(--app-surface)", GRAPHIC, true],
@@ -167,9 +167,10 @@ for (const [themeName, theme] of [["light", light], ["dark", dark]]) {
   console.log(`\n${themeName} mode`);
   for (const [name, fgSpec, bg, min, options = {}] of PAIRS) {
     const fg = typeof fgSpec === "object" ? fgSpec[themeName] : fgSpec;
+    const bgSpec = typeof bg === "object" ? bg[themeName] : bg;
     let line;
     try {
-      const value = ratio(resolve(fg, theme), resolve(bg, theme));
+      const value = ratio(resolve(fg, theme), resolve(bgSpec, theme));
       const ok = value >= min;
       if (!ok && options.advisory) advisories++;
       else if (!ok) failures++;
