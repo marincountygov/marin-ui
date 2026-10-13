@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.25.0 — 2026-10-14
+
+- The MarinOS banner (the bar at the top of every app) now has the same background and text colors as the footer, in light and dark mode: a surface-colored bar with muted text and a line under it, instead of solid black with white text. The "MarinOS" menu button takes the bar's text color and turns accent blue with an underline on hover, like the footer links.
+
 ## 1.24.0 — 2026-10-13
 
 - The Alpha status badge in dark mode now uses the County-approved black text on a solid gold background (about 11:1) instead of gold text on a gold-tinted dark surface. Marin App Shell had been carrying this as its own override since 1.2.2; adopting it here lets the shell drop that override when it refreshes its Marin UI baseline. Light mode is unchanged.
