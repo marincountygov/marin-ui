@@ -178,24 +178,6 @@
   :root:not([data-theme]) {
     --pico-form-element-border-color: var(--app-control-border);
   }
-
-  /* alpha: raw --app-warning (marin-gold, #e5b53b) is unchanged between
-     themes and only reads at AA contrast on a dark background — the
-     light-mode rule above darkens it procedurally instead, since it needs
-     the opposite treatment in light mode. beta: --app-accent *does* get a
-     proper dark-mode value (#8fcaff) that already clears AA as plain text
-     color, so it reverts to the raw token too rather than carrying over
-     light mode's darkening (which would otherwise make it needlessly
-     muddier against a dark background). live needs no override at all —
-     its light-mode rule already uses the raw --app-success token directly,
-     so it was dark-mode-correct from the start. */
-  .app-status[data-status="alpha"] {
-    color: var(--app-warning);
-  }
-
-  .app-status[data-status="beta"] {
-    color: var(--app-accent);
-  }
 }
 
 html {
@@ -747,6 +729,27 @@ a.app-title-row {
 .app-status[data-status="live"] {
   background: color-mix(in srgb, var(--app-success) 18%, var(--app-surface));
   color: var(--app-success);
+}
+
+/* Dark-mode status badges. These sit after the base rules above on purpose: the
+   base rules have the same specificity, so an override placed earlier in the file
+   (as these were before 1.24.0) silently loses and light mode's colors were being
+   used in dark mode. */
+@media (prefers-color-scheme: dark) {
+  /* alpha: the County-approved black-on-gold pairing (solid --app-warning
+     background, black text, about 11:1) instead of gold text on a gold-tinted
+     dark surface; light mode darkens the gold text instead. beta: the raw
+     --app-accent (#8fcaff) already clears AA as text on its tint, so it reverts
+     to that rather than carrying over light mode's darkening. live needs no
+     override: its light-mode rule already uses the raw --app-success token. */
+  .app-status[data-status="alpha"] {
+    background: var(--app-warning);
+    color: var(--marin-black);
+  }
+
+  .app-status[data-status="beta"] {
+    color: var(--app-accent);
+  }
 }
 
 .app-empty {
