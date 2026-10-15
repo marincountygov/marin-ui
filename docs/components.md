@@ -149,6 +149,26 @@ Any `button[data-action="share"]` copies `window.location.href` on click and rep
 </div>
 ```
 
+## On this page (table of contents)
+
+A long page with several sections gets an "On this page" list: a `nav` of links to the sections' `id`s, in a right-hand column on wide screens and above the content on narrow ones. The list marks the section being read, so a reader always knows where they are — no per-page JavaScript needed:
+
+```html
+<nav class="docs-toc" aria-label="On this page">
+  <h2>On this page</h2>
+  <ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#problem">Problem</a></li>
+  </ul>
+</nav>
+```
+
+- **Current section:** `app-shell.js` sets `aria-current="location"` on the link for the section being read, and the CSS makes that link bold and accent blue. The current section is the last one whose top has scrolled past a line about a quarter of the way down the window. At the very bottom of the page the last section is current, even when it is too short to reach that line. Only one link is current at a time. Do not rely on color alone: the bold weight is part of the signal.
+- **Every list on the page** with the `.docs-toc` or `.toc` class is wired up, not just the first.
+- **A list added after the page loads** (an app that builds its sections with JavaScript) calls `window.marinOnThisPage(nav)` once the sections and the list are in the page. It stops listening by itself when the list is removed.
+- **Only list sections that exist.** A section that is hidden or empty gets no link. Section headings in the list use the same words as the headings on the page.
+- Name the nav with `aria-label="On this page"` and use the same words for its visible heading.
+
 ## Inspector panel
 
 An off-canvas panel for editing one item's detail without losing the list behind it — a list stays on screen, a click opens the item's fields in a slide-over panel instead of navigating to a separate page or replacing the list in place. `app-brand.css` provides the shared classes; unlike the patterns above, the open/close/edit behavior stays app-owned because it's coupled to app-specific data (which item, what fields), so there's no generic JavaScript for this one. Promoted from `marin-decision-maker`'s node editor — see that app's `index.html` for a complete reference implementation.
