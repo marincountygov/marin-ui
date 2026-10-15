@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.27.0 — 2026-10-15
+
+- The "On this page" list can set where the reading line sits with `data-on-this-page-line` (pixels from the top of the window). By default the line is still about a quarter of the way down, which marks the wrong section on a page made of short sections: with a section at the top of the window, a short section just below it was marked instead. Marin Learn's Notes pages use a line of 140 pixels. Pages that do not set it behave as before. No CSS or color changes.
+
 ## 1.26.0 — 2026-10-15
 
 - The "On this page" table of contents (`.docs-toc` / `.toc`) now works for more than one list on a page, and for a list added after the page loads. `shared/app-shell.js` exposes `window.marinOnThisPage(nav)` for apps that build their sections with JavaScript; Marin Learn's Notes pages did and had to carry their own copy of this code. The last section is now current when the reader reaches the bottom of the page, even if it is too short to scroll up to the usual line, so a short final section such as "Sources" is not skipped. The pattern is now written up in `docs/components.md`. No CSS or color changes.
