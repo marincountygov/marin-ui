@@ -164,6 +164,7 @@ A long page with several sections gets an "On this page" list: a `nav` of links 
 ```
 
 - **Current section:** `app-shell.js` sets `aria-current="location"` on the link for the section being read, and the CSS makes that link bold and accent blue. The current section is the last one whose top has scrolled past a line about a quarter of the way down the window. At the very bottom of the page the last section is current, even when it is too short to reach that line. Only one link is current at a time. Do not rely on color alone: the bold weight is part of the signal.
+- **The reading line** is about a quarter of the way down the window. A page made of short sections, such as a Note, can set `data-on-this-page-line="140"` (pixels from the top of the window) on the list, so the section at the top of the window is the current one rather than a short section below it.
 - **Every list on the page** with the `.docs-toc` or `.toc` class is wired up, not just the first.
 - **A list added after the page loads** (an app that builds its sections with JavaScript) calls `window.marinOnThisPage(nav)` once the sections and the list are in the page. It stops listening by itself when the list is removed.
 - **Only list sections that exist.** A section that is hidden or empty gets no link. Section headings in the list use the same words as the headings on the page.
