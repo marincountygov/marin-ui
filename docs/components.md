@@ -135,6 +135,30 @@ Any `button[data-copy-value]` copies that value on click and shows brief feedbac
 
 `app-shell.js` swaps `copy-icon` for `copy-check-icon` for 1.5s after a successful copy via the `is-copied` class. It announces the copy through `#app-status-message` if the page has one (the standard app-shell live region), or a page-supplied `[data-copy-status]` live region otherwise — a page using this outside the standard app shell needs one of the two present for screen-reader feedback. Set `data-copy-announce` on the button for custom announcement text; otherwise it announces `Copied <value>`.
 
+## Collapsible filter panel
+
+A filter column beside a list of results can be hidden at any width, so the results can use the whole row. `marin-reach` and `marin-mentions` both use it. The requirement is in `marin-digital-standards/product-design/responsive-design.md` ("A filter panel can be collapsed"); this is the implementation. No per-page JavaScript is needed.
+
+```html
+<form class="search-layout" aria-label="Filter engagements">
+  <div class="search-side">
+    <button type="button" class="filter-toggle" data-filter-toggle="engagements" aria-controls="filter-panel"></button>
+    <aside id="filter-panel" class="search-sidebar" aria-label="Filters">…search, date and facet fields…</aside>
+  </div>
+  <div class="search-results">…tabs, summary and results…</div>
+</form>
+```
+
+The shell (`app-shell.js`) does the rest for every `button[data-filter-toggle]`:
+
+- Draws the Lucide `panel-right-open` icon while the panel is open and `panel-left-open` while it is hidden. Leave the button empty. If you supply your own SVGs, give each `data-filter-icon="open"` or `data-filter-icon="closed"` so the shell can show one at a time. The icons are toggled with the `hidden` attribute, not the `hidden` property, because SVG elements have no `hidden` property.
+- Sets `aria-expanded` on the button, `data-open` on the panel (the element named by `aria-controls`) and `data-filters="open"` or `"closed"` on the nearest `.search-layout`. The CSS uses those to hide the panel and, on a wide screen, shrink the column to just the button.
+- Starts open on wide screens and closed on screens up to 850 px wide. On a wide screen the person's choice is remembered in this browser (`localStorage` key `marinos.filters.<app id>.<data-filter-toggle value>`, with `<body data-app-id>` as the app id, or the page path if there is none; the page keeps working if storage is blocked). Crossing the 850 px line returns to the default for that width, and a narrow-screen choice is never saved.
+- Names the button "Filters" (change it with `data-filter-label`) and adds ", N active" when the app keeps `data-filter-active="N"` on the button (the shell watches the attribute). The button has no visible text, so this is its accessible name; it also sets `title`.
+- Dispatches a bubbling `marin-filters-change` event on the layout with `detail: { open, button, panel }` each time the state is set, so an app can measure again anything sized by the results (for example a Leaflet map's `invalidateSize()`); charts that resize with their container need nothing.
+
+Behavior to keep: hiding the panel never clears or changes a filter (the app keeps filtering exactly as before and still says what is active, for example in a "Showing:" line); the hidden panel is `display: none`, so it leaves the tab order; focus stays on the button when it is used; the button is the first thing in the left column, above the filters (on a narrow screen it sits above the page and the panel opens below it); open, it sits at the column's right edge. The look is the same as the card icon buttons: a 1 px `--app-border` border, `--app-surface` background, `--app-muted` icon, and an accent border with a faint accent tint on hover. `.search-layout`, `.search-side`, `.search-sidebar` (the panel) and `.search-results` are defined here; the field and facet styles (`.search-input-field`, `.search-facet-*`) stay with the app or `marin-docs`' search pattern.
+
 ## Share button
 
 Any `button[data-action="share"]` copies `window.location.href` on click and reports through the nearest `.doc-actions .doc-action-status` — no per-page JavaScript needed:

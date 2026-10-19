@@ -13,7 +13,7 @@ This is the shared MarinOS design system: CSS tokens and components (`shared/app
 
 ## Before finishing
 
-Run `node scripts/check-contrast.js`. Then tell the `marin-app-shell` owners a refresh is due: the shell imports this repository with `scripts/sync-ui.sh ../marin-ui` (it needs a committed checkout), removes any compatibility blocks this release makes unnecessary, and releases a new shell. The shell's `scripts/check.sh` warns when this repository is ahead of its pinned baseline. Merge changes here with a merge commit, not a squash, because the shell's lock file records the commit.
+Run `node scripts/check-contrast.js`, and when you changed the filter panel (`.filter-toggle`, `.search-*`, or the filter code in `shared/app-shell.js`) run `python3 tests/browser_filter_panel.py` (needs Playwright for Python and Chromium; it serves the repo and loads `tests/fixtures/filter-panel.html`). New shared behaviors should get a fixture page and a browser test like it, since this repo has no app to exercise them. Then tell the `marin-app-shell` owners a refresh is due: the shell imports this repository with `scripts/sync-ui.sh ../marin-ui` (it needs a committed checkout), removes any compatibility blocks this release makes unnecessary, and releases a new shell. The shell's `scripts/check.sh` warns when this repository is ahead of its pinned baseline. Merge changes here with a merge commit, not a squash, because the shell's lock file records the commit.
 
 ## Consumers
 
