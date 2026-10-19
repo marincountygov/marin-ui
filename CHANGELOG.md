@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.28.1 — 2026-10-22
+
+- Add the Lucide `panel-left-open` and `panel-right-open` icons to `vendor/icons/lucide/`. They are the two icons the filter panel toggle (1.28.0) draws. `marin-app-shell` embeds its icons from these vendored files rather than hand-drawing geometry in script, so the shell needs them here before it can ship the toggle. The bundle's CSS and script are unchanged.
+
 ## 1.28.0 — 2026-10-22
 
 - New collapsible filter panel, so a filter column beside a list of results can be hidden at any width with no per-page JavaScript. A `button.filter-toggle[data-filter-toggle]` at the top of the column controls the panel named by `aria-controls`: `app-shell.js` draws the Lucide `panel-right-open` / `panel-left-open` icon, sets `aria-expanded`, `data-open` and `data-filters`, starts open on wide screens and closed up to 850 px, remembers a wide-screen choice per app in `localStorage`, names the button "Filters" plus ", N active" from `data-filter-active`, and fires a `marin-filters-change` event so an app can resize anything sized by the results. `shared/app-brand.css` owns the layout shell (`.search-layout`, `.search-side`, `.search-sidebar`, `.search-results`) and the button's look, which matches the card icon buttons. Why: `marin-reach` and `marin-mentions` each carried their own copy of this CSS and script (kept in step "by eye"), including two bugs found in the copies: an SVG icon swapped through the `hidden` property never changes, and a bare SVG draws as a filled black square. One owner means one fix. Requirement: `marin-digital-standards/product-design/responsive-design.md`. Documented in `docs/components.md`.
