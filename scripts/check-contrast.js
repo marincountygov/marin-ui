@@ -144,6 +144,7 @@ const PAIRS = [
   ["muted text on card", "var(--app-muted)", "var(--app-surface)", TEXT],
   ["accent link on card", "var(--app-accent)", "var(--app-surface)", TEXT],
   ["accent link on soft page", "var(--app-accent)", "var(--app-bg-soft)", TEXT],
+  ["filter toggle icon on its hover tint", "var(--app-muted)", TINT("var(--app-accent)", 8, "var(--app-surface)"), GRAPHIC],
   ["control border on page", "var(--app-control-border)", "var(--app-bg)", GRAPHIC],
   ["control border on soft page", "var(--app-control-border)", "var(--app-bg-soft)", GRAPHIC],
   ["control border on card", "var(--app-control-border)", "var(--app-surface)", GRAPHIC],

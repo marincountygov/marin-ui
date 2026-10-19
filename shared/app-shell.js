@@ -541,6 +541,106 @@
     next.click();
   });
 
+  // Collapsible filter panels: any button[data-filter-toggle] hides and shows the filter panel it controls
+  // (aria-controls) inside its nearest .search-layout. No per-page JavaScript needed. The shell:
+  //  - draws the Lucide panel-right-open icon while the panel is open and panel-left-open while it is hidden
+  //    (unless the button already holds its own SVGs),
+  //  - sets aria-expanded, data-open on the panel and data-filters ("open" or "closed") on the layout,
+  //  - starts open on wide screens (unless the person hid it; the choice is remembered in this browser) and
+  //    closed on screens up to 850px,
+  //  - names the button "Filters" (or data-filter-label), plus ", N active" when the app keeps
+  //    data-filter-active="N" on it, and dispatches a bubbling "marin-filters-change" event
+  //    ({ detail: { open, button, panel } }) so an app can resize anything sized by the results (a map).
+  // The button has no visible text, so its name is the label.
+  const filterToggles = document.querySelectorAll("button[data-filter-toggle]");
+  if (filterToggles.length) {
+    const narrowFilters = window.matchMedia("(max-width: 850px)");
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const FILTER_ICONS = {
+      open: ["rect:18:18:3:3:2", "M15 3v18", "m10 15-3-3 3-3"],
+      closed: ["rect:18:18:3:3:2", "M9 3v18", "m14 9 3 3-3 3"],
+    };
+
+    function filterIcon(kind) {
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("aria-hidden", "true");
+      svg.dataset.filterIcon = kind;
+      FILTER_ICONS[kind].forEach((part) => {
+        if (part.startsWith("rect:")) {
+          const [, width, height, x, y, rx] = part.split(":");
+          const rect = document.createElementNS(SVG_NS, "rect");
+          Object.entries({ width, height, x, y, rx }).forEach(([name, value]) => rect.setAttribute(name, value));
+          svg.append(rect);
+        } else {
+          const path = document.createElementNS(SVG_NS, "path");
+          path.setAttribute("d", part);
+          svg.append(path);
+        }
+      });
+      return svg;
+    }
+
+    function filterStorageKey(button) {
+      const app = document.body.dataset.appId || window.location.pathname;
+      return `marinos.filters.${app}.${button.dataset.filterToggle || "filters"}`;
+    }
+
+    function savedFilterChoice(button) {
+      try {
+        return window.localStorage.getItem(filterStorageKey(button));
+      } catch {
+        return null;
+      }
+    }
+
+    function setFilterPanel(button, open, remember) {
+      const layout = button.closest(".search-layout");
+      const panel = document.getElementById(button.getAttribute("aria-controls"));
+      if (!layout || !panel) return;
+      panel.dataset.open = String(open);
+      layout.dataset.filters = open ? "open" : "closed";
+      button.setAttribute("aria-expanded", String(open));
+      button.querySelector('[data-filter-icon="open"]')?.toggleAttribute("hidden", !open);
+      button.querySelector('[data-filter-icon="closed"]')?.toggleAttribute("hidden", open);
+      if (remember && !narrowFilters.matches) {
+        try {
+          window.localStorage.setItem(filterStorageKey(button), open ? "open" : "closed");
+        } catch {
+          // The choice is just not remembered.
+        }
+      }
+      layout.dispatchEvent(new CustomEvent("marin-filters-change", { bubbles: true, detail: { open, button, panel } }));
+    }
+
+    function nameFilterToggle(button) {
+      const count = Number(button.dataset.filterActive) || 0;
+      const base = button.dataset.filterLabel || "Filters";
+      const name = count ? `${base}, ${count} active` : base;
+      button.setAttribute("aria-label", name);
+      button.title = name;
+    }
+
+    function applyFilterDefaults() {
+      filterToggles.forEach((button) => {
+        setFilterPanel(button, !narrowFilters.matches && savedFilterChoice(button) !== "closed", false);
+      });
+    }
+
+    const filterNames = new MutationObserver((records) => records.forEach((record) => nameFilterToggle(record.target)));
+    filterToggles.forEach((button) => {
+      if (!button.querySelector("svg")) button.append(filterIcon("open"), filterIcon("closed"));
+      nameFilterToggle(button);
+      filterNames.observe(button, { attributes: true, attributeFilter: ["data-filter-active", "data-filter-label"] });
+      button.addEventListener("click", () => {
+        const panel = document.getElementById(button.getAttribute("aria-controls"));
+        if (panel) setFilterPanel(button, panel.dataset.open !== "true", true);
+      });
+    });
+    narrowFilters.addEventListener("change", applyFilterDefaults);
+    applyFilterDefaults();
+  }
+
   // Tab sections: elements sharing a data-tab-section="name" show together,
   // hidden unless "name" matches the current hash — everything else in the
   // group stays hidden, so a page reads as one section at a time (Help shows

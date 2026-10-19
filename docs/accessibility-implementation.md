@@ -59,6 +59,10 @@ moving to a tab selects it when switching is cheap (a filter); otherwise Enter/S
 
 A view toggle or link that sits next to the tabs for layout (a "Stats" button) goes beside the `role="tablist"` element, inside a wrapper that carries the row's layout, never inside the tablist itself. Give it `aria-pressed`, not `role="tab"`. See `components.md` ("Tab sections") and `marin-mentions`' `#content-tab-row` for a working example.
 
+### Collapsible filter panel
+
+The Filters button (`button.filter-toggle[data-filter-toggle]`, see `components.md`) has no visible text, so its accessible name is its label: "Filters", plus ", N active" from `data-filter-active`. It exposes `aria-expanded` and `aria-controls`, keeps the same name in both states (the state is `aria-expanded`, and the icon changes with it), and keeps focus when used. A hidden panel is `display: none`, so it is out of the keyboard order and the accessibility tree. Hiding the panel does not change the filters, so the page still says what is active. Anything the results' width controls (a map) listens for `marin-filters-change` and measures again.
+
 ### Hidden file inputs
 
 A file input hidden behind a styled button still needs an accessible name, and should stay out of the Tab order so the visible button is the only stop:

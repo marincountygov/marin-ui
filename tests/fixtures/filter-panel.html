@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Filter panel fixture</title>
+  <link rel="stylesheet" href="../../vendor/pico.min.css">
+  <link rel="stylesheet" href="../../shared/app-brand.css">
+  <script src="../../shared/app-shell.js" defer></script>
+</head>
+<body data-app-id="fixture">
+  <main class="container">
+    <!-- Empty button: the shell draws the icons. -->
+    <form class="search-layout" id="layout-a" aria-label="Filter things">
+      <div class="search-side">
+        <button type="button" id="toggle-a" class="filter-toggle" data-filter-toggle="things" aria-controls="panel-a"></button>
+        <aside id="panel-a" class="search-sidebar" aria-label="Filters">
+          <label for="search-a">Search</label>
+          <input id="search-a" type="search">
+        </aside>
+      </div>
+      <div class="search-results"><p id="results-a">Results A</p></div>
+    </form>
+
+    <!-- Own label and own icons that carry data-filter-icon. -->
+    <form class="search-layout" id="layout-b" aria-label="Filter other things">
+      <div class="search-side">
+        <button type="button" id="toggle-b" class="filter-toggle" data-filter-toggle="others" data-filter-label="Source filters" aria-controls="panel-b">
+          <svg data-filter-icon="open" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h18v18H3z"/></svg>
+          <svg data-filter-icon="closed" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M5 5h14v14H5z"/></svg>
+        </button>
+        <aside id="panel-b" class="search-sidebar" aria-label="Source filters">
+          <label for="search-b">Other</label>
+          <input id="search-b" type="search">
+        </aside>
+      </div>
+      <div class="search-results"><p>Results B</p></div>
+    </form>
+
+    <!-- A toggle whose panel does not exist must not break the page. -->
+    <button type="button" id="toggle-orphan" class="filter-toggle" data-filter-toggle="orphan" aria-controls="no-such-panel"></button>
+  </main>
+  <script>
+    document.addEventListener("marin-filters-change", (event) => {
+      window.__filterEvents = (window.__filterEvents || []).concat([[event.detail.button.id, event.detail.open]]);
+    });
+  </script>
+</body>
+</html>
