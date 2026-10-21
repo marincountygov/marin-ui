@@ -6,8 +6,8 @@
     return;
   }
 
-  const SHELL_VERSION = "1.10.0";
-  const MARIN_UI_VERSION = "1.19.0";
+  const SHELL_VERSION = "1.15.0";
+  const MARIN_UI_VERSION = "1.28.1";
   const MARINOS_URL = "https://marincountygov.github.io/marin-os/";
   const MARINOS_STATUS_URL = `${MARINOS_URL}#status`;
   const CATALOG_URL = `${MARINOS_URL}catalog.json`;
@@ -32,7 +32,7 @@
   const MARINOS_STATUS_LABELS = Object.freeze({ alpha: "Alpha", beta: "Beta", live: "Live" });
 
   // Generated from the hash-locked vendor/icons/lucide/*.svg at build time.
-  const LUCIDE_ICONS = Object.freeze({"check": "<path d=\"M20 6 9 17l-5-5\"/>", "chevron-down": "<path d=\"m6 9 6 6 6-6\"/>", "copy": "<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>", "layout-grid": "<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\"/>"});
+  const LUCIDE_ICONS = Object.freeze({"check": "<path d=\"M20 6 9 17l-5-5\"/>", "chevron-down": "<path d=\"m6 9 6 6 6-6\"/>", "copy": "<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>", "layout-grid": "<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\"/>", "panel-left-open": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/><path d=\"m14 9 3 3-3 3\"/>", "panel-right-open": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M15 3v18\"/><path d=\"m10 15-3-3 3-3\"/>"});
   const LUCIDE_ATTRIBUTES = Object.freeze({
     viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
     "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round",
@@ -53,6 +53,15 @@
   function normalizedAttribute(element, name, fallback = "") {
     const value = element.getAttribute(name)?.trim();
     return value || fallback;
+  }
+
+  // The one wording for any "still loading" message: "Loading {app name}…". Apps and the
+  // shell's own sections use the same text, so a visitor sees the same message everywhere.
+  function loadingMessage() {
+    const info = document.querySelector("marin-app-info");
+    const name = (info && normalizedAttribute(info, "app-name")) ||
+      (document.querySelector(".app-title__link")?.textContent || "").trim() || "this application";
+    return `Loading ${name}\u2026`;
   }
 
   function parseTokenList(value, fallback) {
@@ -555,16 +564,16 @@
           status.setAttribute("role", "status");
           status.setAttribute("aria-live", "polite");
           status.setAttribute("aria-atomic", "true");
-          status.innerHTML = "Loading security information&hellip;";
+          status.textContent = loadingMessage();
           const content = document.createElement("div");
           content.dataset.securityContent = "";
 
           const technicalHeading = document.createElement("h3");
           technicalHeading.textContent = "Technical information";
           const technicalList = document.createElement("ul");
+          // security.txt is already linked under "Report an issue" above, so it is not repeated here.
           [
             [securityJson, "security.json"],
-            [securityContactUrl, "security.txt"],
           ].forEach(([href, label]) => {
             const item = document.createElement("li");
             const link = document.createElement("a");
@@ -588,11 +597,9 @@
 
         if (key === "accessibility") {
           const standardParagraph = document.createElement("p");
-          standardParagraph.append(document.createTextNode(`${appName} targets `));
-          const wcagLink = document.createElement("a");
-          wcagLink.href = WCAG_URL;
-          wcagLink.textContent = "WCAG 2.2 Level AA";
-          standardParagraph.append(wcagLink, document.createTextNode("."));
+          // The link to WCAG is given once, under "Accessibility standard" below; repeating the same
+          // link in nearby text only adds noise for people using a screen reader.
+          standardParagraph.textContent = `${appName} targets WCAG 2.2 Level AA.`;
           section.append(standardParagraph);
 
           if (templates.accessibility) section.append(templates.accessibility);
@@ -605,7 +612,7 @@
           status.setAttribute("role", "status");
           status.setAttribute("aria-live", "polite");
           status.setAttribute("aria-atomic", "true");
-          status.innerHTML = "Loading accessibility score&hellip;";
+          status.textContent = loadingMessage();
           const content = document.createElement("div");
           content.dataset.accessibilityContent = "";
           // The score is read live from marin-os's data/lighthouse.json,
@@ -670,7 +677,7 @@
           status.setAttribute("role", "status");
           status.setAttribute("aria-live", "polite");
           status.setAttribute("aria-atomic", "true");
-          status.innerHTML = "Loading technology information&hellip;";
+          status.textContent = loadingMessage();
           const content = document.createElement("div");
           content.dataset.techContent = "";
           // Read live from marin-os's data/tech.json by catalog id (app-id
@@ -688,7 +695,8 @@
           status.setAttribute("role", "status");
           status.setAttribute("aria-live", "polite");
           status.setAttribute("aria-atomic", "true");
-          status.innerHTML = repo ? "Loading recent commits&hellip;" : "Updates are not configured for this application.";
+          if (repo) status.textContent = loadingMessage();
+          else status.textContent = "Updates are not configured for this application.";
           const list = document.createElement("div");
           list.dataset.updatesList = "";
           if (repo) section.dataset.updatesRepo = repo;
@@ -819,6 +827,31 @@
       }
       this.replaceChildren(link);
       this.dataset.rendered = "true";
+      this.watchFooter(link);
+    }
+
+    // The button is fixed to the bottom corner, so when the page is scrolled until the
+    // footer appears it would sit on top of footer links. Hide it then (only on pages
+    // that scroll, so a short page keeps its button). It stays in the tab order and
+    // shows itself on keyboard focus, so it is never unreachable.
+    watchFooter(link) {
+      let queued = false;
+      const update = () => {
+        queued = false;
+        const footer = document.querySelector("marin-app-footer .app-footer");
+        const scrolls = document.documentElement.scrollHeight > window.innerHeight + 1;
+        const over = Boolean(footer) && scrolls && footer.getBoundingClientRect().top < window.innerHeight;
+        link.toggleAttribute("data-over-footer", over);
+      };
+      const schedule = () => {
+        if (queued) return;
+        queued = true;
+        window.requestAnimationFrame(update);
+      };
+      window.addEventListener("scroll", schedule, { passive: true });
+      window.addEventListener("resize", schedule);
+      if (typeof ResizeObserver === "function") new ResizeObserver(schedule).observe(document.body);
+      update();
     }
   }
 
@@ -1069,45 +1102,144 @@
     heading.append(" ", anchor);
   });
 
-  const toc = document.querySelector(".docs-toc, .toc");
-  const tocLinks = toc
-    ? Array.from(toc.querySelectorAll('a[href^="#"]')).filter((link) => link.hash.length > 1)
-    : [];
-  const tocTargets = tocLinks
-    .map((link) => ({ link, target: document.getElementById(decodeURIComponent(link.hash.slice(1))) }))
-    .filter((item) => item.target);
+  // "On this page" table of contents: every .docs-toc / .toc marks the link for the
+  // section being read with aria-current="location" (CSS makes it bold and accent
+  // blue). The current section is the last one whose top has scrolled past a line
+  // near the top of the window; at the very bottom of the page the last section
+  // counts, even when it is too short to reach that line. Set data-on-this-page-line
+  // on the list to move the line. A page that adds its
+  // table of contents after load calls window.marinOnThisPage(nav).
+  function marinOnThisPage(toc) {
+    if (!toc || toc.dataset.onThisPageReady) return;
+    const items = Array.from(toc.querySelectorAll('a[href^="#"]'))
+      .filter((link) => link.hash.length > 1)
+      .map((link) => ({ link, target: document.getElementById(decodeURIComponent(link.hash.slice(1))) }))
+      .filter((item) => item.target);
+    if (!items.length) return;
+    toc.dataset.onThisPageReady = "true";
 
-  let scrollScheduled = false;
+    let scheduled = false;
+    function update() {
+      scheduled = false;
+      // The reading line: a quarter of the way down the window by default, or the
+      // pixel distance from the top set with data-on-this-page-line (a page of short
+      // sections wants a line near the top so a section at the top is the current one).
+      const line = Number(toc.dataset.onThisPageLine);
+      const threshold = line > 0 ? line : Math.max(96, window.innerHeight * 0.28);
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      let current = items[0];
+      items.forEach((item) => {
+        if (item.target.offsetParent === null) return;
+        if (item.target.getBoundingClientRect().top <= threshold) current = item;
+      });
+      if (atBottom) current = items[items.length - 1];
+      items.forEach((item) => {
+        if (item === current) item.link.setAttribute("aria-current", "location");
+        else item.link.removeAttribute("aria-current");
+      });
+    }
+    function schedule() {
+      if (scheduled) return;
+      scheduled = true;
+      window.requestAnimationFrame(update);
+    }
 
-  function updateCurrentSection() {
-    scrollScheduled = false;
-    if (!tocTargets.length) return;
-
-    const threshold = Math.max(96, window.innerHeight * 0.28);
-    let current = tocTargets[0];
-
-    tocTargets.forEach((item) => {
-      if (item.target.offsetParent === null) return;
-      if (item.target.getBoundingClientRect().top <= threshold) current = item;
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    window.addEventListener("hashchange", schedule);
+    // Stop listening when the page replaces this table of contents.
+    const watcher = new MutationObserver(() => {
+      if (!document.contains(toc)) {
+        window.removeEventListener("scroll", schedule);
+        window.removeEventListener("resize", schedule);
+        window.removeEventListener("hashchange", schedule);
+        watcher.disconnect();
+      }
     });
+    watcher.observe(document.body, { childList: true, subtree: true });
+    update();
+  }
+  window.marinOnThisPage = marinOnThisPage;
+  document.querySelectorAll(".docs-toc, .toc").forEach(marinOnThisPage);
 
-    tocTargets.forEach((item) => {
-      if (item === current) item.link.setAttribute("aria-current", "location");
-      else item.link.removeAttribute("aria-current");
+  // Collapsible filter panels (Marin UI 1.28.0): any button[data-filter-toggle] hides and shows the filter
+  // panel it controls (aria-controls) inside its nearest .search-layout. The shell draws the Lucide
+  // panel-right-open icon while the panel is open and panel-left-open while it is hidden (unless the button holds
+  // its own SVGs marked data-filter-icon="open" and "closed"), sets aria-expanded, data-open on the panel and
+  // data-filters ("open" or "closed") on the layout, starts open on wide screens (a choice made there is remembered
+  // per app and toggle in this browser) and closed up to 850px, names the button "Filters" (or data-filter-label)
+  // plus ", N active" from data-filter-active, and dispatches a bubbling "marin-filters-change" event
+  // ({ detail: { open, button, panel } }) so an app can resize anything sized by the results. Hiding the panel
+  // never changes a filter. The button has no visible text, so its name is its label.
+  const filterToggles = document.querySelectorAll("button[data-filter-toggle]");
+  if (filterToggles.length) {
+    const narrowFilters = window.matchMedia("(max-width: 850px)");
+
+    function filterStorageKey(button) {
+      const app = document.body.dataset.appId || window.location.pathname;
+      return `marinos.filters.${app}.${button.dataset.filterToggle || "filters"}`;
+    }
+
+    function savedFilterChoice(button) {
+      try {
+        return window.localStorage.getItem(filterStorageKey(button));
+      } catch {
+        return null;
+      }
+    }
+
+    function setFilterPanel(button, open, remember) {
+      const layout = button.closest(".search-layout");
+      const panel = document.getElementById(button.getAttribute("aria-controls"));
+      if (!layout || !panel) return;
+      panel.dataset.open = String(open);
+      layout.dataset.filters = open ? "open" : "closed";
+      button.setAttribute("aria-expanded", String(open));
+      // SVG elements have no hidden property, so the attribute is toggled directly.
+      button.querySelector('[data-filter-icon="open"]')?.toggleAttribute("hidden", !open);
+      button.querySelector('[data-filter-icon="closed"]')?.toggleAttribute("hidden", open);
+      if (remember && !narrowFilters.matches) {
+        try {
+          window.localStorage.setItem(filterStorageKey(button), open ? "open" : "closed");
+        } catch {
+          // The choice is just not remembered.
+        }
+      }
+      layout.dispatchEvent(new CustomEvent("marin-filters-change", { bubbles: true, detail: { open, button, panel } }));
+    }
+
+    function nameFilterToggle(button) {
+      const count = Number(button.dataset.filterActive) || 0;
+      const base = button.dataset.filterLabel || "Filters";
+      const name = count ? `${base}, ${count} active` : base;
+      button.setAttribute("aria-label", name);
+      button.title = name;
+    }
+
+    function applyFilterDefaults() {
+      filterToggles.forEach((button) => {
+        setFilterPanel(button, !narrowFilters.matches && savedFilterChoice(button) !== "closed", false);
+      });
+    }
+
+    const filterNames = new MutationObserver((records) => records.forEach((record) => nameFilterToggle(record.target)));
+    filterToggles.forEach((button) => {
+      if (!button.querySelector("svg")) {
+        const open = createLucideIcon("panel-right-open");
+        const closed = createLucideIcon("panel-left-open");
+        open.dataset.filterIcon = "open";
+        closed.dataset.filterIcon = "closed";
+        button.append(open, closed);
+      }
+      nameFilterToggle(button);
+      filterNames.observe(button, { attributes: true, attributeFilter: ["data-filter-active", "data-filter-label"] });
+      button.addEventListener("click", () => {
+        const panel = document.getElementById(button.getAttribute("aria-controls"));
+        if (panel) setFilterPanel(button, panel.dataset.open !== "true", true);
+      });
     });
-  }
-
-  function scheduleCurrentSectionUpdate() {
-    if (scrollScheduled) return;
-    scrollScheduled = true;
-    window.requestAnimationFrame(updateCurrentSection);
-  }
-
-  if (tocTargets.length) {
-    window.addEventListener("scroll", scheduleCurrentSectionUpdate, { passive: true });
-    window.addEventListener("resize", scheduleCurrentSectionUpdate);
-    window.addEventListener("hashchange", scheduleCurrentSectionUpdate);
-    updateCurrentSection();
+    narrowFilters.addEventListener("change", applyFilterDefaults);
+    applyFilterDefaults();
   }
 
   // Sortable table columns: a <thead> button[data-sort-key="foo"] sorts the
@@ -1395,7 +1527,7 @@
 
     async function loadUpdates() {
       if (loaded) return;
-      if (status) status.textContent = "Loading latest commits...";
+      if (status) status.textContent = loadingMessage();
       list.innerHTML = "";
       try {
         // Fetch more than we display: merge-PR commits are filtered out
@@ -1585,7 +1717,7 @@
 
     async function loadSecurity() {
       if (loaded) return;
-      status.textContent = "Loading security information...";
+      status.textContent = loadingMessage();
       try {
         const response = await fetch(jsonPath, { cache: "no-store" });
         if (response.status === 404) {
@@ -1761,7 +1893,7 @@
 
     async function loadScore() {
       if (loaded) return;
-      status.textContent = "Loading accessibility score...";
+      status.textContent = loadingMessage();
       try {
         const [appId, response] = await Promise.all([resolveAppId(), fetch(scoresUrl, { cache: "no-store" })]);
         loaded = true;
@@ -2054,7 +2186,7 @@
 
     async function loadTech() {
       if (loaded) return;
-      status.textContent = "Loading technology information...";
+      status.textContent = loadingMessage();
       try {
         const [appId, response] = await Promise.all([resolveAppId(), fetch(isLocal ? `${base}data/tech.json` : TECH_URL, { cache: "no-store" })]);
         loaded = true;
@@ -2102,6 +2234,7 @@
     version: SHELL_VERSION,
     marinUiVersion: MARIN_UI_VERSION,
     components: Object.freeze(componentDefinitions.map(([name]) => name)),
+    loadingMessage,
   });
   document.dispatchEvent(
     new CustomEvent("marinos:shell-ready", {
