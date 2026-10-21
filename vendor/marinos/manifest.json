@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "name": "Marin App Shell",
-  "shellVersion": "1.10.0",
-  "marinUiVersion": "1.19.0",
+  "shellVersion": "1.15.0",
+  "marinUiVersion": "1.28.1",
   "installPath": "vendor/marinos",
   "fontPathContract": [
     "../fonts/Jost-wght.ttf",
@@ -43,6 +43,16 @@
       "bytes": 357,
       "sha256": "5f36d680531e3bccbf369b01d25b23eaa705d35f4a22dc92dd7cd708c0de767d"
     },
+    "vendor/icons/lucide/panel-left-open.svg": {
+      "source": "icons/lucide/panel-left-open.svg",
+      "bytes": 258,
+      "sha256": "9e2b0b187045a6ce4f4a30c1a5bfbc5d703358c82e9cf1279fa0b16bf6d3c762"
+    },
+    "vendor/icons/lucide/panel-right-open.svg": {
+      "source": "icons/lucide/panel-right-open.svg",
+      "bytes": 260,
+      "sha256": "ff2042f14195626562a3ad096a7ea1b2a6c1b0dacf7690c9544165c053a4c5d2"
+    },
     "vendor/icons/lucide/LICENSE": {
       "source": "icons/lucide/LICENSE",
       "bytes": 3208,
@@ -51,12 +61,12 @@
   },
   "files": {
     "README.md": {
-      "bytes": 1574,
-      "sha256": "5201c310e9968807575e2f4b73d7d29cf83ea84678a58bf50487a57e9eb06f86"
+      "bytes": 1607,
+      "sha256": "8b32792ba1c82e1804984a9450fae2f71e6737e435b2dde3ab72401e8c95db16"
     },
     "brand-source.json": {
-      "bytes": 2289,
-      "sha256": "56a30a90976e14a9d24287e33b8bf78d9def81bb27f3e28db3d5d7d77acb5123"
+      "bytes": 2765,
+      "sha256": "47b6cceeba1954db007900b6e65f4c9feef35283eecf552ca22ec1f50def4ce6"
     },
     "icons/lucide/LICENSE": {
       "bytes": 3208,
@@ -78,6 +88,14 @@
       "bytes": 357,
       "sha256": "5f36d680531e3bccbf369b01d25b23eaa705d35f4a22dc92dd7cd708c0de767d"
     },
+    "icons/lucide/panel-left-open.svg": {
+      "bytes": 258,
+      "sha256": "9e2b0b187045a6ce4f4a30c1a5bfbc5d703358c82e9cf1279fa0b16bf6d3c762"
+    },
+    "icons/lucide/panel-right-open.svg": {
+      "bytes": 260,
+      "sha256": "ff2042f14195626562a3ad096a7ea1b2a6c1b0dacf7690c9544165c053a4c5d2"
+    },
     "licenses/LUCIDE_LICENSE.txt": {
       "bytes": 3208,
       "sha256": "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57"
@@ -91,12 +109,12 @@
       "sha256": "01cd5ffb3a528c219a86e49a814c6c53bd8a69b9a3c305dd237074ba1c811af7"
     },
     "marinos.css": {
-      "bytes": 122424,
-      "sha256": "e99dacee669cf71d79deb727de56457f4faf04c07cb86c86b3388b378e92e2ae"
+      "bytes": 131889,
+      "sha256": "6aad1696bcc4ec9b3bd6a15f5577307ea68591bbf2872d1c606a4cc0d262d230"
     },
     "marinos.js": {
-      "bytes": 91150,
-      "sha256": "43faa0c36b950aff668928b48e821444946916a5eecbad1204f4aa5b0ab3ba4a"
+      "bytes": 98467,
+      "sha256": "5a98fbe43c298bc3c69b9a412ad8c9956e9a9c950ba7ccefaa8babcd1673613e"
     }
   }
 }
