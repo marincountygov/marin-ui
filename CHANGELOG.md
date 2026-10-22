@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.29.0 — 2026-10-22
+
+- Add 36 Lucide icons to `vendor/icons/lucide/`: arrow-down, arrow-left, arrow-right, arrow-up, chevron-left, chevron-right, chevrons-left, chevrons-right, clock, compass, download, ellipsis, eye, eye-off, folder-open, funnel, grip-vertical, key-round, map-pin, maximize, minimize, pencil, plus, printer, redo-2, refresh-cw, rotate-ccw, rss, settings, share, signpost, sticky-note, trash, undo-2, upload, x. Why: secondary buttons across the MarinOS apps are icon-only, and every app was pasting its own copy of these shapes. `marin-app-shell` embeds them from here so an app can write `data-icon="download"` and get the same drawing everywhere. Each file is the stock Lucide SVG with only its shapes kept, in the format of the files already here.
+
 ## 1.28.2 — 2026-10-22
 
 - Documentation only. Add an Action buttons section to `docs/components.md` that points to where the secondary buttons, button groups and spaced groups are defined (Marin App Shell 1.15.0 and 1.16.0), and note that the shell now puts the filter button beside the tab row on narrow screens. Why: the buttons moved out of this bundle's description of its own look, and readers of this page would not otherwise know where they are.
