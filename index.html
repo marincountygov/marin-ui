@@ -91,8 +91,8 @@
             <h2 id="components-heading">Reusable UI patterns</h2>
           </div>
           <div class="app-actions">
-            <button type="button" id="announce-update">Announce demo update</button>
-            <button type="button" class="secondary" id="open-dialog">Open accessible dialog</button>
+            <button type="button" class="action-button" id="announce-update">Announce demo update</button>
+            <button type="button" class="action-button" id="open-dialog">Open accessible dialog</button>
           </div>
         </div>
 
@@ -200,8 +200,8 @@
           </div>
 
           <div class="app-actions">
-            <button type="submit">Validate demo form</button>
-            <button type="button" class="secondary" id="reset-form">Reset form</button>
+            <button type="submit" class="primary">Validate demo form</button>
+            <button type="button" class="action-button" id="reset-form" data-icon="rotate-ccw" aria-label="Reset form" title="Reset form"></button>
           </div>
         </form>
       </section>
@@ -224,19 +224,19 @@
                 <th scope="row">Confirm required app shell</th>
                 <td><span class="app-status" data-status="success">Complete</span></td>
                 <td>Project owner</td>
-                <td><button type="button" class="secondary">Review app shell item</button></td>
+                <td><button type="button" class="action-button">Review app shell item</button></td>
               </tr>
               <tr>
                 <th scope="row">Validate form accessibility</th>
                 <td><span class="app-status" data-status="open">Open</span></td>
                 <td>Developer</td>
-                <td><button type="button" class="secondary">Review form item</button></td>
+                <td><button type="button" class="action-button">Review form item</button></td>
               </tr>
               <tr>
                 <th scope="row">Check contrast before release</th>
                 <td><span class="app-status" data-status="warning">Needs review</span></td>
                 <td>QA reviewer</td>
-                <td><button type="button" class="secondary">Review contrast item</button></td>
+                <td><button type="button" class="action-button">Review contrast item</button></td>
               </tr>
             </tbody>
           </table>
@@ -245,7 +245,7 @@
         <div class="app-empty" aria-label="Empty state example" style="margin-top: 1.5rem;">
           <h3>No imported records</h3>
           <p>Use an empty state when a workflow has no records yet and explain the next useful action.</p>
-          <button type="button" id="empty-state-action">Show empty state guidance</button>
+          <button type="button" class="action-button" id="empty-state-action">Show empty state guidance</button>
         </div>
       </section>
 
@@ -281,7 +281,7 @@
           Native dialogs support keyboard interaction and Escape-to-close behavior. This demo returns focus to the opening button when closed.
         </p>
         <footer>
-          <button type="button" id="close-dialog">Close dialog</button>
+          <button type="button" class="action-button" id="close-dialog">Close dialog</button>
         </footer>
       </article>
     </dialog>
