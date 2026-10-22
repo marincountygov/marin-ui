@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.29.2 — 2026-10-23
+
+- `scripts/check-contrast.js` now covers the colors of the new button kinds in `marin-app-shell`: the chosen tab, accent text when pointed at on the page, a pressed chip or button, a grouped button's hover tint, and danger text on the page. The border of quiet buttons and chips is listed as advisory, since the icon or text names the control. Why: the checklist asks for a pair whenever a component puts one token color on another. Writing the pairs found that plain `--app-accent` text on its 14% tint is 3.8:1 in light mode and on its 8% hover tint is 4.2:1; those states must use `--app-accent-on-tint` (the shell now does, in 1.18.0).
+
 ## 1.29.1 — 2026-10-23
 
 - The narrow-screen "Menu" button (`.app-menu-toggle`) is now a quiet button: no fill, a visible border, and an accent border and text when pointed at, focused or open. It was Pico's solid secondary button, which no other button in the MarinOS apps uses any more, and the template's markup no longer needs the `secondary` class. Why: only a button that submits a form is solid; every other button is quiet (`marin-digital-standards/product-design/interaction-design.md`).
