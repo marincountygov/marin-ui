@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.28.2 — 2026-10-22
+
+- Documentation only. Add an Action buttons section to `docs/components.md` that points to where the secondary buttons, button groups and spaced groups are defined (Marin App Shell 1.15.0 and 1.16.0), and note that the shell now puts the filter button beside the tab row on narrow screens. Why: the buttons moved out of this bundle's description of its own look, and readers of this page would not otherwise know where they are.
+
 ## 1.28.1 — 2026-10-22
 
 - Add the Lucide `panel-left-open` and `panel-right-open` icons to `vendor/icons/lucide/`. They are the two icons the filter panel toggle (1.28.0) draws. `marin-app-shell` embeds its icons from these vendored files rather than hand-drawing geometry in script, so the shell needs them here before it can ship the toggle. The bundle's CSS and script are unchanged.
