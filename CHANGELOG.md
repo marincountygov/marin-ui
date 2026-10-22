@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.29.1 — 2026-10-23
+
+- The narrow-screen "Menu" button (`.app-menu-toggle`) is now a quiet button: no fill, a visible border, and an accent border and text when pointed at, focused or open. It was Pico's solid secondary button, which no other button in the MarinOS apps uses any more, and the template's markup no longer needs the `secondary` class. Why: only a button that submits a form is solid; every other button is quiet (`marin-digital-standards/product-design/interaction-design.md`).
+
 ## 1.29.0 — 2026-10-22
 
 - Add 35 Lucide icons to `vendor/icons/lucide/`: arrow-down, arrow-left, arrow-right, arrow-up, chevron-left, chevron-right, chevrons-left, chevrons-right, clock, compass, download, ellipsis, eye, eye-off, folder-open, funnel, grip-vertical, map-pin, maximize, minimize, pencil, plus, printer, redo-2, refresh-cw, rotate-ccw, rss, settings, share, signpost, sticky-note, trash, undo-2, upload, x. Why: secondary buttons across the MarinOS apps are icon-only, and every app was pasting its own copy of these shapes. `marin-app-shell` embeds them from here so an app can write `data-icon="download"` and get the same drawing everywhere. Each file is the stock Lucide SVG with only its shapes kept, in the format of the files already here.
