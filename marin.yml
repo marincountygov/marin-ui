@@ -9,7 +9,7 @@ project:
   status: active
 
 platform:
-  shell: 1.20.0
+  shell: 1.21.0
 
 deployment:
   target: none
