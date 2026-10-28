@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.31.1 — 2026-10-28
+
+- Documentation only. Add a Copy, download, file reading and upload section to `docs/components.md` that points to where the helpers are defined (Marin App Shell 1.21.0) and states the rules: rich copy puts only clean HTML on the clipboard, a CSV download starts with a byte-order mark, files that are not UTF-8 are read as Windows-1252, and Copy and Download menus list Text, HTML, then Markdown. No CSS or script changes.
+
 ## 1.31.0 — 2026-10-28
 
 - The "On this page" list (`.toc`) is now a bordered box with a ruled heading and a stacked list of links in the normal text color, the same as the Marin Learn notes reader. The current section is bold, and pointing at a link gives it a soft background. It was a plain list with a line down its left side. At narrow widths it still moves above the content.

@@ -122,6 +122,10 @@ Any `<table>` with a sort button in its header sorts generically — no per-page
 
 `app-shell.js` reads and re-sorts `data-sort-*` attributes directly — it has no knowledge of what the keys mean, so the same behavior works for any table. Clicking toggles ascending/descending and updates the `<th>`'s `aria-sort`; give every sortable `<th>` an initial `aria-sort="none"`.
 
+## Copy, download, file reading and upload
+
+These are not defined in this bundle. They live in `marin-app-shell` 1.21.0 and later (`src/marinos.js`, `src/shell.css`): `marinCopyRich`, `marinCopyText`, `marinDownload`, `marinReadText`, `marinDecodeText`, `marinCleanText` and `marinUpload`, with the `.upload-panel` and `.upload-drop-overlay` styles. Rich copy puts only clean HTML on the clipboard (never a copied, rendered element, which carries this page's fonts and bold weights into a CMS); a CSV download starts with a byte-order mark; a file that is not UTF-8 is read as Windows-1252; an upload is a Browse files button with drop anywhere on the page and one set of messages. When there are several formats, Copy and Download are each one `.menu` button that lists Text, HTML, then Markdown. See the shell's `docs/components.md` and `marin-digital-standards/product-design/text-characters-copy-and-upload.md`.
+
 ## Copy-to-clipboard buttons
 
 Any `button[data-copy-value]` copies that value on click and shows brief feedback — no per-page JavaScript needed:
