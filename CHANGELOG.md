@@ -1,5 +1,10 @@
 # MarinOS brand bundle changelog
 
+## 1.31.0 — 2026-10-28
+
+- The "On this page" list (`.toc`) is now a bordered box with a ruled heading and a stacked list of links in the normal text color, the same as the Marin Learn notes reader. The current section is bold, and pointing at a link gives it a soft background. It was a plain list with a line down its left side. At narrow widths it still moves above the content.
+- The page content (`.content`) is now a plain bordered box with no shadow. Pico gave it a soft shadow.
+
 ## 1.30.0 — 2026-10-27
 
 - The filter column's fields and filter groups are now part of this bundle: `.search-input-field` (with a rounded-rectangle search box instead of Pico's pill), `.search-facet-group`, `.search-facet-list` (0.45rem between rows, 24 px checkboxes), `.search-facet-count` and `.mm-facet-group` (a collapsed group that opens to its checkboxes). New "Filter column" section in `docs/components.md` gives the order, wording and spacing. Why: `marin-mentions` and `marin-docs` each kept a copy "in step by eye", and the copies had drifted: the catalog page in `marin-docs` had a different search placeholder that was cut off, an open list of 40 departments, wider row spacing, and a "Custodian department" title. One owner means every filter column looks the same. Apps can delete their own copies of these rules once they install a shell release that carries this version.
