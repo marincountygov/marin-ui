@@ -137,7 +137,39 @@ Any `button[data-copy-value]` copies that value on click and shows brief feedbac
 
 ## Action buttons
 
-Secondary buttons (Copy, Link, Download, Reset, Next) and their groups are not defined in this bundle. They live in `marin-app-shell` 1.15.0 and later (`src/shell.css`): `.action-toolbar`, `.action-group` (add `.action-group--spaced` in 1.16.0 for pairs pressed often), `.action-button` and `.action-search`. They are icon-only, named by `aria-label` and `title`. Only a button that submits a form is the solid blue or dark one. See the shell's `docs/components.md` and `marin-digital-standards/product-design/interaction-design.md`. Apps that vendor the shell get these styles; this bundle's `.copy-button` and `.filter-toggle` remain the base the shell builds on.
+Secondary buttons (Copy, Link, Download, Reset, Next) and their groups are not defined in this bundle. They live in `marin-app-shell` 1.15.0 and later (`src/shell.css`): `.action-toolbar`, `.action-group` (add `.action-group--spaced` in 1.16.0 for pairs pressed often), `.action-button` and `.action-search` (the search field for a toolbar; the filter column's search is `.search-input-field`, see Filter column below). The buttons are icon-only, named by `aria-label` and `title`. Only a button that submits a form is the solid blue or dark one. See the shell's `docs/components.md` and `marin-digital-standards/product-design/interaction-design.md`. Apps that vendor the shell get these styles; this bundle's `.copy-button` and `.filter-toggle` remain the base the shell builds on.
+
+## Filter column
+
+Every filter column looks the same, so people who learn one app know the next. `marin-mentions` is the reference. The panel's contents, top to bottom:
+
+```html
+<aside id="filter-panel" class="search-sidebar" aria-labelledby="filter-panel-title">
+  <div class="search-panel-header">
+    <h2 class="search-panel-title" id="filter-panel-title">Filter software</h2>
+    <button type="button" class="action-button" data-icon="rotate-ccw" aria-label="Reset filters" title="Reset filters"></button>
+  </div>
+  <div class="search-input-field">
+    <label for="filter-search">Search</label>
+    <input type="search" id="filter-search" placeholder="Search systems&hellip;" autocomplete="off">
+  </div>
+  <fieldset class="search-facet-group">
+    <legend>Departments</legend>
+    <details class="mm-facet-group">
+      <summary>All departments</summary>
+      <ul class="search-facet-list">
+        <li><label><input type="checkbox"> Assessor <span class="search-facet-count">(4)</span></label></li>
+      </ul>
+    </details>
+  </fieldset>
+</aside>
+```
+
+- **Title:** "Filter" plus the plural thing being filtered ("Filter Mentions", "Filter software"), with the Reset icon button beside it.
+- **Search first,** as a normal field: label above, a rounded-rectangle box like the selects (not Pico's pill), full width, no `role="search"` wrapper. Keep the placeholder short enough to fit the 248 px column ("Search systems…"). Search never goes in the toolbar.
+- **Filter names** are plural nouns: "Departments", "Monitors", "Sources". Not "Custodian department" or "Filter by source".
+- **Collapsed by default.** Each filter is a `details.mm-facet-group` that opens to its checkboxes. Open it on load when the address holds a choice, and say what is chosen in the summary ("3 selected").
+- **Spacing:** 1.5rem between fields and groups, 0.45rem between checkbox rows, 24 px checkboxes. Do not add your own list or checkbox spacing in an app.
 
 ## Collapsible filter panel
 
@@ -161,7 +193,7 @@ The shell (`app-shell.js`) does the rest for every `button[data-filter-toggle]`:
 - Names the button "Filters" (change it with `data-filter-label`) and adds ", N active" when the app keeps `data-filter-active="N"` on the button (the shell watches the attribute). The button has no visible text, so this is its accessible name; it also sets `title`.
 - Dispatches a bubbling `marin-filters-change` event on the layout with `detail: { open, button, panel }` each time the state is set, so an app can measure again anything sized by the results (for example a Leaflet map's `invalidateSize()`); charts that resize with their container need nothing.
 
-Behavior to keep: hiding the panel never clears or changes a filter (the app keeps filtering exactly as before and still says what is active, for example in a "Showing:" line); the hidden panel is `display: none`, so it leaves the tab order; focus stays on the button when it is used; the button is the first thing in the left column, above the filters (on a narrow screen it sits above the page and the panel opens below it; App Shell 1.15.0 and later puts it beside the tab row instead); open, it sits at the column's right edge. The look is the same as the card icon buttons: a 1 px `--app-border` border, `--app-surface` background, `--app-muted` icon, and an accent border with a faint accent tint on hover. `.search-layout`, `.search-side`, `.search-sidebar` (the panel) and `.search-results` are defined here; the field and facet styles (`.search-input-field`, `.search-facet-*`) stay with the app or `marin-docs`' search pattern.
+Behavior to keep: hiding the panel never clears or changes a filter (the app keeps filtering exactly as before and still says what is active, for example in a "Showing:" line); the hidden panel is `display: none`, so it leaves the tab order; focus stays on the button when it is used; the button is the first thing in the left column, above the filters (on a narrow screen it sits above the page and the panel opens below it; App Shell 1.15.0 and later puts it beside the tab row instead); open, it sits at the column's right edge. The look is the same as the card icon buttons: a 1 px `--app-border` border, `--app-surface` background, `--app-muted` icon, and an accent border with a faint accent tint on hover. `.search-layout`, `.search-side`, `.search-sidebar` (the panel), `.search-results` and the field and filter styles described next are all defined here.
 
 ## Share button
 
