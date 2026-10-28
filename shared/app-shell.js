@@ -382,39 +382,50 @@
     });
   });
 
-  /** Render html into a hidden contenteditable element, select it, and let
-   * the browser's native execCommand("copy") capture both clipboard
-   * flavors from the real selection. Kept only as a fallback for browsers
-   * without the async Clipboard API's multi-flavor write() below — its
-   * plain-text flavor is the browser's own derivation from the selected
-   * DOM (visible text only, e.g. a link's href is dropped), not the exact
-   * `text` a caller asked for, which write() gives explicit control over. */
-  function copyRichTextViaExecCommand(html) {
-    const temp = document.createElement("div");
-    temp.contentEditable = "true";
-    temp.style.position = "fixed";
-    temp.style.left = "-9999px";
-    temp.innerHTML = html;
-    document.body.appendChild(temp);
-    const range = document.createRange();
-    range.selectNodeContents(temp);
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-    const copied = document.execCommand("copy");
-    selection.removeAllRanges();
-    document.body.removeChild(temp);
+  // Copy: the same helpers as the Marin App Shell (marinCopyRich, marinCopyText), so apps that load this
+  // bundle alone get clean HTML on the clipboard with none of the page's fonts, sizes or bold weights.
+  /** Put `html` and `text` on the clipboard through the browser's copy event. Nothing is rendered,
+   * so no fonts, sizes, colors or bold weights from this page come along: a CMS pastes plain
+   * <h2> and <li> and applies its own look. A text box holds the selection the browser needs to
+   * fire the event (Safari and Firefox do not fire it with nothing selected). */
+  function copyViaCopyEvent(html, text) {
+    const holder = document.createElement("textarea");
+    holder.value = text || " ";
+    holder.setAttribute("readonly", "");
+    holder.setAttribute("aria-hidden", "true");
+    holder.tabIndex = -1;
+    holder.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0";
+    const previousFocus = document.activeElement;
+    document.body.appendChild(holder);
+    holder.select();
+    const onCopy = (event) => {
+      if (html != null) event.clipboardData.setData("text/html", html);
+      event.clipboardData.setData("text/plain", text ?? "");
+      event.preventDefault();
+    };
+    document.addEventListener("copy", onCopy, { once: true });
+    let copied = false;
+    try {
+      // marin-shared-helpers: allow (this bundle's own implementation of the copy helper)
+      copied = document.execCommand("copy");
+    } catch {
+      copied = false;
+    }
+    document.removeEventListener("copy", onCopy);
+    document.body.removeChild(holder);
+    if (previousFocus instanceof HTMLElement) previousFocus.focus({ preventScroll: true });
     return copied;
   }
 
-  /** Write both clipboard flavors explicitly so a plain-text paste gets
-   * exactly `text` (e.g. a link's URL, spelled out, not just its visible
-   * label) and a rich-text paste gets exactly `html`. Falls back to the
-   * execCommand technique above, then to plain writeText(text), for
-   * browsers without ClipboardItem/clipboard.write support. */
+  /** Copy rich text: HTML for a visual editor, plain text for everything else. Tries the browser's
+   * copy event first, because it puts exactly the HTML given on the clipboard (the asynchronous
+   * Clipboard API sanitizes it, and an app found a title losing its link that way), then the
+   * asynchronous Clipboard API. Resolves true when copied. */
   async function copyRich(text, html) {
+    if (copyViaCopyEvent(html, text)) return true;
     if (typeof ClipboardItem !== "undefined" && navigator.clipboard?.write) {
       try {
+        // marin-shared-helpers: allow (this bundle's own implementation of the copy helper)
         await navigator.clipboard.write([
           new ClipboardItem({
             "text/plain": new Blob([text], { type: "text/plain" }),
@@ -423,17 +434,21 @@
         ]);
         return true;
       } catch {
-        // Fall through to the older technique below (older browser, or a
-        // permissions/user-gesture rejection ClipboardItem hit but
-        // execCommand might not).
+        // Neither route worked: the caller shows its manual-copy box.
       }
     }
-    try {
-      if (copyRichTextViaExecCommand(html)) return true;
-    } catch {
-      // Fall through to plain-text writeText in the caller.
-    }
     return false;
+  }
+
+  /** Copy plain text. Resolves true when copied. */
+  async function copyText(text) {
+    try {
+      // marin-shared-helpers: allow (this bundle's own implementation of the copy helper)
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      return copyViaCopyEvent(null, text);
+    }
   }
 
   // Copy-to-clipboard: any button[data-copy-value] copies that value and
@@ -462,12 +477,12 @@
     if (html) {
       copyRich(value, html).then((copied) => {
         if (copied) onCopied();
-        else navigator.clipboard.writeText(value).then(onCopied).catch(onFailed);
+        else copyText(value).then((plain) => (plain ? onCopied() : onFailed()));
       });
       return;
     }
 
-    navigator.clipboard.writeText(value).then(onCopied).catch(onFailed);
+    copyText(value).then((copied) => (copied ? onCopied() : onFailed()));
   });
 
   // Share: any button[data-action="share"] copies the current page URL and
@@ -476,12 +491,8 @@
   document.querySelectorAll('[data-action="share"]').forEach((button) => {
     button.addEventListener("click", async () => {
       const status = button.closest(".doc-actions")?.querySelector(".doc-action-status") ?? null;
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        if (status) status.textContent = "Link copied";
-      } catch {
-        if (status) status.textContent = "Couldn't copy — copy the address bar link instead";
-      }
+      const copied = await copyText(window.location.href);
+      if (status) status.textContent = copied ? "Link copied" : "Couldn't copy — copy the address bar link instead";
     });
   });
 
