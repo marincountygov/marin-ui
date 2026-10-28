@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.30.0 — 2026-10-27
+
+- The filter column's fields and filter groups are now part of this bundle: `.search-input-field` (with a rounded-rectangle search box instead of Pico's pill), `.search-facet-group`, `.search-facet-list` (0.45rem between rows, 24 px checkboxes), `.search-facet-count` and `.mm-facet-group` (a collapsed group that opens to its checkboxes). New "Filter column" section in `docs/components.md` gives the order, wording and spacing. Why: `marin-mentions` and `marin-docs` each kept a copy "in step by eye", and the copies had drifted: the catalog page in `marin-docs` had a different search placeholder that was cut off, an open list of 40 departments, wider row spacing, and a "Custodian department" title. One owner means every filter column looks the same. Apps can delete their own copies of these rules once they install a shell release that carries this version.
+
 ## 1.29.2 — 2026-10-23
 
 - `scripts/check-contrast.js` now covers the colors of the new button kinds in `marin-app-shell`: the chosen tab, accent text when pointed at on the page, a pressed chip or button, a grouped button's hover tint, and danger text on the page. The border of quiet buttons and chips is listed as advisory, since the icon or text names the control. Why: the checklist asks for a pair whenever a component puts one token color on another. Writing the pairs found that plain `--app-accent` text on its 14% tint is 3.8:1 in light mode and on its 8% hover tint is 4.2:1; those states must use `--app-accent-on-tint` (the shell now does, in 1.18.0).
