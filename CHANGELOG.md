@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.32.0 — 2026-10-29
+
+- `shared/app-shell.js` copies through the browser's copy event, the same as Marin App Shell 1.21.0's `marinCopyRich`, instead of copying a hidden, rendered element. Why: the old method put the page's fonts, sizes and bold weights on the clipboard as inline styles, and a CMS turned a copied bold heading into `<strong>`. The Copy and Share buttons (`data-copy-value`, `data-copy-html`, `data-action="share"`) keep working the same and now fall back to the plain-text copy when the rich copy fails.
+
 ## 1.31.1 — 2026-10-28
 
 - Documentation only. Add a Copy, download, file reading and upload section to `docs/components.md` that points to where the helpers are defined (Marin App Shell 1.21.0) and states the rules: rich copy puts only clean HTML on the clipboard, a CSV download starts with a byte-order mark, files that are not UTF-8 are read as Windows-1252, and Copy and Download menus list Text, HTML, then Markdown. No CSS or script changes.
