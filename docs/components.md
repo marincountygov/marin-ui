@@ -124,7 +124,7 @@ Any `<table>` with a sort button in its header sorts generically — no per-page
 
 ## Copy, download, file reading and upload
 
-These are not defined in this bundle. They live in `marin-app-shell` 1.21.0 and later (`src/marinos.js`, `src/shell.css`): `marinCopyRich`, `marinCopyText`, `marinDownload`, `marinReadText`, `marinDecodeText`, `marinCleanText` and `marinUpload`, with the `.upload-panel` and `.upload-drop-overlay` styles. Rich copy puts only clean HTML on the clipboard (never a copied, rendered element, which carries this page's fonts and bold weights into a CMS); a CSV download starts with a byte-order mark; a file that is not UTF-8 is read as Windows-1252; an upload is a Browse files button with drop anywhere on the page and one set of messages. When there are several formats, Copy and Download are each one `.menu` button that lists Text, HTML, then Markdown. See the shell's `docs/components.md` and `marin-digital-standards/product-design/text-characters-copy-and-upload.md`.
+These are not defined in this bundle. They live in `marin-app-shell` 1.21.0 and later (`src/marinos.js`, `src/shell.css`): `marinCopyRich`, `marinCopyText`, `marinDownload`, `marinReadText`, `marinDecodeText`, `marinCleanText` and `marinUpload`, with the `.upload-panel` and `.upload-drop-overlay` styles. Rich copy puts only clean HTML on the clipboard (never a copied, rendered element, which carries this page's fonts and bold weights into a CMS); a CSV download starts with a byte-order mark; a file that is not UTF-8 is read as Windows-1252; an upload is a Browse files button with drop anywhere on the page and one set of messages. Every Copy and Download is one `.menu` button that lists Text, HTML, then Markdown (App Shell 1.22.0 builds them: `marinContentFormats`, `marinFormatMenus`). See the shell's `docs/components.md` and `marin-digital-standards/product-design/text-characters-copy-and-upload.md`.
 
 ## Copy-to-clipboard buttons
 
@@ -199,15 +199,14 @@ The shell (`app-shell.js`) does the rest for every `button[data-filter-toggle]`:
 
 Behavior to keep: hiding the panel never clears or changes a filter (the app keeps filtering exactly as before and still says what is active, for example in a "Showing:" line); the hidden panel is `display: none`, so it leaves the tab order; focus stays on the button when it is used; the button is the first thing in the left column, above the filters (on a narrow screen it sits above the page and the panel opens below it; App Shell 1.15.0 and later puts it beside the tab row instead); open, it sits at the column's right edge. The look is the same as the card icon buttons: a 1 px `--app-border` border, `--app-surface` background, `--app-muted` icon, and an accent border with a faint accent tint on hover. `.search-layout`, `.search-side`, `.search-sidebar` (the panel), `.search-results` and the field and filter styles described next are all defined here.
 
-## Share button
+## Copy link button
 
-Any `button[data-action="share"]` copies `window.location.href` on click and reports through the nearest `.doc-actions .doc-action-status` — no per-page JavaScript needed:
+Any `button[data-action="share"]` copies `window.location.href` on click and reports through the nearest `.doc-actions .doc-action-status` — no per-page JavaScript needed. The button copies a link, so it is named **Copy link** and uses the **link** icon (never a share icon or the word "Share"):
 
 ```html
 <div class="doc-actions">
-  <div class="menu">
-    <button type="button" class="doc-action menu-toggle" aria-expanded="false" aria-controls="share-menu-panel">Share<svg class="menu-toggle__caret" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
-    <div id="share-menu-panel" class="menu-panel" hidden><button type="button" data-action="share">Copy link</button></div>
+  <div class="action-group" role="group" aria-label="Page actions">
+    <button type="button" class="action-button" data-action="share" data-icon="link" aria-label="Copy link" title="Copy link"></button>
   </div>
   <span class="doc-action-status" role="status" aria-live="polite"></span>
 </div>

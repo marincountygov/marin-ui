@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.32.1 — 2026-10-29
+
+- Documentation only. The "Share button" section of `docs/components.md` is now "Copy link button": the button that copies the page address is named Copy link and uses the `link` icon, never a share icon or the word "Share". No CSS or script changes.
+
 ## 1.32.0 — 2026-10-29
 
 - `shared/app-shell.js` copies through the browser's copy event, the same as Marin App Shell 1.21.0's `marinCopyRich`, instead of copying a hidden, rendered element. Why: the old method put the page's fonts, sizes and bold weights on the clipboard as inline styles, and a CMS turned a copied bold heading into `<strong>`. The Copy and Share buttons (`data-copy-value`, `data-copy-html`, `data-action="share"`) keep working the same and now fall back to the plain-text copy when the rich copy fails.
