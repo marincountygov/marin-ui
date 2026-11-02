@@ -1,5 +1,9 @@
 # MarinOS brand bundle changelog
 
+## 1.33.1 — 2026-11-02
+
+- Add the Lucide `route` icon (ISC) to `vendor/icons/lucide/`. It is the app icon for Marin Spec, which uses one icon in its header, its favicon and its `marin-os` catalog entry.
+
 ## 1.33.0 — 2026-11-02
 
 - The solid button (the main action of a screen, `.primary`, a form's submit button, and the Next and Previous buttons of a step flow) is now Marin Blue (`#0777cf`) with white text in light mode, and the accent `#8fcaff` with dark text in dark mode. It was Pico's stock blue (`#0172ad`), which is not a brand color. Why: `--pico-primary` was already set to Marin Blue, but Pico's `:root:not([data-theme=dark])` rule outranks a plain `:root` rule and sets the button fill through `--pico-primary-background`, which this bundle never overrode. New tokens `--app-primary-bg`, `--app-primary-bg-hover` and `--app-on-primary` carry the three colors, and `scripts/check-contrast.js` now checks them in both themes (4.62:1 and 6.63:1 in light, 10.62:1 and 12.99:1 in dark). Link and text colors are unchanged.
