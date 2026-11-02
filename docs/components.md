@@ -141,9 +141,13 @@ Any `button[data-copy-value]` copies that value on click and shows brief feedbac
 
 ## Action buttons
 
-Secondary buttons (Copy, Link, Download, Reset, Next) and their groups are not defined in this bundle. They live in `marin-app-shell` 1.15.0 and later (`src/shell.css`): `.action-toolbar`, `.action-group` (add `.action-group--spaced` in 1.16.0 for pairs pressed often), `.action-button` and `.action-search` (the search field for a toolbar; the filter column's search is `.search-input-field`, see Filter column below). The buttons are an icon with or without a short label, named by `aria-label` and `title`; a lone button has a visible border, and buttons in a group share the group's border. Only a button that submits a form is the solid blue or dark one. See the shell's `docs/components.md` and `marin-digital-standards/product-design/interaction-design.md`. Apps that vendor the shell get these styles; this bundle's `.copy-button` and `.filter-toggle` remain the base the shell builds on.
+Secondary buttons (Copy, Link, Download, Reset) and their groups are not defined in this bundle. They live in `marin-app-shell` 1.15.0 and later (`src/shell.css`): `.action-toolbar`, `.action-group` (add `.action-group--spaced` in 1.16.0 for pairs pressed often), `.action-button` and `.action-search` (the search field for a toolbar; the filter column's search is `.search-input-field`, see Filter column below). The buttons are an icon with or without a short label, named by `aria-label` and `title`; a lone button has a visible border, and buttons in a group share the group's border. Only a button that submits a form is the solid blue or dark one. See the shell's `docs/components.md` and `marin-digital-standards/product-design/interaction-design.md`. Apps that vendor the shell get these styles; this bundle's `.copy-button` and `.filter-toggle` remain the base the shell builds on.
+
+The Next button of a step-by-step flow is not a secondary button: it is a solid button with its words and a right arrow after them, with a quiet icon-only Previous beside it (see "Step flow" in `marin-app-shell/docs/components.md` and the Buttons section of `marin-digital-standards/product-design/interaction-design.md`).
 
 ## Filter column
+
+The column can hold a list of steps instead of filters, for an app whose whole workflow is a sequence of steps (`marin-spec`): a `nav` of links numbered "1. Name" inside the panel, `data-filter-label="Steps"` on the toggle, and `aria-current="step"` on the current link. Keep a visible current-step line as the first child of `.search-results`, since a hidden first child leaves the narrow-screen toggle alone on its row. A short flow inside one feature keeps its steps as a row above the content instead.
 
 Every filter column looks the same, so people who learn one app know the next. `marin-mentions` is the reference. The panel's contents, top to bottom:
 
