@@ -1,0 +1,7 @@
+{
+  "records": [
+    { "id": "a", "url": "https://example.com/a", "eventName": "Design review", "date": "2026-04-01", "place": { "address": { "locality": "Mill Valley" } }, "status": "Completed", "agencies": ["Community Development Agency"] },
+    { "id": "b", "url": "javascript:alert(1)", "eventName": "Budget hearing", "date": "2026-05-12", "place": { "address": { "locality": "San Rafael" } }, "status": "Planned", "agencies": ["Office of the County Executive", "Community Development Agency"] },
+    { "id": "c", "eventName": "<b>Not markup</b>", "date": "2026-03-02", "place": { "address": { "locality": "Novato" } }, "status": "Planned", "agencies": ["District 3"] }
+  ]
+}

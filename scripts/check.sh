@@ -32,6 +32,7 @@ bash "$ROOT_DIR/scripts/check-consumer.sh" "$ROOT_DIR"
 
 if [[ "$RUN_BROWSER" == 1 ]]; then
   python3 "$ROOT_DIR/tests/browser_filter_panel.py"
+  python3 "$ROOT_DIR/tests/browser_record_list.py"
 else
   printf 'SKIP: Browser tests not requested; run with --browser to include them.\n'
 fi

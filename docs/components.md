@@ -70,6 +70,10 @@ meta
 
 The last block (`site-header` through `meta`) is the alternate Docs shell header/footer pair — see "Docs shell" in `app-shell.md` for when to use it instead of the `app-header`-based Docs shell.
 
+A short list of cards on a Dashboard fills its rows: use `docs-grid docs-grid--3` (three to a row, one on a narrow screen) and show a whole number of rows (3 or 6 cards, never 5), with a link to the tab for the rest. For a record list use `data-columns` and a `data-limit` that is a multiple of it. Do not add ancillary text such as "25 more.", a count, or a tally of what is left out: the link to the tab is the way to the rest.
+
+Use `app-card--secondary` on an `app-card` for a second-level list (departments inside an agency, help items): the same card with a smaller icon, title and description. Pages never define their own small card.
+
 Directory cards place a meaningful icon before their content and make the card's `h3` text the destination link. Do not add a second "Open …" link.
 
 Documentation pages add hover/focus anchor links to content headings and use `aria-current="location"` to highlight the section currently in view in the "On this page" navigation.
@@ -154,7 +158,7 @@ Every filter column looks the same, so people who learn one app know the next. `
 ```html
 <aside id="filter-panel" class="search-sidebar" aria-labelledby="filter-panel-title">
   <div class="search-panel-header">
-    <h2 class="search-panel-title" id="filter-panel-title">Filter software</h2>
+    <h2 class="search-panel-title" id="filter-panel-title">Filter</h2>
     <button type="button" class="action-button" data-icon="rotate-ccw" aria-label="Reset filters" title="Reset filters"></button>
   </div>
   <div class="search-input-field">
@@ -173,11 +177,58 @@ Every filter column looks the same, so people who learn one app know the next. `
 </aside>
 ```
 
-- **Title:** "Filter" plus the plural thing being filtered ("Filter Mentions", "Filter software"), with the Reset icon button beside it.
+- **Title:** "Filter", and only that word (not "Filter Mentions", "Filter software" or "Filter vendors"), with the Reset icon button beside it.
 - **Search first,** as a normal field: label above, a rounded-rectangle box like the selects (not Pico's pill), full width, no `role="search"` wrapper. Keep the placeholder short enough to fit the 248 px column ("Search systems…"). Search never goes in the toolbar.
 - **Filter names** are plural nouns: "Departments", "Monitors", "Sources". Not "Custodian department" or "Filter by source".
+- **A choice of one is a filter too.** Which year, version or measure the results show (for example Recommended or Adopted) goes in the filter column, not in the toolbar: a `.search-facet-group` fieldset with a `<legend>` and one `select`, not collapsed, one always chosen with the latest as the default, above the multi-select filters. Reset restores the default. The toolbar keeps only sort, view and the Copy and Download buttons. It is a dropdown (`select`) in the fieldset, labelled by the legend, with the default selected, not radio buttons, so the column does not grow with the list.
+- **Reset does four things.** It deselects every filter and clears the search, puts a choice of one (such as the budget book or the year) back to its default, the latest, even if that means opening another page, collapses every filter group (`details.mm-facet-group` closed again, as on first load), and returns to the first tab (the results tab, not Stats, Data or Notes). It leaves sort and view alone. The address loses its filter and tab parameters, and the "Showing:" line goes back to its "All" words.
 - **Collapsed by default.** Each filter is a `details.mm-facet-group` that opens to its checkboxes. Open it on load when the address holds a choice, and say what is chosen in the summary ("3 selected").
 - **Spacing:** 1.5rem between fields and groups, 0.45rem between checkbox rows, 24 px checkboxes. Do not add your own list or checkbox spacing in an app.
+
+## Test banner
+
+An app, or a section of an app, that is a design test with data that has not been fully reviewed shows one yellow banner directly under the header navigation, above the page content, on every page of it. Use `.app-test-banner` (in `shared/app-brand.css`: the County's black on gold, readable in light and dark, shown in print too) and this text exactly, with no changes and no extra explanation:
+
+```html
+<div class="app-test-banner" role="note">TEST: This is a design test. Data shown has not been fully reviewed and is for test use only.</div>
+```
+
+Switch it on in the app's `marin.yml`, never per page by hand:
+
+```yaml
+project:
+  test: false            # true puts the banner on every page of the app
+  test_sections: budget/ # or only on these sections: folders, separated by commas
+```
+
+`test` is `true` or `false` and defaults to `false`. `test_sections` is one line of folders separated by commas (the shell reads `marin.yml` as simple key and value lines, so no YAML list) and applies when `test` is `false`. A static page does not read `marin.yml`, so the app's build writes the banner from it. Remove the line (or set `false`) when the data has been reviewed; do not keep the banner on reviewed data. It is not an alert: it never closes, and it does not change focus or move the page.
+
+## Card tags
+
+A card's tags (category, function, status and the like) sit at the bottom of the card in a `.mm-terms` row of `.mm-term` pills, as on a `marin-mentions` card: plain `<span class="mm-term">`, never buttons and never above the title. An identifier that names what the card is (a platform, "Fund 1000") is an `.app-badge` in the `.mm-card__meta` row above the title, at weight 400. Every app uses these two and no other tag style. Filtering is done in the filter column, not by pressing a tag.
+
+## Results header
+
+Above the results, every app and page with a filter column stacks the same three things, top to bottom: the tab row (with the Stats toggle), the "Showing:" line, then the toolbar. `marin-reach` is the reference.
+
+```html
+<div class="search-results">
+  <div class="tab-list">…tabs…</div>
+  <div class="mm-results-summary"><p class="app-help-text" id="active-filters" aria-live="polite">Showing: All dates · All projects · All agencies (18 engagements — Planned 10, Completed 8, Canceled 0)</p></div>
+  <div class="action-toolbar">
+    <div class="action-group" role="group" aria-label="Sort" id="sort-group">
+      <button type="button" class="action-button" data-sort="high" aria-pressed="true" aria-label="Value, high to low" title="Value, high to low">…Lucide arrow-down-wide-narrow…</button>
+      <button type="button" class="action-button" data-sort="az" aria-pressed="false" aria-label="Name, A to Z" title="Name, A to Z">…Lucide arrow-down-a-z…</button>
+    </div>
+    <div class="action-group" role="group" aria-label="Copy, share and export">…Copy link, Copy, Download…</div>
+  </div>
+  <ul class="search-results-list">…</ul>
+</div>
+```
+
+- **The "Showing:" line is bold and is the only count.** It lists each filter in order, using its choice or its "All" words, then the count in brackets with a short breakdown after a dash: "(1,648 vendors, 5,236 contracts — Active 2,129, Terminated 3,107)". No "N of M" line, no chips.  Every control in the filter column is a part of it, in the column's order, including a choice of one such as the year (its chosen label, for example "Showing: 2025-26 Adopted · All functions · All budget units (67 lines — General Government 24, Public Protection 24, …)"). The breakdown is required: it lists every value of one grouping, zeros included ("News 22, Video 1, Social 0"), never a bare "(67 lines)". One format for every app and page, copied from `marin-mentions`; do not reword it, reorder it or drop the dash. It is a live region. `.mm-results-summary` and `#active-filters { font-weight: 700 }` are in `marin-reach` and `marin-mentions` `app.css` and are not in this bundle yet; until they are, copy those rules.
+- **Sort is icon buttons in the toolbar's first group,** never a select in the filter column. Use `aria-pressed` for the active one and Lucide `arrow-down-wide-narrow` / `arrow-up-narrow-wide` (amount), `arrow-down-a-z` / `arrow-down-z-a` (name), and `calendar-arrow-down` / `calendar-arrow-up` (date). Hide the group on a view that has nothing to sort.
+- **The address holds the filters, sort and view,** so Copy link shares what is on screen.
 
 ## Collapsible filter panel
 
@@ -215,6 +266,10 @@ Any `button[data-action="share"]` copies `window.location.href` on click and rep
   <span class="doc-action-status" role="status" aria-live="polite"></span>
 </div>
 ```
+
+## Phone numbers
+
+A phone number shown on a page is a link a phone can dial: `<a href="tel:+14154736528">415-473-6528</a>`. The link text is the number as people read it. The `tel:` address is the international form, with `+1` and the ten digits and no spaces, dashes or brackets. An extension is not part of the link; write it after the link as text ("ext. 12"). A number the page cannot dial (a fax line) is plain text with its label.
 
 ## On this page (table of contents)
 
@@ -321,6 +376,120 @@ State the actual result (top value, total, peak point), not a generic caption �
 Chart.js sizes a canvas at creation time. If a chart can be created while its container is `hidden` (behind a tab or toggle that starts closed), call `.resize()` on the `Chart` instance the first time it becomes visible, or it renders at 0×0 and looks blank.
 
 Chart.js draws its own text and grid and ignores page colors, so its default dark grey text is nearly invisible in dark mode. Before creating a chart, set `Chart.defaults.color` to the page's text color and `Chart.defaults.borderColor` to a card's border color (read both with `getComputedStyle`), and destroy and rebuild charts when `prefers-color-scheme` changes (existing charts do not pick up new defaults). Keep the bar or line color at 3:1 or better on the card in both themes. Give each chart a visually hidden data table with the same numbers, wrapped in a `visually-hidden` `<div>` (the class does not clip a `<table>` element by itself, and an unwrapped table can cause sideways scrolling on narrow screens). When exporting a chart as PNG, draw it onto a canvas filled with the card's background color first, so light-on-dark text stays readable on any paper or slide.
+
+## Record list
+
+A `[data-record-list]` element loads a JSON file and draws the records that match as the result cards the apps use (`ul.search-results-list` of `li.app-card.mm-card`). It lets one app's records appear on another app's page without a copy of that app's code. It loads the first time it becomes visible, using the same `hidden` check as the Updates feed, so it works inside a tab section. Key numbers and charts (below) load the same way, and a file used by several of them on one page is fetched once.
+
+```html
+<section id="reach" data-tab-section="reach" hidden>
+  <div data-record-list data-app-name="Reach" data-noun="engagements"
+       data-src="https://marincountygov.github.io/marin-reach/data/engagements.json" data-records="records"
+       data-match="agencies" data-value="Community Development Agency"
+       data-title="eventName" data-meta="date,location" data-badge="status" data-text="project" data-sort="date"></div>
+</section>
+```
+
+| Attribute | Meaning |
+|---|---|
+| `data-src` | Required. The JSON address. It can be on another site that allows reading it. `{date:-29}` is the UTC date 29 days ago and `{date:0}` today. |
+| `data-records` | Dot path to the list of records. Leave out when the file is the list. |
+| `data-match`, `data-value` | Keep a record when this field equals the value, or contains it when the field is a list. Leave out to draw every record. |
+| `data-exclude` | `field=value`. Drop the records whose field equals the value (or lists it), before anything is drawn or counted. Key numbers and charts take it too. Use it to leave out one kind of record, such as `sourceType=social`. |
+| `data-title` | Required. The field shown as the card heading. |
+| `data-link` | A field holding an http or https address. The heading becomes a link to it. |
+| `data-link-template` | Instead of `data-link`: an address with `{field}` parts filled from each record (values are encoded), such as `https://example.org/app/?engagement={id}`. Use it when the target app opens one record from its address. |
+| `data-meta` | Comma-separated fields shown under the heading, joined by a dash. `field:words` adds words after the value (`redirects:visits` reads "5 visits"). |
+| `data-hidden-path`, `data-hidden-text` | A flag that, when true, withholds the list and shows the text instead, for a service that hides small counts. |
+| `data-text` | A field shown as a short description under that line. |
+| `data-image` | A field holding an http or https address of a picture, shown beside the text. |
+| `data-badge` | A field shown as a badge above the heading. |
+| `data-sort`, `data-sort-order` | Sort field, and `desc` (default) or `asc`. |
+| `data-limit` | Most cards drawn. Default 24; the status line says how many were left out. |
+| `data-empty-text` | Said instead of "No … found." when nothing is left to draw. Use it when a filter (`data-match`, `data-exclude`) can leave a list empty for a reason a person cannot see. |
+| `data-src` with several files | Several addresses separated by spaces: their records are joined (a file that cannot be read is skipped unless none can). `data-unique` names the field that makes two records the same one, so a record in two files is drawn and counted once. Key numbers and charts take both. |
+| `data-columns` | `2` or `3`: draw the cards in that many columns on a wide screen, one on a narrow one. Pick a `data-limit` that is a multiple of it so the last row is full. |
+| `data-group`, `data-group-link`, `data-group-date`, `data-group-noun` | One card for each value of a field (an array field counts each value) instead of one for each record: the value as the heading, how many records it has (`data-group-noun` names them) and the dates they span (`data-group-date`). `data-group-link` is the address the heading links to, with `{value}` replaced by the value. Newest first. Use it for a list of campaigns drawn from their events. |
+| `data-timeframe` | The date field. The status line then says how far back the records go, from the oldest: "(last week)", "(last month)", "(last 3 months)" or "(since Jan 5, 2026)". |
+| `data-app-name`, `data-noun` | Words for the status lines: "Loading Reach…", "2 engagements.", "No engagements found.", "Reach could not be loaded right now." |
+
+Field names can be dot paths. Values are always set as text, never as HTML. A `YYYY-MM-DD` value is shown as a long date, and a full date and time as the short form the console shows ("Nov 2, 4:12 PM", Pacific time). The card styles (`.mm-card`, `.search-results-list`) are the apps' own; a page that uses the component needs them in its stylesheet. Tested by `tests/browser_record_list.py`.
+
+## Key numbers
+
+A `[data-key-numbers]` element shows a few numbers as the apps' stat cards (`.mm-stats-kpis`). They are either numbers a service already added up, or numbers counted from the records. It loads the first time it becomes visible.
+
+```html
+<div data-key-numbers data-app-name="Links"
+     data-src="https://example.org/api/summary?from={date:-29}&to={date:0}"
+     data-fields="period_redirects:Visits,tracked_links:Links"
+     data-hidden-path="meta.suppressed" data-hidden-text="Too few visits to show."></div>
+
+<div data-key-numbers data-app-name="Mentions" data-src="monitors/marin-cda.json" data-records="items"
+     data-compute='[["count","Mentions"],["unique","Unique sources","source"],["count","Social","sourceType","social"]]'></div>
+```
+
+`data-src` is required, with `data-fields` or `data-compute`. `data-fields` is `field:Label` pairs; a field is a dot path under `data-path` (default `data`). `data-compute` is a JSON list counted from the records (with `data-records`, `data-match` and `data-value` as in the record list): `["count","Label"]` counts the records, `["count","Label","field","value"]` counts those whose field equals the value, and `["unique","Label","field"]` counts the different values. `data-hidden-path` names a flag; when it is true the numbers are withheld and `data-hidden-text` is shown, for a service that hides small counts. Numbers get thousands separators, and values are set as text.
+
+## Charts
+
+A `[data-chart]` element draws one of the apps' chart cards with Chart.js, from the same kind of file. The page supplies its own copy of Chart.js (`data-chart-lib`); the component loads it when the first chart is shown.
+
+```html
+<div class="mm-stats-grid">
+  <div data-chart data-app-name="Mentions" data-src="monitors/marin-cda.json" data-records="items"
+       data-chart-lib="../vendor/chart.min.js" data-chart-title="Mentions over time"
+       data-kind="line" data-date="publishedAt" data-bucket="day"></div>
+  <div data-chart data-app-name="Mentions" data-src="monitors/marin-cda.json" data-records="items"
+       data-chart-lib="../vendor/chart.min.js" data-chart-title="Top sources" data-kind="bar" data-group="source"></div>
+</div>
+```
+
+| Attribute | Meaning |
+|---|---|
+| `data-src`, `data-records`, `data-match`, `data-value` | As for the record list. |
+| `data-chart-lib` | Required. The address of `chart.min.js` on the page's own site. |
+| `data-chart-title` | Required. The card heading. |
+| `data-kind` | `line` (default) counts records per day or month; `bar` ranks values, as horizontal bars. |
+| `data-date`, `data-bucket` | Line. The date field, and `day` (default) or `month`. Days and months with nothing stay on the line as zero. Days are Pacific. |
+| `data-group`, `data-top` | Bar. The field to rank (a list field counts each value) and the most bars (default 10). |
+| `data-sum` | Add up this field instead of counting records, for rows a service already added up by day. |
+| `data-hidden-path` | As for key numbers. When the flag is true the chart is left out, since the key numbers beside it say why. |
+| `data-empty-text` | Words for a chart with nothing to draw. |
+| `data-hide-empty` | Hide a chart drawn from records when there is nothing to draw, instead of saying so. Use it for a teaser chart above a list that already says it is empty. |
+| `data-inline` | Instead of `data-src`: the id of a `<script type="application/json">` in the page that holds the amounts (below). Nothing is fetched except Chart.js. |
+| `data-kind="columns"` or `"bars"` | With `data-inline`: vertical columns, or horizontal bars. Both start at zero. |
+| `data-kind="pie"` | With `data-inline`: the first series as shares of a whole. Slices run from the largest, zero values have no slice, and the legend names each slice with its share; the tooltip gives the amount and the percentage. Use it for the parts of one total at one time, not for change over time. |
+| `data-stacked` | With `data-inline`: stack the series. |
+
+The canvas has a text summary for screen readers (the total and the peak, or the top bar). Charts take the page's text and grid colors. Tested by `tests/browser_record_list.py`, with a stand-in for Chart.js.
+
+**Amounts the page already holds** (a budget) are drawn from a block in the page, so the chart and the table beside it come from the same figures:
+
+```html
+<script type="application/json" id="types-spec">{"labels": ["Salaries and Benefits", "Services and Supplies"],
+  "series": [{"name": "FY 2025-26", "values": [16125624, 4611103]}, {"name": "FY 2026-27", "values": [17890809, 4911771]}],
+  "format": "currency", "summary": "Salaries and Benefits is the largest at $17,890,809."}</script>
+<div data-chart data-inline="types-spec" data-chart-lib="../vendor/chart.min.js" data-chart-title="Expenditure by type" data-kind="columns"></div>
+```
+
+`format` is `currency` (axis in $K and $M, tooltips and the text summary in whole dollars, a minus sign for decreases) or `number`. `summary` is the sentence screen readers get after the title; without it the component names the largest value, or each series' total. Several series are drawn side by side, named in a legend; the colors are chosen to stay apart for people who see color differently, and color is never the only signal. Put the data in the table beside the chart too.
+
+## Sub-tabs
+
+A `[data-subtabs]` group inside a tab section splits it into panels. It holds a `[data-subtabs-nav]` of links and `[data-subtab]` panels; each link is `#` plus a panel's `id`, and a link to the tab section itself means the first panel.
+
+```html
+<section id="mentions" data-tab-section="mentions" hidden>
+  <div data-subtabs>
+    <nav data-subtabs-nav aria-label="Mentions sections"><a href="#mentions">Home</a><a href="#mentions-stats">Stats</a></nav>
+    <div id="mentions-home" data-subtab>…</div>
+    <div id="mentions-stats" data-subtab hidden>…</div>
+  </div>
+</section>
+```
+
+One panel shows at a time: the one the hash names, or contains an element the hash names, else the first. The nav marks the current link with `aria-current="page"`. A hash that names a panel opens its tab section without the shell scrolling to it. Record lists, key numbers and charts in a hidden panel load when it is first shown. Tested by `tests/browser_record_list.py`.
 
 ## Form control borders
 

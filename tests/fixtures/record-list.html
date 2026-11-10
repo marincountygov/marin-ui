@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Record list fixture</title>
+  <link rel="stylesheet" href="../../vendor/pico.min.css">
+  <link rel="stylesheet" href="../../shared/app-brand.css">
+  <script src="../../shared/app-shell.js" defer></script>
+</head>
+<body data-app-id="fixture">
+  <main class="container">
+    <section id="overview" data-tab-section="overview"><p>Overview</p></section>
+
+    <!-- Hidden until its tab is chosen: nothing is fetched before that. -->
+    <section id="reach" data-tab-section="reach">
+      <div id="list-match" data-record-list data-src="record-list.json" data-records="records"
+           data-match="agencies" data-value="Community Development Agency"
+           data-title="eventName" data-link="url" data-meta="date,place.address.locality" data-badge="status"
+           data-sort="date" data-app-name="Reach" data-noun="engagements"></div>
+    </section>
+
+    <section id="markup" data-tab-section="markup">
+      <div id="list-markup" data-record-list data-src="record-list.json" data-records="records"
+           data-match="agencies" data-value="District 3" data-title="eventName" data-app-name="Reach"></div>
+    </section>
+
+    <section id="timeframe" data-tab-section="timeframe">
+      <div id="list-time" data-record-list data-src="record-list.json" data-records="records" data-title="eventName" data-limit="2"
+           data-sort="date" data-timeframe="date" data-app-name="Reach"></div>
+    </section>
+
+    <section id="groups" data-tab-section="groups">
+      <div id="list-groups" data-record-list data-src="record-list.json" data-records="records" data-title="eventName" data-group="agencies"
+           data-group-link="https://example.com/reach/?agency={value}" data-group-date="date" data-group-noun="engagements" data-noun="agencies" data-app-name="Reach"></div>
+    </section>
+
+    <section id="none" data-tab-section="none">
+      <div id="list-none" data-record-list data-src="record-list.json" data-records="records"
+           data-match="agencies" data-value="Nobody" data-title="eventName" data-app-name="Reach" data-noun="engagements"></div>
+    </section>
+
+    <section id="broken" data-tab-section="broken">
+      <div id="list-broken" data-record-list data-src="missing.json" data-title="eventName" data-app-name="Reach"></div>
+    </section>
+
+    <section id="numbers" data-tab-section="numbers">
+      <div id="numbers-ok" data-key-numbers data-app-name="Links" data-src="key-numbers.json?from={date:-29}&to={date:0}"
+           data-fields="period_redirects:Visits,tracked_links:Links,missing:Never shown"
+           data-hidden-path="meta.suppressed" data-hidden-text="Too few visits to show."></div>
+    </section>
+
+    <section id="numbers-small" data-tab-section="numbers-small">
+      <div id="numbers-hidden" data-key-numbers data-app-name="Links" data-src="key-numbers-hidden.json"
+           data-fields="period_redirects:Visits" data-hidden-path="meta.suppressed" data-hidden-text="Too few visits to show."></div>
+    </section>
+
+    <section id="counted" data-tab-section="counted">
+      <div id="counted-numbers" data-key-numbers data-app-name="Reach" data-src="record-list.json" data-records="records"
+           data-match="agencies" data-value="Community Development Agency"
+           data-compute='[["count","Engagements"],["count","Planned","status","Planned"],["unique","Places","place.address.locality"]]'></div>
+      <div id="chart-line" data-chart data-app-name="Reach" data-src="record-list.json" data-records="records" data-chart-lib="chart-stub.js" data-match="agencies" data-value="Community Development Agency"
+           data-chart-title="Events over time" data-kind="line" data-date="date" data-bucket="month"></div>
+      <div id="chart-bar" data-chart data-app-name="Reach" data-src="record-list.json" data-records="records" data-chart-lib="chart-stub.js" data-match="agencies" data-value="Community Development Agency"
+           data-chart-title="By agency" data-kind="bar" data-group="agencies" data-top="2"></div>
+      <div id="chart-daily" data-chart data-app-name="Links" data-src="daily.json" data-records="data" data-chart-lib="chart-stub.js"
+           data-chart-title="Visits over time" data-kind="line" data-date="date" data-sum="redirects"></div>
+      <div id="chart-small" data-chart data-app-name="Links" data-src="key-numbers-hidden.json" data-records="data" data-chart-lib="chart-stub.js"
+           data-chart-title="Visits over time" data-kind="line" data-date="date" data-hidden-path="meta.suppressed"></div>
+      <!-- Amounts the page already holds: no fetch, only Chart.js. -->
+      <script type="application/json" id="spec-types">{"labels":["Salaries and Benefits","Services and Supplies"],"series":[{"name":"FY 2025-26","values":[16125624,4611103]},{"name":"FY 2026-27","values":[17890809,4911771]}],"format":"currency","summary":"Salaries and Benefits is the largest at $17,890,809."}</script>
+      <script type="application/json" id="spec-one">{"labels":["Planning","Building"],"series":[{"name":"FY 2026-27","values":[9000000,3000000]}],"format":"currency"}</script>
+      <div id="chart-columns" data-chart data-inline="spec-types" data-chart-lib="chart-stub.js" data-chart-title="By type" data-kind="columns"></div>
+      <div id="chart-stacked" data-chart data-inline="spec-types" data-chart-lib="chart-stub.js" data-chart-title="Stacked" data-kind="columns" data-stacked></div>
+      <div id="chart-pie" data-chart data-inline="spec-pie-data" data-chart-lib="chart-stub.js" data-chart-title="Shares" data-kind="pie"></div>
+      <script type="application/json" id="spec-pie-data">{"labels":["Planning","Building","Housing","None"],"series":[{"name":"FY 2026-27","values":[6000000,3000000,1000000,0]}],"format":"currency"}</script>
+      <div id="chart-bars" data-chart data-inline="spec-one" data-chart-lib="chart-stub.js" data-chart-title="By division" data-kind="bars"></div>
+    </section>
+
+    <section id="items" data-tab-section="items">
+      <div id="items-ok" data-record-list data-src="links-items.json" data-records="data.items" data-title="display" data-meta="redirects:visits"
+           data-sort="redirects" data-hidden-path="meta.suppressed" data-hidden-text="Too few visits to show." data-app-name="Links" data-noun="links"></div>
+      <div id="items-small" data-record-list data-src="key-numbers-hidden.json" data-records="data.items" data-title="display"
+           data-hidden-path="meta.suppressed" data-hidden-text="Too few visits to show." data-app-name="Links" data-noun="links"></div>
+    </section>
+
+    <section id="subs" data-tab-section="subs">
+      <div data-subtabs>
+        <nav data-subtabs-nav><a href="#subs">Home</a><a href="#subs-stats">Stats</a></nav>
+        <div id="subs-home" data-subtab><p>Home panel</p></div>
+        <div id="subs-stats" data-subtab hidden>
+          <div id="sub-numbers" data-key-numbers data-app-name="Reach" data-src="record-list.json" data-records="records" data-compute='[["count","Engagements"]]'></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
