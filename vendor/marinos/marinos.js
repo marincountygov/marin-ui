@@ -7,7 +7,7 @@
   }
 
   const SHELL_VERSION = "1.24.0";
-  const MARIN_UI_VERSION = "1.33.0";
+  const MARIN_UI_VERSION = "1.34.0";
   const MARINOS_URL = "https://marincountygov.github.io/marin-os/";
   const MARINOS_STATUS_URL = `${MARINOS_URL}#status`;
   const CATALOG_URL = `${MARINOS_URL}catalog.json`;
@@ -2208,12 +2208,35 @@
   }
 
   async function fetchRecords(el) {
-    let records = pickPath(await fetchJson(el.dataset.src), el.dataset.records);
-    if (!Array.isArray(records)) throw new Error(`${el.dataset.src}: no list of records`);
+    // data-src may name several files, separated by spaces; their records are joined, and a record
+    // found in more than one file (same data-unique field) is kept once. One missing file is skipped.
+    const sources = el.dataset.src.split(/\s+/).filter(Boolean);
+    const loaded = await Promise.allSettled(sources.map((src) => fetchJson(src)));
+    if (loaded.every((one) => one.status === "rejected")) throw loaded[0].reason;
+    const lists = loaded.filter((one) => one.status === "fulfilled").map((one) => pickPath(one.value, el.dataset.records));
+    if (!lists.every(Array.isArray)) throw new Error(`${el.dataset.src}: no list of records`);
+    let records = lists.flat();
+    if (el.dataset.unique) {
+      const seen = new Set();
+      records = records.filter((record) => {
+        const key = pickPath(record, el.dataset.unique);
+        if (key == null || !seen.has(key)) { seen.add(key); return true; }
+        return false;
+      });
+    }
     if (el.dataset.match) {
       records = records.filter((record) => {
         const found = pickPath(record, el.dataset.match);
         return Array.isArray(found) ? found.includes(el.dataset.value) : found === el.dataset.value;
+      });
+    }
+    if (el.dataset.exclude) {
+      // "field=value": drop the records whose field equals the value (or lists it).
+      const [field, ...rest] = el.dataset.exclude.split("=");
+      const value = rest.join("=");
+      records = records.filter((record) => {
+        const found = pickPath(record, field);
+        return !(Array.isArray(found) ? found.includes(value) : found === value);
       });
     }
     return records;
@@ -2244,6 +2267,7 @@
   // Record lists: the app's result cards.
   //   data-title     required. Field shown as each card's heading.
   //   data-link      optional. Field holding an http(s) address; the heading links to it.
+  //   data-link-template optional. Instead of data-link: an address with {field} parts filled from the record.
   //   data-meta      optional. Comma-separated fields shown under the heading, joined by " — ".
   //                  "field:words" adds words after the value ("redirects:visits" reads "5 visits").
   //   data-hidden-path  optional. Dot path to a flag; when true nothing is drawn and
@@ -2253,6 +2277,10 @@
   //   data-badge     optional. Field shown as a badge above the heading.
   //   data-sort      optional. Field to sort by; data-sort-order is "desc" (default) or "asc".
   //   data-limit     optional. Most cards drawn (default 24).
+  //   data-empty-text optional. Shown instead of "No {noun} found." when no record is left to draw.
+  //   data-src       may name several files separated by spaces; data-unique is the field that makes a record the same
+  //                  record when it is in more than one of them (an agency and its divisions).
+  //   data-columns   optional. 2 or 3: cards in that many columns on a wide screen (one on a narrow one).
   //   data-group    optional. Field to group by (an array field counts each value). The list then draws one card for each
   //                  value, not one for each record: the value as the heading, how many records it has, and the dates
   //                  they span. data-group-link is the address the heading links to, with {value} replaced by the value
@@ -2267,6 +2295,7 @@
     const status = statusLine("recordListStatus");
     const cards = document.createElement("ul");
     cards.className = "search-results-list";
+    if (["2", "3"].includes(list.dataset.columns)) cards.classList.add(`search-results-list--${list.dataset.columns}`);
     cards.setAttribute("aria-label", noun);
     list.replaceChildren(status, cards);
 
@@ -2299,7 +2328,10 @@
         }
         const heading = document.createElement("h3");
         heading.className = "mm-card__title";
-        const address = list.dataset.link ? field(record, list.dataset.link) : "";
+        // data-link names a field holding the address; data-link-template builds it from fields: "https://x.org/?id={id}".
+        const address = list.dataset.linkTemplate
+          ? list.dataset.linkTemplate.replace(/\{([^}]+)\}/g, (_, name) => encodeURIComponent(pickPath(record, name) ?? ""))
+          : list.dataset.link ? field(record, list.dataset.link) : "";
         if (isWebAddress(address)) {
           const anchor = document.createElement("a");
           anchor.href = address;
@@ -2338,7 +2370,7 @@
     whenShown(list, async () => {
       status.textContent = `Loading ${appName}…`;
       try {
-        if (list.dataset.hiddenPath && pickPath(await fetchJson(list.dataset.src), list.dataset.hiddenPath) === true) {
+        if (list.dataset.hiddenPath && pickPath(await fetchJson(list.dataset.src.split(/\s+/)[0]), list.dataset.hiddenPath) === true) {
           status.textContent = list.dataset.hiddenText || "Too few to show.";
           return;
         }
@@ -2348,7 +2380,7 @@
           records = [...records].sort((a, b) => direction * String(pickPath(a, list.dataset.sort) ?? "").localeCompare(String(pickPath(b, list.dataset.sort) ?? ""), "en", { numeric: true }));
         }
         if (!records.length) {
-          status.textContent = `No ${noun} found.`;
+          status.textContent = list.dataset.emptyText || `No ${noun} found.`;
           return;
         }
         if (list.dataset.group) {
@@ -2686,7 +2718,7 @@
           await drawInline();
           return;
         }
-        const [body] = await Promise.all([fetchJson(box.dataset.src), loadChartLib(box.dataset.chartLib)]);
+        const [body] = await Promise.all([fetchJson(box.dataset.src.split(/\s+/)[0]), loadChartLib(box.dataset.chartLib)]);
         if (box.dataset.hiddenPath && pickPath(body, box.dataset.hiddenPath) === true) {
           // The key numbers beside it already say why; a second card saying it again adds nothing.
           box.hidden = true;
@@ -2695,6 +2727,10 @@
         const records = await fetchRecords(box);
         const entries = tally(records);
         if (!entries.length) {
+          if ("hideEmpty" in box.dataset) {
+            box.hidden = true;
+            return;
+          }
           status.textContent = box.dataset.emptyText || "Nothing to show yet.";
           return;
         }
