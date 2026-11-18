@@ -52,7 +52,7 @@ def run(base, context, page):
     # The shell draws the icons and names the button; the panel starts open on a wide screen.
     s = state(page)
     require(s["expanded"] == "true" and s["filters"] == "open" and s["open"] == "true", f"Starts open: {s}")
-    require(s["label"] == "Filters" and s["title"] == "Filters", f"Default name: {s}")
+    require(s["label"] == "Filter" and s["title"] == "Filter", f"Default name: {s}")
     require(s["icons"] == [["open", False], ["closed", True]], f"Open shows the panel-right-open icon: {s['icons']}")
     require(page.is_visible("#panel-a") and page.inner_text("#toggle-a").strip() == "", "Panel visible, button has no text")
 
@@ -80,10 +80,10 @@ def run(base, context, page):
 
     # The name carries the active count, from data-filter-active, and clears again.
     page.evaluate("document.getElementById('toggle-a').dataset.filterActive = '3'")
-    page.wait_for_function("document.getElementById('toggle-a').getAttribute('aria-label') === 'Filters, 3 active'", timeout=3000)
-    require(page.get_attribute("#toggle-a", "title") == "Filters, 3 active", "The title matches the name")
+    page.wait_for_function("document.getElementById('toggle-a').getAttribute('aria-label') === 'Filter, 3 active'", timeout=3000)
+    require(page.get_attribute("#toggle-a", "title") == "Filter, 3 active", "The title matches the name")
     page.evaluate("document.getElementById('toggle-a').dataset.filterActive = '0'")
-    page.wait_for_function("document.getElementById('toggle-a').getAttribute('aria-label') === 'Filters'", timeout=3000)
+    page.wait_for_function("document.getElementById('toggle-a').getAttribute('aria-label') === 'Filter'", timeout=3000)
 
     # The choice is remembered per app and per toggle; another toggle is not affected.
     page.click("#toggle-a")
@@ -130,6 +130,44 @@ def run_storage_blocked(base, browser):
     context.close()
 
 
+def run_scroll(base, browser):
+    """A long filter panel scrolls on its own on a wide screen, and the page does not scroll with it."""
+    context = browser.new_context(viewport={"width": 1100, "height": 700})
+    page = context.new_page()
+    page.goto(base + FIXTURE)
+    page.wait_for_selector("#toggle-c svg", state="attached")
+    page.evaluate("document.getElementById('layout-c').scrollIntoView()")
+    info = page.evaluate(
+        """() => { const p = document.getElementById('panel-c'), side = p.parentElement;
+            return { scrolls: p.scrollHeight > p.clientHeight, overflowY: getComputedStyle(p).overflowY, sideHeight: side.getBoundingClientRect().height }; }"""
+    )
+    require(info["scrolls"] and info["overflowY"] == "auto", f"A long panel scrolls inside itself: {info}")
+    require(info["sideHeight"] <= 700, f"The column is no taller than the window: {info}")
+    page.evaluate("window.scrollTo(0, document.getElementById('layout-c').offsetTop)")
+    before = page.evaluate("window.scrollY")
+    page.hover("#panel-c")
+    page.mouse.wheel(0, 400)
+    page.wait_for_timeout(200)
+    moved = page.evaluate("[document.getElementById('panel-c').scrollTop, window.scrollY]")
+    require(moved[0] > 0 and abs(moved[1] - before) < 1, f"Wheeling over the panel scrolls the panel, not the page: {moved}")
+    top = page.evaluate("document.getElementById('title-c').getBoundingClientRect().top - document.getElementById('panel-c').getBoundingClientRect().top")
+    require(-1 <= top < 40, f"The Filter title stays at the top while the fields scroll: {top}")
+    gap = page.evaluate(
+        """() => { const l = document.querySelectorAll('#panel-c .search-facet-list li'); return l[1].getBoundingClientRect().top - l[0].getBoundingClientRect().bottom; }"""
+    )
+    require(gap >= 9, f"Checkbox rows have room between them: {gap}px")
+    context.close()
+
+    # Narrow screens: the page scrolls the panel, the panel does not scroll itself.
+    context = browser.new_context(viewport={"width": 360, "height": 700})
+    page = context.new_page()
+    page.goto(base + FIXTURE)
+    page.wait_for_selector("#toggle-c svg", state="attached")
+    page.click("#toggle-c")
+    require(page.evaluate("getComputedStyle(document.getElementById('panel-c')).overflowY") != "auto", "Narrow, the panel does not scroll itself")
+    context.close()
+
+
 def main():
     server = ThreadingHTTPServer(("127.0.0.1", 0), partial(Handler, directory=str(ROOT)))
     Thread(target=server.serve_forever, daemon=True).start()
@@ -146,6 +184,7 @@ def main():
                 run(base, context, page)
                 context.close()
             run_storage_blocked(base, browser)
+            run_scroll(base, browser)
             browser.close()
     finally:
         server.shutdown()

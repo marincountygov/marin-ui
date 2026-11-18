@@ -183,7 +183,8 @@ Every filter column looks the same, so people who learn one app know the next. `
 - **A choice of one is a filter too.** Which year, version or measure the results show (for example Recommended or Adopted) goes in the filter column, not in the toolbar: a `.search-facet-group` fieldset with a `<legend>` and one `select`, not collapsed, one always chosen with the latest as the default, above the multi-select filters. Reset restores the default. The toolbar keeps only sort, view and the Copy and Download buttons. It is a dropdown (`select`) in the fieldset, labelled by the legend, with the default selected, not radio buttons, so the column does not grow with the list.
 - **Reset does four things.** It deselects every filter and clears the search, puts a choice of one (such as the budget book or the year) back to its default, the latest, even if that means opening another page, collapses every filter group (`details.mm-facet-group` closed again, as on first load), and returns to the first tab (the results tab, not Stats, Data or Notes). It leaves sort and view alone. The address loses its filter and tab parameters, and the "Showing:" line goes back to its "All" words.
 - **Collapsed by default.** Each filter is a `details.mm-facet-group` that opens to its checkboxes. Open it on load when the address holds a choice, and say what is chosen in the summary ("3 selected").
-- **Spacing:** 1.5rem between fields and groups, 0.45rem between checkbox rows, 24 px checkboxes. Do not add your own list or checkbox spacing in an app.
+- **Spacing:** 1.5rem between fields and groups, 0.6rem between checkbox rows, 0.5rem above and below a group's name, 0.75rem under an open group's list, 24 px checkboxes. Do not add your own list or checkbox spacing in an app.
+- **Scrolling:** on a wide screen the column is as tall as the window at most and scrolls on its own (`.search-side`, 1.35.0 and later); the Filter title and Reset button stay at the top while the fields scroll. On a narrow screen the page scrolls it.
 
 ## Test banner
 
@@ -240,7 +241,7 @@ A filter column beside a list of results can be hidden at any width, so the resu
 <form class="search-layout" aria-label="Filter engagements">
   <div class="search-side">
     <button type="button" class="filter-toggle" data-filter-toggle="engagements" aria-controls="filter-panel"></button>
-    <aside id="filter-panel" class="search-sidebar" aria-label="Filters">…search, date and facet fields…</aside>
+    <aside id="filter-panel" class="search-sidebar" aria-label="Filter">…search, date and facet fields…</aside>
   </div>
   <div class="search-results">…tabs, summary and results…</div>
 </form>
@@ -251,7 +252,7 @@ The shell (`app-shell.js`) does the rest for every `button[data-filter-toggle]`:
 - Draws the Lucide `panel-right-open` icon while the panel is open and `panel-left-open` while it is hidden. Leave the button empty. If you supply your own SVGs, give each `data-filter-icon="open"` or `data-filter-icon="closed"` so the shell can show one at a time. The icons are toggled with the `hidden` attribute, not the `hidden` property, because SVG elements have no `hidden` property.
 - Sets `aria-expanded` on the button, `data-open` on the panel (the element named by `aria-controls`) and `data-filters="open"` or `"closed"` on the nearest `.search-layout`. The CSS uses those to hide the panel and, on a wide screen, shrink the column to just the button.
 - Starts open on wide screens and closed on screens up to 850 px wide. On a wide screen the person's choice is remembered in this browser (`localStorage` key `marinos.filters.<app id>.<data-filter-toggle value>`, with `<body data-app-id>` as the app id, or the page path if there is none; the page keeps working if storage is blocked). Crossing the 850 px line returns to the default for that width, and a narrow-screen choice is never saved.
-- Names the button "Filters" (change it with `data-filter-label`) and adds ", N active" when the app keeps `data-filter-active="N"` on the button (the shell watches the attribute). The button has no visible text, so this is its accessible name; it also sets `title`.
+- Names the button "Filter" (change it with `data-filter-label`) and adds ", N active" when the app keeps `data-filter-active="N"` on the button (the shell watches the attribute). The button has no visible text, so this is its accessible name; it also sets `title`.
 - Dispatches a bubbling `marin-filters-change` event on the layout with `detail: { open, button, panel }` each time the state is set, so an app can measure again anything sized by the results (for example a Leaflet map's `invalidateSize()`); charts that resize with their container need nothing.
 
 Behavior to keep: hiding the panel never clears or changes a filter (the app keeps filtering exactly as before and still says what is active, for example in a "Showing:" line); the hidden panel is `display: none`, so it leaves the tab order; focus stays on the button when it is used; the button is the first thing in the left column, above the filters (on a narrow screen it sits above the page and the panel opens below it; App Shell 1.15.0 and later puts it beside the tab row instead); open, it sits at the column's right edge. The look is the same as the card icon buttons: a 1 px `--app-border` border, `--app-surface` background, `--app-muted` icon, and an accent border with a faint accent tint on hover. `.search-layout`, `.search-side`, `.search-sidebar` (the panel), `.search-results` and the field and filter styles described next are all defined here.
