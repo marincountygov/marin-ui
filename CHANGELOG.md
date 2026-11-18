@@ -1,5 +1,8 @@
 # MarinOS brand bundle changelog
 
+## 1.35.1 — 2026-11-17
+- The pinned Filter title and Reset button in the scrolling filter column sit on the page background and no longer let a checkbox show above them. Why: with Marin Mentions' real list, a checkbox peeked out above the title and the title sat in a slightly whiter box than the page.
+
 ## 1.35.0 — 2026-11-17
 - The filter button is named "Filter" ("Filter, 3 active"), not "Filters", the same word as the panel title. Why: the panel title, the button and the panel's landmark name should all say the same thing. A button can still set its own name with `data-filter-label`.
 - The filter column (`.search-side`) scrolls on its own on a wide screen: at most as tall as the window, with the Filter title and Reset button pinned at the top. Why: a long panel (Monitors and Sources in Marin Mentions) could only be scrolled by scrolling the whole page. Narrow screens are unchanged.
