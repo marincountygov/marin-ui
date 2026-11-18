@@ -559,7 +559,7 @@
   //  - sets aria-expanded, data-open on the panel and data-filters ("open" or "closed") on the layout,
   //  - starts open on wide screens (unless the person hid it; the choice is remembered in this browser) and
   //    closed on screens up to 850px,
-  //  - names the button "Filters" (or data-filter-label), plus ", N active" when the app keeps
+  //  - names the button "Filter" (or data-filter-label), plus ", N active" when the app keeps
   //    data-filter-active="N" on it, and dispatches a bubbling "marin-filters-change" event
   //    ({ detail: { open, button, panel } }) so an app can resize anything sized by the results (a map).
   // The button has no visible text, so its name is the label.
@@ -626,7 +626,7 @@
 
     function nameFilterToggle(button) {
       const count = Number(button.dataset.filterActive) || 0;
-      const base = button.dataset.filterLabel || "Filters";
+      const base = button.dataset.filterLabel || "Filter";
       const name = count ? `${base}, ${count} active` : base;
       button.setAttribute("aria-label", name);
       button.title = name;

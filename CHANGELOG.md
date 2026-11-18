@@ -1,6 +1,9 @@
 # MarinOS brand bundle changelog
 
-## Unreleased
+## 1.35.0 — 2026-11-17
+- The filter button is named "Filter" ("Filter, 3 active"), not "Filters", the same word as the panel title. Why: the panel title, the button and the panel's landmark name should all say the same thing. A button can still set its own name with `data-filter-label`.
+- The filter column (`.search-side`) scrolls on its own on a wide screen: at most as tall as the window, with the Filter title and Reset button pinned at the top. Why: a long panel (Monitors and Sources in Marin Mentions) could only be scrolled by scrolling the whole page. Narrow screens are unchanged.
+- Filter groups: 0.6rem between checkbox rows (was 0.45rem), 0.5rem above and below a group's name (was 0.25rem), 0.75rem under an open group's list, and a visible focus ring on a group's name. Why: the rows inside collapsed groups looked jammed together.
 - Add `.app-test-banner` to `shared/app-brand.css` and a "Test banner" section to `docs/components.md`: one yellow banner under the header navigation for an app or section that is a design test with unreviewed data, switched on by `project.test` or `project.test_sections` in `marin.yml`. Why: Marin Docs' Budget section shows figures that have not been fully reviewed and needs one standard way to say so.
 
 ## 1.34.0 — 2026-11-03
