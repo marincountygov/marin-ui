@@ -718,7 +718,8 @@
           found.set(key, entry);
         });
       });
-      return [...found.values()].sort((a, b) => compare(a.label, b.label));
+      // "order": "data" keeps the choices in the order the file lists them, instead of A to Z.
+      return spec.order === "data" ? [...found.values()] : [...found.values()].sort((a, b) => compare(a.label, b.label));
     }
 
     const groups = await Promise.all(
@@ -1123,6 +1124,8 @@
 
   // A file that will not load shows a short message the person can act on, announced as an alert, with a Retry.
   function drawFilterColumn(column) {
+    if (column.dataset.filterDrawn) return;
+    column.dataset.filterDrawn = "true";
     renderFilterColumn(column).catch((error) => {
       column.dataset.filterError = error.message;
       console.error(`Filter column: ${error.message}`);
@@ -1137,6 +1140,7 @@
       retry.textContent = "Retry";
       retry.addEventListener("click", () => {
         column.removeAttribute("data-filter-error");
+        column.removeAttribute("data-filter-drawn");
         column.replaceChildren();
         drawFilterColumn(column);
       });
@@ -1145,6 +1149,15 @@
     });
   }
   document.querySelectorAll("[data-filter-column]").forEach(drawFilterColumn);
+  // A column added to the page later (an app that draws its pages from templates as the address changes) is drawn
+  // as it arrives. One that leaves with its page takes its work with it.
+  new MutationObserver((records) => {
+    records.forEach((record) => record.addedNodes.forEach((node) => {
+      if (node.nodeType !== 1) return;
+      if (node.matches("[data-filter-column]")) drawFilterColumn(node);
+      node.querySelectorAll("[data-filter-column]").forEach(drawFilterColumn);
+    }));
+  }).observe(document.body, { childList: true, subtree: true });
 
   // Tab sections: elements sharing a data-tab-section="name" show together,
   // hidden unless "name" matches the current hash — everything else in the
