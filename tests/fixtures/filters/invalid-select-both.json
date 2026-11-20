@@ -1,0 +1,1 @@
+{"schemaVersion": "1.0.0", "search": {"id": "s"}, "groups": [{"type": "select", "id": "t", "label": "Times", "allLabel": "All times", "default": "1", "options": {"values": [{"value": "1", "label": "One"}]}}]}

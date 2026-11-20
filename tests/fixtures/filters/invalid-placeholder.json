@@ -1,0 +1,1 @@
+{ "schemaVersion": "1.0.0", "search": { "id": "s", "placeholder": "Search systems…" }, "groups": [ { "type": "date-range", "id": "date", "label": "Dates" } ] }

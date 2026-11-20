@@ -153,7 +153,7 @@ The Next button of a step-by-step flow is not a secondary button: it is a solid 
 
 The column can hold a list of steps instead of filters, for an app whose whole workflow is a sequence of steps (`marin-spec`): a `nav` of links numbered "1. Name" inside the panel, `data-filter-label="Steps"` on the toggle, and `aria-current="step"` on the current link. Keep a visible current-step line as the first child of `.search-results`, since a hidden first child leaves the narrow-screen toggle alone on its row. A short flow inside one feature keeps its steps as a row above the content instead.
 
-Every filter column looks the same, so people who learn one app know the next. `marin-mentions` is the reference. The panel's contents, top to bottom:
+Every filter column looks the same, so people who learn one app know the next. An app does not write the column's words or markup: it lists its filters in `filters.json`, checked against `schemas/filter-panel.schema.json` (`python3 scripts/check-filters.py filters.json`), and the shell draws the column from it. The schema holds what an app may set (each group's type, visible name, "All …" text and where its choices come from) and leaves out what the shell owns (the word "Filter", the "Search" label, Reset, order, spacing, scrolling and accessibility). Choices come from the app's own data files, so their labels are never typed into a page. Examples that must pass and fail are in `tests/fixtures/filters/`. `marin-mentions` is the reference for how the column looks. The markup the shell draws, top to bottom:
 
 ```html
 <aside id="filter-panel" class="search-sidebar" aria-labelledby="filter-panel-title">
@@ -163,7 +163,7 @@ Every filter column looks the same, so people who learn one app know the next. `
   </div>
   <div class="search-input-field">
     <label for="filter-search">Search</label>
-    <input type="search" id="filter-search" placeholder="Search systems&hellip;" autocomplete="off">
+    <input type="search" id="filter-search" autocomplete="off">
   </div>
   <fieldset class="search-facet-group">
     <legend>Departments</legend>
@@ -178,13 +178,29 @@ Every filter column looks the same, so people who learn one app know the next. `
 ```
 
 - **Title:** "Filter", and only that word (not "Filter Mentions", "Filter software" or "Filter vendors"), with the Reset icon button beside it.
-- **Search first,** as a normal field: label above, a rounded-rectangle box like the selects (not Pico's pill), full width, no `role="search"` wrapper. Keep the placeholder short enough to fit the 248 px column ("Search systems…"). Search never goes in the toolbar.
-- **Filter names** are plural nouns: "Departments", "Monitors", "Sources". Not "Custodian department" or "Filter by source".
+- **Search first,** as a normal field: label "Search" above, a rounded-rectangle box like the selects (not Pico's pill), full width, no `role="search"` wrapper, and no placeholder: the label says what the box is. The schema does not allow a placeholder or another label. Search never goes in the toolbar.
+- **Filter names** are plural nouns: "Departments", "Monitors", "Sources". Not "Custodian department" or "Filter by source". Every group shows its name; none is hidden for assistive technology only.
+- **Nothing chosen** reads "All" and the plural noun ("All departments", "All statuses"), never "Any status" or "All". The text comes from `allLabel`.
+- **Sort is not in the column.** It sits above the results, the way Marin Mentions shows it.
 - **A choice of one is a filter too.** Which year, version or measure the results show (for example Recommended or Adopted) goes in the filter column, not in the toolbar: a `.search-facet-group` fieldset with a `<legend>` and one `select`, not collapsed, one always chosen with the latest as the default, above the multi-select filters. Reset restores the default. The toolbar keeps only sort, view and the Copy and Download buttons. It is a dropdown (`select`) in the fieldset, labelled by the legend, with the default selected, not radio buttons, so the column does not grow with the list.
 - **Reset does four things.** It deselects every filter and clears the search, puts a choice of one (such as the budget book or the year) back to its default, the latest, even if that means opening another page, collapses every filter group (`details.mm-facet-group` closed again, as on first load), and returns to the first tab (the results tab, not Stats, Data or Notes). It leaves sort and view alone. The address loses its filter and tab parameters, and the "Showing:" line goes back to its "All" words.
 - **Collapsed by default.** Each filter is a `details.mm-facet-group` that opens to its checkboxes. Open it on load when the address holds a choice, and say what is chosen in the summary ("3 selected").
 - **Spacing:** 1.5rem between fields and groups, 0.6rem between checkbox rows, 0.5rem above and below a group's name, 0.75rem under an open group's list, 24 px checkboxes. Do not add your own list or checkbox spacing in an app.
 - **Scrolling:** on a wide screen the column is as tall as the window at most and scrolls on its own (`.search-side`, 1.35.0 and later); the Filter title and Reset button stay at the top while the fields scroll. On a narrow screen the page scrolls it.
+
+**Drawn by the shell.** Put `<div class="search-side" data-filter-column="filters.json" data-filter-name="things"></div>` inside the `.search-layout` and the shell draws the toggle button, the column and the markup above from the file, with no filter HTML in the page (shell code in `shared/app-shell.js`, test page `tests/fixtures/filter-column.html`). The app listens for `marin-filter-change` (`detail.state` holds the search and each group's choice; `detail.source` names the group, `search` or `reset`) and `marin-filter-ready`, and can call `setCounts(groupId, {value: n})` and `reset()` on the element; `filterState` holds the current choices. Choices are kept in the address (`q`, and each group's `param`; a date range uses `param-from` and `param-to`), so a link, Back and reload restore them. A choice of one with `"default": "latest"` starts on its newest value. What the column does for accessibility, so an app does not:
+- Search waits for a pause in typing before it sends a change, so an app filters once, not on every key.
+- **Results:** put `data-filter-results` on the element that holds the results message, inside the same `.search-layout`, and call `setResults(count)` on the column after filtering (`setResults(count, "Showing 24 of 50 mentions")` for the app's own wording). The element becomes a polite status that says "12 results." once. At 0 it says "No results." and offers a Reset filters button. This replaces each app's own "active filters" and "no results" text.
+- Reset leaves focus on the Reset button and says "Filters reset. 12 results." as one message when the app calls `setResults` from its change handler, or "Filters reset." alone if it does not.
+- A file that will not load shows "Could not load the filters." with a Retry button, announced as an alert, instead of an empty column.
+- A date range whose To is before its From is not applied: both fields are marked `aria-invalid`, tied to a visible alert ("The To date must be on or after the From date."), and the results stay as they were until it is fixed.
+- No option is ever disabled, even with a count of 0, so it stays in the tab order and reachable by screen reader.
+- A field tabbed into view stops below the pinned title row, not under it (`scroll-padding-top` follows the title row's height).
+- On a narrow screen Escape closes the open panel and returns focus to the filter button; a closed panel is out of the tab order.
+- Every option row is a click target at least 24 px tall and as wide as the column; focus rings use system colors in forced-colors mode, and the toggle, fields, Reset and icons keep their border or stroke (tested).
+- **Parent and child:** `options.parentField` names the record field that holds another choice's value; that choice is listed under it, indented (a division under its department). They are separate checkboxes: choosing one does not choose the other. A loop of parents is listed flat, so nothing is lost.
+- **Group types:** `checkbox` (collapsed with an "All …" summary, or `"collapsed": false` for a short always-showing list with defaults), `nested-checkbox` (`groupBy` one or two fields: a collapsed group for each value, in the data's order, with "(N selected)"), `radio`, `select` (an `allLabel` for "everything", or a `default` for a choice that is never empty, such as a time range) and `date-range`. A radio or select choice marked `"hidden": true` is not listed; the app sets it with `setValue(groupId, value)`, which updates the column and address without sending a change.
+- `python3 tests/browser_filter_column.py` checks all of this, including an axe-core scan (set `AXE_CORE` to `axe.min.js`) and 320 px width.
 
 ## Test banner
 

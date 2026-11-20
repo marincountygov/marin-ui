@@ -17,6 +17,11 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - run: python -m pip install playwright
+      - run: python -m pip install playwright jsonschema
+      - run: npm pack axe-core@4.10.2 --silent && tar xzf axe-core-4.10.2.tgz
       - run: python -m playwright install --with-deps chromium
       - run: python tests/browser_filter_panel.py
+      - run: python scripts/check-filters.py
+      - run: python tests/browser_filter_column.py
+        env:
+          AXE_CORE: ${{ github.workspace }}/package/axe.min.js

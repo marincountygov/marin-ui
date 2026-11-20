@@ -1,0 +1,1 @@
+{ "schemaVersion": "1.0.0", "search": { "id": "s" }, "groups": [ { "type": "checkbox", "id": "source", "label": "Filter by source", "allLabel": "All sources", "options": { "values": [ { "value": "a", "label": "A" } ] } } ] }
