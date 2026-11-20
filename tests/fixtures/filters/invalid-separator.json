@@ -1,0 +1,1 @@
+{"schemaVersion": "1.0.0", "search": {"id": "s"}, "groups": [{"type": "checkbox", "id": "a", "label": "As", "allLabel": "All as", "separator": ";", "options": {"values": [{"value": "x", "label": "X"}]}}]}
