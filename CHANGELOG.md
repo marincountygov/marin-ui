@@ -1,5 +1,8 @@
 # MarinOS brand bundle changelog
 
+## 1.37.0 — 2026-11-20
+- The filter column does the matching and the counting. The file names the record field each group looks at (`"field": "themes"`, a dot path such as `"venue.name"`; a list of values counts as each value) and the fields the search reads (`search.fields`, with `search.match` of `"phrase"` or `"words"`). The column then has `matchesRecord(record, {skip})`, `filter(records, {skip})` and `updateCounts(records, {extra, skip})`: OR inside a group, AND across groups, the search, a date range on the record's date, a count beside every choice that leaves out its own group, and group totals that count each record once. A group with no `field` (a time range, a tab) stays the app's own. Why: five apps each wrote about 15 to 20 lines of the same matching and counting; one shared copy is tested once.
+
 ## Documentation, 2026-11-20 (no version change: docs are not part of the shipped bundle)
 - `docs/components.md` "Filter column": filters are multi-select (checkbox groups) by default. A choice of one (`select`, `radio`) is only for choices that exclude each other, such as a time range, a year, a version or a budget book. Why: Marin Learn's Themes started as a drop-down and had to become checkboxes; a person should be able to combine themes, departments or statuses.
 
