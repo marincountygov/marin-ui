@@ -25,6 +25,7 @@ fi
 python3 "$ROOT_DIR/vendor/marinos/audit-buttons.py" "$ROOT_DIR" --fail
 # Lists copy, download, file reading and upload code that does not use the shell's helpers; it must list nothing.
 python3 "$ROOT_DIR/vendor/marinos/audit-shared-helpers.py" "$ROOT_DIR" --fail
+python3 "$ROOT_DIR/scripts/check-filters.py"
 if command -v node >/dev/null 2>&1; then
   node "$ROOT_DIR/scripts/check-contrast.js"
 fi

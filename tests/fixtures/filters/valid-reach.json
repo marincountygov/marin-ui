@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "1.0.0",
+  "search": { "id": "filter-search" },
+  "groups": [
+    { "type": "date-range", "id": "date", "label": "Dates" },
+    { "type": "select", "id": "venue", "label": "Venues", "allLabel": "All venues", "options": { "from": "data/places.json", "valueField": "id", "labelField": "name" } },
+    { "type": "radio", "id": "book", "label": "Budget books", "default": "latest", "options": { "from": "data/books.json", "valueField": "id", "labelField": "title" } }
+  ]
+}

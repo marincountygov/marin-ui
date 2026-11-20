@@ -1,0 +1,1 @@
+{ "schemaVersion": "1.0.0", "search": { "id": "s" }, "groups": [ { "type": "checkbox", "id": "status", "label": "Statuses", "allLabel": "Any status", "options": { "values": [ { "value": "open", "label": "Open" } ] } } ] }

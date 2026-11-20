@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0.0",
+  "search": { "id": "job-search-input" },
+  "groups": [
+    { "type": "checkbox", "id": "titlegroup", "label": "Title groups", "allLabel": "All title groups", "options": { "from": "data/job-classes.json", "valueField": "title_group" } },
+    { "type": "checkbox", "id": "payband", "label": "Maximum yearly pay", "allLabel": "All pay bands", "options": { "values": [ { "value": "under-100k", "label": "Under $100,000" }, { "value": "100k-150k", "label": "$100,000 to $150,000" } ] } },
+    { "type": "checkbox", "id": "hours", "label": "Schedules", "allLabel": "All schedules", "options": { "from": "data/job-classes.json", "valueField": "hours_per_period" } },
+    { "type": "checkbox", "id": "steps", "label": "Step counts", "allLabel": "All step counts", "options": { "from": "data/job-classes.json", "valueField": "number_of_steps" } }
+  ]
+}

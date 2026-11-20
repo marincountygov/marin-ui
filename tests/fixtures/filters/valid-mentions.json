@@ -1,0 +1,60 @@
+{
+ "schemaVersion": "1.0.0",
+ "search": {
+  "id": "filter-search"
+ },
+ "groups": [
+  {
+   "type": "select",
+   "id": "time",
+   "label": "Times",
+   "default": "60d",
+   "options": {
+    "values": [
+     {
+      "value": "24h",
+      "label": "Past 24 hours"
+     },
+     {
+      "value": "60d",
+      "label": "Past 60 days"
+     },
+     {
+      "value": "report",
+      "label": "Report dates",
+      "hidden": true
+     }
+    ]
+   }
+  },
+  {
+   "type": "nested-checkbox",
+   "id": "monitor",
+   "label": "Monitors",
+   "groupBy": [
+    "facet",
+    "group"
+   ],
+   "options": {
+    "from": "data/monitors.json",
+    "records": "monitors",
+    "valueField": "id",
+    "labelField": "name",
+    "parentField": "parent"
+   }
+  },
+  {
+   "type": "nested-checkbox",
+   "id": "source",
+   "label": "Sources",
+   "groupBy": [
+    "content_type"
+   ],
+   "options": {
+    "from": "data/sources.json",
+    "valueField": "id",
+    "labelField": "name"
+   }
+  }
+ ]
+}
