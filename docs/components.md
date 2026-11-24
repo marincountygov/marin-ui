@@ -625,7 +625,7 @@ The list page of a set of documents (the regulations, the guides, the procedures
 
 ## Search results that show where the words are
 
-A search that looks through the text of documents (not only their names) shows, under each result, **a line of the text where the words are**, with the matched words marked, and **marks the same words on the page the result opens**. A result that is only a heading makes a person open page after page to find the sentence; this answers before the click. Reference: `marin-docs` (`home-search.js`, `doc-search.js`, `doc-highlight.js`, `search-text.css`) and the MarinOS home search (`marin-os/assets/app.js`).
+A search that looks through the text of documents (not only their names) shows, under each result, **a line of the text where the words are**, with the matched words marked, and **marks the same words on the page the result opens**. A result that is only a heading makes a person open page after page to find the sentence; this answers before the click. Reference: `marin-docs` (`home-search.js`, `doc-search.js`) and the MarinOS home search (`marin-os/assets/app.js`).
 
 **The snippet.**
 - About 170 characters, cut at word boundaries, with an ellipsis (`…`) on a side that continues. It starts about 60 characters before the first word that starts with a typed word, so the match is near the start of the line.
@@ -642,9 +642,9 @@ A search that looks through the text of documents (not only their names) shows, 
 **Highlighting on arrival.**
 - When a result is pressed, the words go to `sessionStorage` under `marin-search-hit` (`{ path, terms, at }`); nothing is added to the address, so shared links stay clean and a result that leaves one app for another (the MarinOS home page to Marin Docs, which share an origin) still carries the words.
 - The page that opens reads them once, if the path matches and they are under two minutes old, wraps each word that starts with a term in `mark.search-hit` inside the page's content (not the navigation, the actions or the pager), and scrolls to the first mark, or stays at the section the address names. Escape clears the marks; reloading shows none.
-- Style (`search-text.css`): `mark.search-hit { padding: 0 .1em; border-radius: .15em; background: color-mix(in srgb, var(--app-accent) 22%, transparent); color: inherit; }`. Do not use the browser's default yellow `mark`.
+- Style (in `app-brand.css`, so every app has it): `mark.search-hit` is a tint of the accent on the surface with the normal text color (the pair is checked for contrast in both themes), `.search-snippet` is a muted block line. Do not use the browser's default yellow `mark`.
 
-**Status.** Built in Marin Docs and the MarinOS home search. The shared pieces (the two CSS rules, `snippet` and the highlighter) are copied into each; they belong in `marin-app-shell` as `marinSearchSnippet` and `marinSearchHighlight` with the CSS in `marin-ui`, so every app's search can use them after a shell release. Until then keep the copies identical.
+**The code.** The App Shell provides it, so an app writes none of this: `marinSearchWords(text)` (the typed words, the way the search splits them), `marinSearchSnippet(text, words)` (the `.search-snippet` element, with the matched words in `mark.search-hit`, or `null` when no word of the text starts with a typed word), `marinSearchRemember(href, words)` (call it when a result is pressed) and the highlighter, which runs by itself on the page a result opens. Reference apps: Marin Docs and the MarinOS home search.
 
 ## Standard app nav: About and Updates
 
