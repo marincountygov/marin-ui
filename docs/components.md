@@ -641,7 +641,7 @@ A document that has facts about itself (who prepared it, who approved it, when i
 
 - **A definition list** (`dl.details`, as in a procedure's Overview) in a `section.doc-details` with an accessible name ("About this regulation"). One row for each fact: the term, then the value.
 - **Only what the data holds.** A row appears only when the data has a value for it. Nothing is filled in, worked out, converted or reworded: a date that the source writes as "2005-01" or "02-07-17" is shown as written, and a name keeps the source's own marks. A document with no facts has no block, not an empty one.
-- **The terms** are the plain names of what the data says. For dates the data gives a formal name, use the standard's own meaning: "Applies from" (the date the document applies from) and "Version dated" (the date the shown text is valid for). Do not merge two different dates into one row.
+- **The terms** are the plain names of what the data says. For dates the data gives a formal name, use the standard's own meaning: "Applies from" (the date the document applies from) and "Version dated" (the date the shown text is valid for). Do not merge two different dates into one row. A document whose text is copied from another source also shows **"Last checked"**: the day the copy was last compared with that source. It is the day of the check, not the date the source changed, and it is a row like the others: shown only when the data records it, never worked out or assumed. Without it the page says nothing about how current the copy is, which is better than a date nobody recorded.
 - **Built, not written:** generated from the same data as the page, with one function, so every document of the kind has the same rows in the same order.
 - It prints with the document.
 
