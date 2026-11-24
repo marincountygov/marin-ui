@@ -579,6 +579,59 @@ Any `[data-security-json="security.json"]` section lazy-loads that file (same or
 
 Both `[data-security-status]` and `[data-security-content]` are required inside the section. An app with no `security.json` yet gets a plain "not yet published" status, not an error. Visibility is detected the same way as Updates (the section's `hidden` attribute), so it works with the tab-sections pattern or any custom hash routing. Link to files with **relative** paths (`.well-known/security.txt`, `security.json`), never root-absolute ones: apps are GitHub Pages project sites under `/<repo>/`, so `/.well-known/…` resolves to the org root and 404s.
 
+## Document set outline (left navigation of documents)
+
+A document that belongs to a set (a page of a guide, a regulation in a manual, a procedure in a collection) has one left navigation that shows the set, its groups and its documents, with the one being read marked. It is the same on every kind of document, so a person who learns it on one finds it on the next. Marin Docs is the reference (`marin-docs/scripts/doc-nav.js` and `marin-docs/doc-nav.css`).
+
+**Three levels.**
+
+1. The set: its title, linking to the list page of the set. A set whose first group already links to its start page (a guide's Overview) may leave the title out.
+2. Groups inside the set: a guide's parts, a manual's sections, a collection's departments. A set with few documents (about 8 or fewer) is one plain list with no group names.
+3. Documents in each group: one link each, in the order the source gives (not alphabetical, unless the set has no order of its own). The document being read has `aria-current="page"` and is bold. Exactly one link per page is current.
+
+The sections of the document being read are not in this navigation. They stay in the right column, "On this page" (see above), so the left navigation is the same on every page of the set.
+
+**The data.** The navigation is built from what the set already knows, never a new list to keep by hand:
+
+```
+{ "set":    { "name": "Personnel Management Regulations", "href": "./" },
+  "groups": [ { "name": "Section 1: General and Administration",
+                "items": [ { "label": "PMR 1: Purpose & Authority", "href": "pmr-1.html", "current": false } ] } ] }
+```
+
+The build reads the order and the groups from the data it already uses (a guide's `groups`, the `hasPart` order of a manual, the department of a procedure) and writes the markup, so there is nothing to keep in step and no script on the page.
+
+**Markup.** `<aside class="doc-nav" aria-label="…">`. A group is a `<div>` with an `<h2>`, or, in a long set (the 29 regulations), a `<details>` with a `<summary>` that is open only for the group holding the current document. Do not remove the `details` behavior with script; it works without JavaScript.
+
+**Layout.** Three columns on a wide screen: navigation 14rem, content, "On this page" 15.5rem, with the navigation sticky and scrolling inside its column when it is taller than the screen. Under 850px the navigation sits above the content in a bordered box. A view that needs the full width (a flow chart) hides both side columns.
+
+**Search inside the set.** Under the set title there is a search box (label "Search") that looks only through that set: every document and every section, by name and by text. While there is text in the box the results (`N results / matching “word”`, then one link to each section with the document it is in) replace the groups; Escape, or emptying the box, brings the groups back. The text is in one file for the set, built with the pages and read only when the box is focused (the regulations are about 400 KB). The box is hidden until its script runs. A set's list page has the same box above its cards. Only listed documents are in the file: a document left off the lists is left off the search too.
+
+**Do not** add a second set of links to the same set in the page (a pager is allowed), write the navigation by hand into a page, or put the sections of the current document under it.
+
+## Search results that show where the words are
+
+A search that looks through the text of documents (not only their names) shows, under each result, **a line of the text where the words are**, with the matched words marked, and **marks the same words on the page the result opens**. A result that is only a heading makes a person open page after page to find the sentence; this answers before the click. Reference: `marin-docs` (`home-search.js`, `doc-search.js`, `doc-highlight.js`, `search-text.css`) and the MarinOS home search (`marin-os/assets/app.js`).
+
+**The snippet.**
+- About 170 characters, cut at word boundaries, with an ellipsis (`…`) on a side that continues. It starts about 60 characters before the first word that starts with a typed word, so the match is near the start of the line.
+- Every word that starts with a typed word is wrapped in `<mark class="search-hit">`. The whole word is marked, not only the typed part.
+- When the words are only in the result's name, show the start of the text instead (same length, no marks). Never show a blank line under a result that has text.
+- The snippet is `<span class="search-snippet">` (block, muted, 0.9rem), directly under the name. The name stays the link; the snippet is not. A result inside a document shows where it is in muted text after the name (`in PMR 35: Probation Period`).
+- A result with no text of its own (an app, an organization) keeps its one plain line, unchanged.
+- **Not in a sidebar or a narrow column.** The search box in a left navigation lists names only; there is no room for a line of text. Highlighting on arrival still applies to what it opens.
+
+**The text.**
+- The text is not in the small list that finds names. Each set of documents has its own text file (`{ n, p, h, t }`: name, the document it is in, where it opens, the text), named in the list's `sets`, and a search box reads it only after a person starts to search. A box that reads the text uses it in place of the list's entries of the same kind.
+- Only text that is already on a public page is in a text file, and only for documents that are listed.
+
+**Highlighting on arrival.**
+- When a result is pressed, the words go to `sessionStorage` under `marin-search-hit` (`{ path, terms, at }`); nothing is added to the address, so shared links stay clean and a result that leaves one app for another (the MarinOS home page to Marin Docs, which share an origin) still carries the words.
+- The page that opens reads them once, if the path matches and they are under two minutes old, wraps each word that starts with a term in `mark.search-hit` inside the page's content (not the navigation, the actions or the pager), and scrolls to the first mark, or stays at the section the address names. Escape clears the marks; reloading shows none.
+- Style (`search-text.css`): `mark.search-hit { padding: 0 .1em; border-radius: .15em; background: color-mix(in srgb, var(--app-accent) 22%, transparent); color: inherit; }`. Do not use the browser's default yellow `mark`.
+
+**Status.** Built in Marin Docs and the MarinOS home search. The shared pieces (the two CSS rules, `snippet` and the highlighter) are copied into each; they belong in `marin-app-shell` as `marinSearchSnippet` and `marinSearchHighlight` with the CSS in `marin-ui`, so every app's search can use them after a shell release. Until then keep the copies identical.
+
 ## Standard app nav: About and Updates
 
 `#app-nav` never includes a link to the app's own default/home view, whether or not that view has its own task-specific name — the header icon/title link (`.app-title-row`, see "App shell" in `app-shell.md`) is the only way back to it. `#app-nav` lists just what's left: About, Updates, Security, and any additional non-default task tabs the app genuinely has (e.g. a multi-step app with Preview/Publish steps beyond its default Build step).
