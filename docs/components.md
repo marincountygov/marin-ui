@@ -623,6 +623,18 @@ The list page of a set of documents (the regulations, the guides, the procedures
 - **A page below the home page has the same shell as the home page**: the header with the app name and About and Updates, the footer, and Feedback, with no breadcrumb. (Marin Budget and Marin Docs are the references.) The left navigation is not drawn on the landing page; the cards are the navigation.
 - Only listed documents appear: a document left off the lists is left off the cards, the navigation and the search.
 
+## Printing a document
+
+A document that people print or attach to a case (a regulation, a procedure, a guide page) prints as the document and nothing else. Marin Docs is the reference (`marin-docs/doc-nav.css`, the `@media print` block, which guides, regulations and procedures all load).
+
+- **Left off the paper:** the navigation (header, left navigation, footer, Feedback, "On this page"), the search boxes, the copy/download buttons, the previous and next links and the section anchors. The shell already leaves off its own header, footer and Feedback button; the app leaves off the rest.
+- **What is printed:** the title, the text, the lists and tables, in black on white, filling the page width with no box, border or shadow (`@page` margins of about 2 cm). Headings stay with the text after them (`break-after: avoid`) and paragraphs do not leave one or two lines alone on a page (`orphans: 3; widows: 3`).
+- **A link to another site shows its address** in brackets after its text (`a[href^="http"]::after`), because paper has no link. Links inside the app do not.
+- **Marked search words are not marked on paper** (`mark.search-hit` has no background).
+- **The browser adds** the address of the page, the date and the page numbers. Do not draw them yourself.
+- **Print or save as PDF** is the last item of the Download menu of a document, and opens the browser's print dialog (`window.print()`), where "Save as PDF" is a choice. Do not build a PDF in the app. A page with only a Copy link button has no Download menu; it still prints correctly.
+- **Test it:** emulate print media and check that the navigation, actions, header and footer are not visible, that the text fills the page, and that a link to another site shows its address; render a PDF of one page and read it.
+
 ## Search results that show where the words are
 
 A search that looks through the text of documents (not only their names) shows, under each result, **a line of the text where the words are**, with the matched words marked, and **marks the same words on the page the result opens**. A result that is only a heading makes a person open page after page to find the sentence; this answers before the click. Reference: `marin-docs` (`home-search.js`, `doc-search.js`) and the MarinOS home search (`marin-os/assets/app.js`).
