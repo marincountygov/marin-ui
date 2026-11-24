@@ -607,7 +607,7 @@ The build reads the order and the groups from the data it already uses (a guide'
 
 **Search inside the set.** Under the set title there is a search box (label "Search") that looks only through that set: every document and every section, by name and by text. While there is text in the box the results (`N results / matching “word”`, then one link to each section with the document it is in) replace the groups; Escape, or emptying the box, brings the groups back. The text is in one file for the set, built with the pages and read only when the box is focused (the regulations are about 400 KB). The box is hidden until its script runs. A set's list page has the same box above its cards. Only listed documents are in the file: a document left off the lists is left off the search too.
 
-**Previous and next.** At the foot of a document in an ordered set (every page of a guide, every regulation in the manual, every listed procedure), a `nav.doc-pager` with a Previous and a Next link, each with the title of the document it goes to (`marin-docs/scripts/doc-pager.js`). The order is the set's own order, crossing group boundaries (the last regulation of one Section is followed by the first of the next). The first document has no Previous and the last has no Next; a set of one draws nothing.
+**Previous and next.** At the foot of a document in an ordered set (every page of a guide, every regulation in the manual, every listed procedure), a `nav.doc-pager` with a Previous and a Next link, each with the title of the document it goes to (`marin-docs/scripts/doc-pager.js`). The order is the set's own order, crossing group boundaries (the last regulation of one Section is followed by the first of the next). The first document has no Previous and the last has no Next; a set of one draws nothing. A page in the "Reference" group (a glossary) is part of the set but not in its order, so it has no pager and the pager of the last document does not run into it.
 
 **Do not** add a second set of links to the same set in the page (the pager above is the one allowed), write the navigation by hand into a page, or put the sections of the current document under it.
 
@@ -655,6 +655,18 @@ A document that people quote (a regulation, a procedure) has **Citation** in its
 - **Why the menu and not a button on every heading:** a long document has dozens of sections, and a button on each puts every one in the keyboard's tab order. The Copy menu is one control, and the address already names the section.
 - **Built, not written:** the generator writes the manual's name, the section prefix and the effective date on the actions; the shared script builds the line. Nothing is written by hand into a page.
 - A page that cannot copy says so ("Could not copy the citation."); it never fails silently.
+
+## Document set glossary
+
+A set of documents that defines terms (the regulations define "Employee", "Probationary Period") has **one glossary page for the set**, built from the set's own list of terms. It is a page of the set, not a shared list across sets: the same word can mean different things in different sets, and a reader of one set wants the definitions that bind it. Marin Docs is the reference (`marin-docs/pmrs/glossary.html`, built by `scripts/build-pmrs.js` from `definitions.jsonld`).
+
+- **The data:** a `DefinedTermSet` with `DefinedTerm`s (`name`, `description`, and `subjectOf`: the section that defines it). The page is built from it and nothing else. Do not hand-write a glossary page for a set whose terms are in data; a hand-written one (the Public Engagement Plan's) is fine until its terms are in data.
+- **The page:** the title "Glossary", then terms A to Z in a definition list (`dl.doc-glossary`), a heading for each letter that has a term and an "On this page" list of those letters. Each term's id is its name as a slug, so it can be linked to. The definition is the data's own words, with no added explanation.
+- **Where it is defined:** after each definition, a small link to the section that defines it ("PMR 2.1"), taken from `subjectOf`. A term with no such section has no link.
+- **In the set:** a "Reference" group in the left navigation, after the groups of documents, holding "Glossary" (and any other page that is part of the set but not in its order). A page in Reference is not in the previous and next order. The list page of the set gets a "Reference" card listing the same links.
+- **In the set's search:** each term is an entry in the set's text file, "in Glossary", opened at its entry. A person who types a term finds its definition among the results.
+- **Copy, download, print:** like the other pages. It offers the text, HTML and Markdown, and the JSON of the glossary (the terms' data); it has no Citation, because the section that defines a term is the citation.
+- **No linking of terms inside the text** unless the set's data says where each use is. A term is not underlined or linked in a regulation just because the word appears.
 
 ## Search results that show where the words are
 
