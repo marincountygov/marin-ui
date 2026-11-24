@@ -1,5 +1,8 @@
 # MarinOS brand bundle changelog
 
+## 1.38.0 — 2026-11-24
+- Add `mark.search-hit` and `.search-snippet` to `shared/app-brand.css`: a search result can show a line of the text where the words are, with the matched words marked, and the same words are marked on the page the result opens. The mark is a tint of the accent on the surface with the normal text color, never the browser's default yellow. `scripts/check-contrast.js` checks the pair in light and dark mode. The behavior (`marinSearchSnippet`, `marinSearchHighlight`) is in the App Shell. Why: Marin Docs and the MarinOS home search each carried a copy; every app's search can now use the same one. The standard is "Search results that show where the words are" in `docs/components.md`.
+
 ## 1.37.0 — 2026-11-20
 - The filter column does the matching and the counting. The file names the record field each group looks at (`"field": "themes"`, a dot path such as `"venue.name"`; a list of values counts as each value) and the fields the search reads (`search.fields`, with `search.match` of `"phrase"` or `"words"`). The column then has `matchesRecord(record, {skip})`, `filter(records, {skip})` and `updateCounts(records, {extra, skip})`: OR inside a group, AND across groups, the search, a date range on the record's date, a count beside every choice that leaves out its own group, and group totals that count each record once. A group with no `field` (a time range, a tab) stays the app's own. Why: five apps each wrote about 15 to 20 lines of the same matching and counting; one shared copy is tested once.
 
