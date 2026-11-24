@@ -635,6 +635,16 @@ A document that people print or attach to a case (a regulation, a procedure, a g
 - **Print or save as PDF** is the last item of the Download menu of a document, and opens the browser's print dialog (`window.print()`), where "Save as PDF" is a choice. Do not build a PDF in the app. A page with only a Copy link button has no Download menu; it still prints correctly.
 - **Test it:** emulate print media and check that the navigation, actions, header and footer are not visible, that the text fills the page, and that a link to another site shows its address; render a PDF of one page and read it.
 
+## Document details
+
+A document that has facts about itself (who prepared it, who approved it, when it applies) shows them in one block near the top, under the title and before the text. Marin Docs is the reference (`marin-docs/scripts/doc-details.js`, used for the regulations; the Overview of a procedure is the same block written by hand).
+
+- **A definition list** (`dl.details`, as in a procedure's Overview) in a `section.doc-details` with an accessible name ("About this regulation"). One row for each fact: the term, then the value.
+- **Only what the data holds.** A row appears only when the data has a value for it. Nothing is filled in, worked out, converted or reworded: a date that the source writes as "2005-01" or "02-07-17" is shown as written, and a name keeps the source's own marks. A document with no facts has no block, not an empty one.
+- **The terms** are the plain names of what the data says. For dates the data gives a formal name, use the standard's own meaning: "Applies from" (the date the document applies from) and "Version dated" (the date the shown text is valid for). Do not merge two different dates into one row.
+- **Built, not written:** generated from the same data as the page, with one function, so every document of the kind has the same rows in the same order.
+- It prints with the document.
+
 ## Search results that show where the words are
 
 A search that looks through the text of documents (not only their names) shows, under each result, **a line of the text where the words are**, with the matched words marked, and **marks the same words on the page the result opens**. A result that is only a heading makes a person open page after page to find the sentence; this answers before the click. Reference: `marin-docs` (`home-search.js`, `doc-search.js`) and the MarinOS home search (`marin-os/assets/app.js`).
