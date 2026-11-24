@@ -607,7 +607,21 @@ The build reads the order and the groups from the data it already uses (a guide'
 
 **Search inside the set.** Under the set title there is a search box (label "Search") that looks only through that set: every document and every section, by name and by text. While there is text in the box the results (`N results / matching “word”`, then one link to each section with the document it is in) replace the groups; Escape, or emptying the box, brings the groups back. The text is in one file for the set, built with the pages and read only when the box is focused (the regulations are about 400 KB). The box is hidden until its script runs. A set's list page has the same box above its cards. Only listed documents are in the file: a document left off the lists is left off the search too.
 
-**Do not** add a second set of links to the same set in the page (a pager is allowed), write the navigation by hand into a page, or put the sections of the current document under it.
+**Previous and next.** At the foot of a document in an ordered set (every page of a guide, every regulation in the manual, every listed procedure), a `nav.doc-pager` with a Previous and a Next link, each with the title of the document it goes to (`marin-docs/scripts/doc-pager.js`). The order is the set's own order, crossing group boundaries (the last regulation of one Section is followed by the first of the next). The first document has no Previous and the last has no Next; a set of one draws nothing.
+
+**Do not** add a second set of links to the same set in the page (the pager above is the one allowed), write the navigation by hand into a page, or put the sections of the current document under it.
+
+## Document set landing page
+
+The list page of a set of documents (the regulations, the guides, the procedures) is the front door to it: a person sees what is in the set, and can search the whole set. Marin Docs is the reference (`marin-docs/pmrs/`, built by `scripts/build-pmrs.js`).
+
+- **One card for each group of the set**, in the set's order (the four Sections of the regulations), each with the group's name as its heading and its documents listed as links. A card is `.app-card` in `docs-grid docs-grid--2`, one column on a narrow screen. The heading is not a link unless the group has a page of its own. Do not make one card for each document with a summary, and do not hide the documents one click deeper.
+- **Only what the data holds.** The names are the data's own. Do not write a summary, a definition or a line of explanation for the cards. A group with no name is a plain list.
+- **A search box above the cards**, labelled "Search", that looks through the whole set (every document and every section, by name and by text). The results replace the cards while there is text in the box and show the name, where it is, and a line of text with the words marked (see "Search results that show where the words are"); an empty box, or Escape, brings the cards back. The box is hidden until its script runs, so the cards are all there is without JavaScript.
+- **Built from the structured data** the set already has, at build time, as plain HTML, the same data that draws the left navigation (see "Document set outline"). Nothing on the page is written by hand.
+- **Spacing.** The source line (the link to where the set comes from) sits 2rem below the cards.
+- **A page below the home page has the same shell as the home page**: the header with the app name and About and Updates, the footer, and Feedback, with no breadcrumb. (Marin Budget and Marin Docs are the references.) The left navigation is not drawn on the landing page; the cards are the navigation.
+- Only listed documents appear: a document left off the lists is left off the cards, the navigation and the search.
 
 ## Search results that show where the words are
 
