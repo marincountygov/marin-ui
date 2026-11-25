@@ -4,6 +4,7 @@
 - In Windows forced colors, a checked checkbox or radio is drawn with the browser's own control (`appearance: auto`), so its state shows. Pico's white mark had no background to show against once forced colors replaced it, so every checked box in the filter column looked unchecked. Outside forced colors nothing changes.
 
 ## Documentation, 2026-11-24 (no version change: docs are not part of the shipped bundle)
+- `docs/components.md` "Charts (canvas)": a chart in a report or other dynamic preview is the same Chart.js card as Marin Mentions' (title, legend, described canvas, hidden table, PNG button), never a second renderer. Why: Marin Census first drew its own SVG charts, so they looked and copied differently from every other app.
 - `docs/components.md` "Tab sections": Data is always the last tab. "Sortable table columns": a table has a border and each cell has one, the same on the page and in Fullscreen, in every app. A table holds one kind of thing: group rows with a table for each group (heading and caption), and sort only a column whose values are comparable.
 
 ## 1.38.0 — 2026-11-24
