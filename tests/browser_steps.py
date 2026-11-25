@@ -79,11 +79,13 @@ def run(page, base):
 
     # Previous and Next are made for every step, in a named group, with names that match what is seen.
     group = page.locator(".step:not([hidden]) .steps-pager")
-    require(group.get_attribute("role") == "group" and group.get_attribute("aria-label") == "Previous and next step", "The pager is a named group")
+    require(group.evaluate("e => e.tagName") == "NAV" and group.get_attribute("aria-label") == "Previous and next step", "The pager is a named nav")
     require(group.locator("[data-prev-step]").get_attribute("aria-label") == "Previous: gather", "Previous is named")
     require(group.locator("[data-next-step]").inner_text().strip() == "Next: send", "Next keeps its words")
     require(page.locator("#gather .steps-pager [data-prev-step]").count() == 0 and page.locator("#send .steps-pager [data-next-step]").count() == 0, "No Previous on the first step and no Next on the last")
     require(group.locator("[disabled]").count() == 0, "Nothing is disabled")
+    sizes = [b.bounding_box() for b in group.locator("button").all()]
+    require(all(b["width"] < 400 for b in sizes), f"The buttons do not stretch: {sizes}")
 
     # Skip ahead: the last step is one click away, and the first two read as completed.
     page.click("nav.steps a[href='#send']")

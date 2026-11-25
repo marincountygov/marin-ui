@@ -398,12 +398,11 @@
     // .steps-pager. Next is the one solid button, with the next step's name in lowercase and an arrow after the words;
     // Previous is a quiet icon-only button with the arrow before it, named by aria-label and title. The first step has no
     // Previous and the last has no Next (they are left out, never disabled). The arrows are drawn by the shell and are
-    // decoration. Both buttons are a group with a name, 44 px or more, in the tab order after the step's content.
+    // decoration. Both buttons sit in a named nav (not role=group, whose Pico styles join the buttons), 44 px or more, in the tab order after the step's content.
     steps.forEach((step, index) => {
       if (step.section.querySelector(".steps-pager")) return;
-      const pager = document.createElement("div");
+      const pager = document.createElement("nav");
       pager.className = "steps-pager";
-      pager.setAttribute("role", "group");
       pager.setAttribute("aria-label", "Previous and next step");
       if (index > 0) {
         const name = `Previous: ${steps[index - 1].title.toLowerCase()}`;
