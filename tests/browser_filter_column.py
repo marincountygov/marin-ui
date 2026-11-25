@@ -457,7 +457,26 @@ def forced_colors(browser, base):
     for name in ("toggle", "search", "select", "reset"):
         require(look[name][0] != "none" and float(look[name][1].replace("px", "")) >= 1, f"{name} keeps a border in forced colors: {look[name]}")
     require(look["stroke"] not in ("none", "") and look["legend"], f"Icons keep a stroke and group names show in forced colors: {look}")
+    # A checked box must show that it is checked. Pico's white mark has no background to show against in forced colors, so the
+    # browser's own control is used there (and only there: elsewhere the brand's own box is kept).
+    box = page.locator("#items-filter-panel input[type=checkbox]").first
+    box.check()
+    require(box.evaluate("e => getComputedStyle(e).appearance") == "auto", "A checkbox is drawn by the browser in forced colors")
+    try:
+        from PIL import Image
+        import io
+        picture = Image.open(io.BytesIO(box.screenshot())).convert("L")
+        w, h = picture.size
+        inner = [picture.getpixel((x, y)) for x in range(w // 4 + 2, w - w // 4 - 2) for y in range(h // 4 + 2, h - h // 4 - 2)]
+        require(any(v < 100 for v in inner), "A checked checkbox shows a mark in forced colors")
+    except ImportError:
+        print("SKIP: forced-colors checkbox mark (needs Pillow).")
     context.close()
+    normal = browser.new_context(viewport={"width": 1100, "height": 800})
+    page = normal.new_page()
+    load(page, base)
+    require(page.locator("#items-filter-panel input[type=checkbox]").first.evaluate("e => getComputedStyle(e).appearance") == "none", "The brand's own checkbox is kept outside forced colors")
+    normal.close()
 
 
 def axe(page, base, scheme):

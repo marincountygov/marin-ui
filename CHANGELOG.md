@@ -1,5 +1,8 @@
 # MarinOS brand bundle changelog
 
+## 1.39.0 — 2026-11-24
+- In Windows forced colors, a checked checkbox or radio is drawn with the browser's own control (`appearance: auto`), so its state shows. Pico's white mark had no background to show against once forced colors replaced it, so every checked box in the filter column looked unchecked. Outside forced colors nothing changes.
+
 ## 1.38.0 — 2026-11-24
 - Add `mark.search-hit` and `.search-snippet` to `shared/app-brand.css`: a search result can show a line of the text where the words are, with the matched words marked, and the same words are marked on the page the result opens. The mark is a tint of the accent on the surface with the normal text color, never the browser's default yellow. `scripts/check-contrast.js` checks the pair in light and dark mode. The behavior (`marinSearchSnippet`, `marinSearchHighlight`) is in the App Shell. Why: Marin Docs and the MarinOS home search each carried a copy; every app's search can now use the same one. The standard is "Search results that show where the words are" in `docs/components.md`.
 
