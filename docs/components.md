@@ -111,6 +111,10 @@ If `vendor/icons/lucide/` doesn't yet have the icon an app needs, add that one S
 
 ## Sortable table columns
 
+**A table has a border, and each cell has one** (1 px `--app-border`), so rows and columns read as a grid. It is the same on the page and in Fullscreen, in every app (Marin Budget is the reference). Give the table its top and left edge and each cell its right and bottom edge (`border-collapse: separate; border-spacing: 0`), so a sticky first column keeps its lines when the rest scrolls. Numbers use tabular figures (`font-variant-numeric: tabular-nums`).
+
+**A table holds one kind of thing, and sorts only where it can.** Group rows by making a table for each group, each with a visible heading and a visually hidden `caption`, not a heading row inside one table. Use `th scope="col"` for column headings and `th scope="row"` for each row's name. A column sorts only when its values are comparable down the column; rows in different units, and a column of unique labels, have no sort.
+
 The row of action buttons for a table is, in this order: the choice of layout (when there is one), Copy, Copy link, Download, Fullscreen. Copy link copies the address, so the address holds what is on screen, including the layout (`?layout=charts`), and a shared link opens on it. The heading of every page of the same kind is built the same way (the name, then its code in brackets as a link), whether the page is a whole department or a part of one.
 
 A page that builds a document from choices (Marin Budget's Reports) has Copy, Download and Fullscreen above its preview, left aligned under its heading in a toolbar like a tool's (the button that opens a saved file is an icon button in a toolbar at the top), and no Copy link, because the address cannot hold what was built; the report file (Download) is what is shared. On a Stats tab the buttons that copy and download all the charts keep the same order around Copy link: Copy charts, Copy link, Download all charts, Fullscreen. The buttons of a chart or a table are 1rem above it, the same as a tool's toolbar is above its list; a line of results is 0.5rem above its buttons. The title of a chart card is the title of every card (1.25rem, bold). A chart has the same four buttons in the same order (Copy as an image or text, Copy link, Download a PNG, Fullscreen, which opens the chart and its buttons together). The section headings of a Dashboard are the size of the section headings of the other pages.
@@ -373,6 +377,8 @@ An off-canvas panel for editing one item's detail without losing the list behind
 ## Tab sections
 
 Elements sharing a `data-tab-section="name"` value show together and hide together, one group at a time, matched against the URL hash — no per-page JavaScript needed:
+
+**Data is always the last tab.** An app that has a Data tab (the dataset, its release and source, its files and what each measure means) puts it after every other tab, in the same place in every app, so people learn where to look. Places or the main list first, tools such as Reports next, Data last. About and Updates stay in the header navigation, not in the tab row.
 
 ```html
 <nav class="app-nav" id="app-nav" aria-label="Application navigation">
