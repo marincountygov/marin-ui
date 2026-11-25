@@ -296,7 +296,7 @@ An app whose whole workflow is a sequence of steps (`marin-spec`) lists them in 
 <div class="search-layout">
   <div class="search-side">
     <button type="button" class="filter-toggle" data-filter-toggle="steps" data-filter-label="Steps" aria-controls="steps-panel" hidden></button>
-    <aside id="steps-panel" class="search-sidebar" aria-labelledby="steps-title">
+    <aside id="steps-panel" class="search-sidebar" data-filter-column-exempt="steps" aria-labelledby="steps-title">
       <div class="search-panel-header"><h2 class="search-panel-title" id="steps-title">Steps</h2></div>
       <nav class="steps" data-steps aria-labelledby="steps-title">
         <ol>
@@ -324,6 +324,7 @@ An app whose whole workflow is a sequence of steps (`marin-spec`) lists them in 
 </div>
 ```
 
+- **Not a filter column.** `data-filter-column-exempt="steps"` on the `aside` tells the shell's filter-column audit (`audit-filter-column.py`) that this panel is a list of steps, not a hand-written filter column.
 - **State is a word first.** The shell writes "Completed", "Current" or "Up next" under each step's name (`.step-state`) and sets `data-step-state` (`complete`, `current`, `upcoming`) and `aria-current="step"` on the current link. Color, weight and a 4 px bar on the left edge only reinforce the word: green bar and green word for completed, accent bar with a tint and bold name for the current step, muted name and a grey bar for up next. Color is never the only signal (WCAG 1.4.1). `scripts/check-contrast.js` checks each pair in light and dark.
 - **Text only.** No circles, no numbers inside shapes, no icons or images in the list. The step label is "1. Name": the number is part of the words.
 - **Completed means earlier.** Every step before the current one reads as completed, and nothing is saved, so skipping ahead marks the steps between as completed. The app keeps no progress in the browser.

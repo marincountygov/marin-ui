@@ -1,5 +1,8 @@
 # MarinOS brand bundle changelog
 
+## Documentation, 2026-11-25 (no version change: docs are not part of the shipped bundle)
+- `docs/components.md` "Steps layout": the steps panel carries `data-filter-column-exempt="steps"` so the filter-column audit does not list it. Why: the audit lists every `search-sidebar` that is not drawn from `filters.json`, and the steps list is not a filter.
+
 ## 1.40.0 — 2026-11-25
 - Add the Steps layout: `nav.steps[data-steps]`, `.step`, `.step-box`, `.steps-progress`, `.steps-body` and `.steps-pager` in `shared/app-brand.css`, and the behavior in `shared/app-shell.js` (`marinSteps`, the `marin-step-change` event). One step shows at a time in the collapsible left column; each step in the list says "Completed", "Current" or "Up next" in words, with a bar on the left edge, color and weight to reinforce it; the "Step 2 of 6" line has a progress bar; "On this page" is built from the current step's boxes; any step can be opened at any time. No circles, numbers in shapes or icons. Completed means earlier than the current step, and nothing is saved. `.filter-toggle[hidden]` now stays hidden. `scripts/check-contrast.js` has the new pairs, and `tests/fixtures/steps.html` with `tests/browser_steps.py` checks it in light and dark, narrow, without JavaScript and in print. Why: the six-step flow in Marin Spec was its own code and styles, and the standard only described it in words, so the next step-by-step app would have copied it. The layout is vertical and collapsible only; a horizontal variant was left out on purpose.
 
