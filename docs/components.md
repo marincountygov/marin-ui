@@ -657,6 +657,14 @@ A document that has facts about itself (who prepared it, who approved it, when i
 - **Built, not written:** generated from the same data as the page, with one function, so every document of the kind has the same rows in the same order.
 - It prints with the document.
 
+## Facts about a thing (definition list)
+
+A list of facts about one thing (the About section of a place or an organization, a document's Overview, a dataset on a Data tab) is a definition list with the class `details`: `<dl class="details"><dt>Name</dt><dd>Value</dd>…</dl>`. It is defined once in `shared/app-brand.css` (a grid of a 10rem term column and the value, one column on a phone), so every app draws it the same way. Marin Docs, Marin Pulse and Marin Census use it.
+
+- **Flat.** Each term is a `<dt>` followed by its `<dd>`, directly inside the `<dl>`. No wrapping `<div>` for each pair, no bordered box, and no class of an app's own (`org-facts`, `facts`) or its own styles for the same list.
+- **Only what the data holds.** A row appears only when there is a value. Nothing is filled in or reworded (see "Document details").
+- **Not for numbers that belong in a table.** A topic's statistics (an estimate, its margin of error, what it is out of) are a table with a heading for each group, as on a place's page in Marin Census, not a list of terms and values. Where another app shows the same numbers, it uses the same table markup and class names, with every measure the page has, not a chosen few.
+
 ## Citing a document
 
 A document that people quote (a regulation, a procedure) has **Citation** in its Copy menu, which copies one line a person can paste into an email, a grievance or a memo. Marin Docs is the reference (`marin-docs/guides/guide-actions.js`, with `data-citation-*` on the `.doc-actions` that the regulation generator writes).

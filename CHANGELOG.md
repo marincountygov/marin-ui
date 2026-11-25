@@ -1,5 +1,8 @@
 # MarinOS brand bundle changelog
 
+## Documentation, 2026-11-25 (no version change: docs are not part of the shipped bundle)
+- `docs/components.md` "Facts about a thing (definition list)": a list of facts is `dl.details` (already in `shared/app-brand.css`), flat, with no app-specific class or styles. Why: Marin Pulse's About section used its own `org-facts` list and Marin Census's Data tab its own `facts` box, so the same list looked different in each app and in Marin Docs. Both now use `details`. The same section says statistics are a table for each topic, shown the same wherever they appear.
+
 ## 1.39.0 — 2026-11-24
 - In Windows forced colors, a checked checkbox or radio is drawn with the browser's own control (`appearance: auto`), so its state shows. Pico's white mark had no background to show against once forced colors replaced it, so every checked box in the filter column looked unchecked. Outside forced colors nothing changes.
 
