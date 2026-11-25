@@ -3,6 +3,9 @@
 ## Documentation, 2026-11-25 (no version change: docs are not part of the shipped bundle)
 - `docs/components.md` "Steps layout": the steps panel carries `data-filter-column-exempt="steps"` so the filter-column audit does not list it. Why: the audit lists every `search-sidebar` that is not drawn from `filters.json`, and the steps list is not a filter.
 
+## Documentation, 2026-11-26 (no version change: docs are not part of the shipped bundle)
+- `docs/components.md` "Heading sizes": a page below the home page that has its own title has that title as its one h1, and its header draws the app name as plain text (`title-heading="false"`, App Shell 2.9.0). Why: every inner page of Marin Docs (guides, regulations, procedures) had two h1s, the app title and the page's own, and demoting the page title would have flattened its headings.
+
 ## 1.43.0 — 2026-11-26
 - `.app-card` takes its background, border color and shadow from three custom properties, `--app-card-bg`, `--app-card-border` and `--app-card-shadow`, with the same values as before as the defaults. A card with a state (Meeting Meter's summary fades its edge while idle) sets them on itself instead of redrawing the surface. `docs/components.md` "Cards" says so, and says padding is layout, so a card that holds one main thing may be roomier on a class of its own. Why: the last five cards that redrew their own surface (Docs' SOP cards, Brand's logo cards, Learn's quiz and review panels, Meeting Meter's idle summary) could not use `.app-card` without losing a state or some padding. Nothing changes where the properties are not set.
 
