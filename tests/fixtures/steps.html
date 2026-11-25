@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Steps fixture | County of Marin</title>
+  <link rel="stylesheet" href="../../vendor/pico.min.css">
+  <link rel="stylesheet" href="../../shared/app-brand.css">
+  <script src="../../shared/app-shell.js" defer></script>
+</head>
+<body data-app-id="fixture-steps">
+  <main class="container">
+    <h1 class="visually-hidden">Steps layout fixture</h1>
+    <section id="start">
+    <div class="search-layout">
+      <div class="search-side">
+        <button type="button" class="filter-toggle" data-filter-toggle="steps" data-filter-label="Steps" aria-controls="steps-panel" hidden></button>
+        <aside id="steps-panel" class="search-sidebar" data-filter-column-exempt="steps" aria-labelledby="steps-title">
+          <div class="search-panel-header">
+            <h2 class="search-panel-title" id="steps-title">Steps</h2>
+          </div>
+          <nav class="steps" data-steps aria-labelledby="steps-title">
+            <ol>
+              <li><a href="#gather">1. Gather</a></li>
+              <li><a href="#answer">2. Answer</a></li>
+              <li><a href="#send">3. Send</a></li>
+            </ol>
+          </nav>
+        </aside>
+      </div>
+      <div class="search-results">
+        <div class="steps-progress" hidden></div>
+        <div class="steps-body">
+          <div class="steps-toc-holder" data-steps-toc></div>
+          <div class="steps-main">
+            <section id="gather" class="step" aria-labelledby="gather-heading">
+              <h2 id="gather-heading">Gather</h2>
+              <p>Collect what you need.</p>
+              <div class="step-box"><h3>What you do</h3><p>List the documents.</p></div>
+              <div class="step-box"><h3>What you get back</h3><p>A checklist.</p></div>
+            </section>
+            <section id="answer" class="step" aria-labelledby="answer-heading">
+              <h2 id="answer-heading">Answer</h2>
+              <div class="step-box"><h3>Your name</h3><label for="name">Name</label><input id="name" type="text"></div>
+              <div class="step-box"><h3>Your notes</h3><p>Write them.</p></div>
+            </section>
+            <section id="send" class="step" aria-labelledby="send-heading">
+              <h2 id="send-heading">Send</h2>
+              <div class="step-box"><h3>Send it</h3><p>Done.</p></div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+    </section>
+  </main>
+</body>
+</html>
