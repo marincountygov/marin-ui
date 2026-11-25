@@ -51,6 +51,12 @@ def run(page, base, scheme):
     boxes = page.eval_on_selector_all("#with-image > *", "els => els.map(e => { const r = e.getBoundingClientRect(); return [r.x, r.y, r.width, r.height]; })")
     require(boxes[0][0] < boxes[1][0] < boxes[2][0], "The checkbox, the image and the body sit in a row")
     require(abs(boxes[1][2] - 144) < 1 and abs(boxes[1][3] - 144) < 1, "The image is 9rem square")
+    # The card surface has defaults, and the three custom properties are the one way to change it.
+    plain = style(page, "#plain-card", "backgroundColor", "borderTopColor", "boxShadow")
+    hooked = style(page, "#hooked-card", "backgroundColor", "borderTopColor", "boxShadow")
+    require(plain[0] != "rgba(0, 0, 0, 0)" and plain[1] != "rgba(0, 0, 0, 0)" and plain[2] != "none", f"A card has its surface by default: {plain}")
+    require(hooked == ["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0)", "none"], f"A card can change its colors through the three custom properties: {hooked}")
+    require(style(page, "#hooked-card", "borderTopWidth", "paddingTop") == ["1px", "16px"], "The hooked card keeps its border width and padding")
     # Two columns.
     require(style(page, "#two-columns", "display") == ["grid"], "The two-column list is a grid")
     cols = page.eval_on_selector_all("#two-columns > li", "els => els.map(e => e.getBoundingClientRect().x)")
