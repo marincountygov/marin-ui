@@ -178,7 +178,7 @@ The Next button of a step-by-step flow is not a secondary button: it is a solid 
 
 ## Filter column
 
-The column can hold a list of steps instead of filters, for an app whose whole workflow is a sequence of steps (`marin-spec`): a `nav` of links numbered "1. Name" inside the panel, `data-filter-label="Steps"` on the toggle, and `aria-current="step"` on the current link. Keep a visible current-step line as the first child of `.search-results`, since a hidden first child leaves the narrow-screen toggle alone on its row. A short flow inside one feature keeps its steps as a row above the content instead.
+The column can hold a list of steps instead of filters: see "Steps layout" below.
 
 Every filter column looks the same, so people who learn one app know the next. An app does not write the column's words or markup: it lists its filters in `filters.json`, checked against `schemas/filter-panel.schema.json` (`python3 scripts/check-filters.py filters.json`), and the shell draws the column from it. The schema holds what an app may set (each group's type, visible name, "All …" text and where its choices come from) and leaves out what the shell owns (the word "Filter", the "Search" label, Reset, order, spacing, scrolling and accessibility). Choices come from the app's own data files, so their labels are never typed into a page. Examples that must pass and fail are in `tests/fixtures/filters/`. `marin-mentions` is the reference for how the column looks. The markup the shell draws, top to bottom:
 
@@ -287,6 +287,55 @@ Above the results, every app and page with a filter column stacks the same three
 - **Every choice in a filter is A to Z by label by default**, in the filter column and in any in-page filter (area types, places, topics). Only a choice with a natural order (years, time ranges) keeps it. An unchecked choice leaves what the filter feeds as well as the list: a built report does not keep an item whose type is unchecked.
 - **Service areas, departments and agencies run A to Z** in lists, tables, cards, charts and filter groups, and a list of them opens on "Name, A to Z". A chart titled as a ranking may order by amount; a page that reproduces a printed book keeps the book's order. Charts that keep an order pass it through (Marin Budget's `keepOrder`).
 - **Stats shows only what is relevant to the filter.** A whole-book summary sits in a container that is hidden as soon as a search or filter choice narrows the selection (the year is not a filter).
+
+## Steps layout
+
+An app whose whole workflow is a sequence of steps (`marin-spec`) lists them in the collapsible left column, the same column as the filters, and shows one step at a time. The list is always vertical and always in the column; there is no horizontal variant. The shell does the work (`nav[data-steps]`), so a page needs no script of its own.
+
+```html
+<div class="search-layout">
+  <div class="search-side">
+    <button type="button" class="filter-toggle" data-filter-toggle="steps" data-filter-label="Steps" aria-controls="steps-panel" hidden></button>
+    <aside id="steps-panel" class="search-sidebar" aria-labelledby="steps-title">
+      <div class="search-panel-header"><h2 class="search-panel-title" id="steps-title">Steps</h2></div>
+      <nav class="steps" data-steps aria-labelledby="steps-title">
+        <ol>
+          <li><a href="#gather">1. Gather</a></li>
+          <li><a href="#answer">2. Answer</a></li>
+        </ol>
+      </nav>
+    </aside>
+  </div>
+  <div class="search-results">
+    <div class="steps-progress" hidden></div>
+    <div class="steps-body">
+      <div class="steps-toc-holder" data-steps-toc></div>
+      <div class="steps-main">
+        <section id="gather" class="step" aria-labelledby="gather-heading">
+          <h2 id="gather-heading">Gather</h2>
+          <p>One-line intro.</p>
+          <div class="step-box"><h3>What you do</h3>…</div>
+          <p class="steps-pager"><button type="button" class="primary" data-next-step="answer" data-icon-end="arrow-right" hidden>Next: answer</button></p>
+        </section>
+        <!-- one section.step per link, in the same order -->
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+- **State is a word first.** The shell writes "Completed", "Current" or "Up next" under each step's name (`.step-state`) and sets `data-step-state` (`complete`, `current`, `upcoming`) and `aria-current="step"` on the current link. Color, weight and a 4 px bar on the left edge only reinforce the word: green bar and green word for completed, accent bar with a tint and bold name for the current step, muted name and a grey bar for up next. Color is never the only signal (WCAG 1.4.1). `scripts/check-contrast.js` checks each pair in light and dark.
+- **Text only.** No circles, no numbers inside shapes, no icons or images in the list. The step label is "1. Name": the number is part of the words.
+- **Completed means earlier.** Every step before the current one reads as completed, and nothing is saved, so skipping ahead marks the steps between as completed. The app keeps no progress in the browser.
+- **Any step, any time.** Every link works at any time, forward or back. Next and Previous follow "Step flow" under Buttons: `data-next-step` and `data-prev-step` hold the step id, the first step has no Previous and the last has no Next. They and the toggle are `hidden` in the page and shown by the shell once JavaScript runs.
+- **Progress line.** `.steps-progress` is filled with "Step 2 of 6: Analyze" (a polite status) and a native `<progress>` bar that is hidden from screen readers, since the line says the same. Keep it as the first child of `.search-results`: the narrow-screen toggle needs a visible first child to sit beside. With the column open on a wide screen it is kept for screen readers only, because the highlighted step already says where you are.
+- **On this page.** `[data-steps-toc]` is filled with the current step's `.step-box` headings (`h3`), each box given an id of the step plus its heading, and rebuilt when the step changes. Each link has the step's name added as visually hidden text, so "What you do (2. Analyze)" still makes sense read alone. A step with fewer than two boxes has no list. Do not write the list by hand.
+- **The address.** `#analyze` opens a step and `#analyze-what-you-do` opens the step that holds the box and scrolls to it. Changing step adds a history entry, so Back goes to the step before. Focus moves to the step's `h2` when the person changes step, not on first load.
+- **Without JavaScript** every step shows, the links jump down the page, and Next, Previous and the toggle stay hidden. Print shows every step and hides the list and buttons.
+- **Event.** The nav dispatches a bubbling `marin-step-change` ({ detail: { id, index, total, name } }) for an app that needs to react. `window.marinSteps(nav)` starts a nav added after load.
+- **Short flows inside one feature** (the Marin Mentions report builder) keep their row of `.tab-button` items until they move to this layout.
+
+Tests: `tests/fixtures/steps.html` and `python3 tests/browser_steps.py`.
 
 ## Collapsible filter panel
 
