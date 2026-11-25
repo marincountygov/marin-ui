@@ -255,6 +255,27 @@ project:
 
 ## Cards
 
+**One card surface, `.app-card`:** a surface background, a 1px border, the standard radius, 1rem of padding, a soft shadow and 1rem below it. Every card in every app is an `.app-card`. An app does not redraw a card's border, radius, background, shadow or padding in its own CSS, and does not make a second card class for the surface (`.job-card`, `.logo-card`, `.course-card` and the like are only for what is inside a card). The one variant is `.app-card--secondary`, the same card quieter (a smaller icon, name and text) for a second-level list: a department among departments, a help item. A card that has an icon uses `.app-card__icon` (2.25rem, accent colored, drawn with the Lucide icon in a `viewBox="0 0 24 24"` SVG).
+
+**A reading box is not a card.** A box for reading (an "On this page" list, a document's content, a step's part, a note) is a bordered box with 1.25rem of padding and no shadow (`.toc`, `.content`, `.step-box`), so a page of items and a page of reading look different at a glance. Use a card for a thing a person picks, a box for text a person reads.
+
+**A list of cards** is `.search-results-list` (a column, 1rem apart, no bullets; `.search-results-list--2` and `--3` make two or three columns, one on a narrow screen) or, for cards with an icon, `.docs-grid`. A card in a list has no bottom margin of its own. An app does not write these rules.
+
+**The record card** is the card of a thing that has a page of its own (a mention, a campaign, a department, a job class, a capital project, a program). It is an `.app-card.mm-card` in a list, with these parts, all from `shared/app-brand.css`: `.mm-card__select` (a checkbox, first), `.mm-card__image` (9rem square, optional), then `.mm-card__body` holding `.mm-card__title` (the name, a link, in an h3 or h4), `.mm-card__byline`, `.mm-card__text` and `.mm-card__meta`. Narrower than 480px the card stacks and the image runs across. An app adds only what is its own to this (a source line, a favicon, copy buttons) in its own classes, and never sets the size, weight, margin or color of the parts above.
+
+```html
+<ul class="search-results-list">
+  <li class="app-card mm-card">
+    <span class="mm-card__select"><input type="checkbox" aria-label="Select Road maintenance"></span>
+    <div class="mm-card__body">
+      <h3 class="mm-card__title"><a href="road-maintenance.html">Road maintenance</a></h3>
+      <p class="mm-card__byline">Department of Public Works</p>
+      <p class="mm-card__text">Keeps County roads safe and open.</p>
+    </div>
+  </li>
+</ul>
+```
+
 A card is a name that opens the page of the thing, and a line or two of plain text. Three sizes, the same in every app: the **name 1.25rem and bold**, the text 1rem (`.mm-card__text`), a small line 0.875rem (`.mm-card__byline`, `.mm-card__meta`), the last two regular weight. **A card has no badges, except a status** (Active, Terminated, New, Ongoing), and a status is the shell's status badge (`.app-status` with `data-status`: `open` blue, `done` green, `warning` amber, `danger` red), not a pill of our own; where pressing it applies a filter it is a `button.app-status` that looks the same. A kind, a category, a type, a service area or a department is text or a filter, not a badge. The figures on a card are lines of text, a label (muted) and its value on one line (`.capital-figures` inside `.mm-card`); a capital project shows its cost estimate and, if it has one, the additional funds needed. What a card shows is only what identifies it and its one or two figures: a vendor, its number of contracts and its total; a contract, its vendor and its amount; a department, its figures. Everything else is on the page of the thing, in a list of its own facts (`.facts`, one bordered box, a name and its value on each line).
 
 Names on cards and pages are written as a department's are (`shared/display-name.js`: a capital on each word, the short words and acronyms as they are written), not in the capitals the data has.

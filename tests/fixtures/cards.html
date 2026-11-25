@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cards fixture</title>
+  <link rel="stylesheet" href="../../vendor/pico.min.css">
+  <link rel="stylesheet" href="../../shared/app-brand.css">
+</head>
+<body>
+  <main class="container app-main">
+    <h1 class="visually-hidden">Cards fixture</h1>
+    <ul class="search-results-list" id="plain">
+      <li class="app-card mm-card" id="with-image">
+        <span class="mm-card__select"><input type="checkbox" aria-label="Select the first card"></span>
+        <img class="mm-card__image" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Crect width='10' height='10' fill='%23888'/%3E%3C/svg%3E">
+        <div class="mm-card__body">
+          <h3 class="mm-card__title"><a href="#one">A name that opens the page of the thing</a></h3>
+          <p class="mm-card__byline">A byline, small and muted</p>
+          <p class="mm-card__text">The text of the card, one or two plain lines.</p>
+          <div class="mm-card__meta"><span>Label</span><span>Value</span></div>
+        </div>
+      </li>
+      <li class="app-card mm-card" id="no-image">
+        <div class="mm-card__body">
+          <h3 class="mm-card__title"><a href="#two">A second card</a></h3>
+          <p class="mm-card__text">Text.</p>
+        </div>
+      </li>
+    </ul>
+    <ul class="search-results-list search-results-list--2" id="two-columns">
+      <li class="app-card mm-card"><div class="mm-card__body"><h3 class="mm-card__title"><a href="#a">One</a></h3></div></li>
+      <li class="app-card mm-card"><div class="mm-card__body"><h3 class="mm-card__title"><a href="#b">Two</a></h3></div></li>
+    </ul>
+  </main>
+</body>
+</html>
