@@ -773,7 +773,7 @@ An h1 has one of two sizes, set by two tokens in `shared/app-brand.css`. Nothing
 | **App title**: the h1 in the app header | `.app-title` (the shell draws it) | `--app-h1-app` | 1.35rem to 1.75rem |
 | **Page title**: the h1 of a page's own content (a document, a guide, a report, a landing page) | `.page-title`, or `.doc-title`, or `.hero h1` | `--app-h1-page` | 1.75rem to 2.25rem |
 
-A page has one h1. An app page has the app title in its header and no second h1 in the content; a content page in a docs shell (no app header) has its page title as the one h1. Section headings (h2 and below) keep their own sizes. `python3 vendor/marinos/audit-h1.py . --fail` (App Shell 2.6.0 and later) lists an app's own CSS that sets an h1 size.
+A page has one h1. An app page has the app title in its header and no second h1 in the content; a content page in a docs shell (no app header) has its page title as the one h1. Section headings (h2 and below) keep their own sizes. `python3 vendor/marinos/audit-h1.py . --fail` (App Shell 2.6.0 and later) lists an app's own CSS that sets an h1 size. An app's own heading class (a gate title, a reader title) sets it with `font-size: var(--app-h1-app)` or `font-size: var(--app-h1-page)` and a media query is not needed, because the tokens already get smaller on a small screen.
 
 ## MarinOS menu (banner)
 
