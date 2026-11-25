@@ -683,7 +683,7 @@ The list page of a set of documents (the regulations, the guides, the procedures
 - **Built from the structured data** the set already has, at build time, as plain HTML, the same data that draws the left navigation (see "Document set outline"). Nothing on the page is written by hand.
 - **Spacing.** The source line (the link to where the set comes from) sits 2rem below the cards.
 - **A source line is the source and nothing else.** It names the publisher and dataset and links to it. It has no caveat, method note, confidence level or margin-of-error sentence, or definition added to it, on the page or in a copied, downloaded or report version. Put any of that in its own place (a column heading, a Data tab, a measure's definition).
-- **A page below the home page has the same shell as the home page**: the header with the app name and About and Updates, the footer, and Feedback, with no breadcrumb. (Marin Budget and Marin Docs are the references.) The left navigation is not drawn on the landing page; the cards are the navigation.
+- **A page below the home page has the same shell as the home page**: the header with the app name, the footer, and Feedback, with no breadcrumb. (Marin Budget and Marin Docs are the references.) The left navigation is not drawn on the landing page; the cards are the navigation.
 - Only listed documents appear: a document left off the lists is left off the cards, the navigation and the search.
 
 ## Printing a document
@@ -764,31 +764,46 @@ A search that looks through the text of documents (not only their names) shows, 
 
 **The code.** The App Shell provides it, so an app writes none of this: `marinSearchWords(text)` (the typed words, the way the search splits them), `marinSearchSnippet(text, words)` (the `.search-snippet` element, with the matched words in `mark.search-hit`, or `null` when no word of the text starts with a typed word), `marinSearchRemember(href, words)` (call it when a result is pressed) and the highlighter, which runs by itself on the page a result opens. Reference apps: Marin Docs and the MarinOS home search.
 
-## Standard app nav: About and Updates
+## Heading sizes
 
-`#app-nav` never includes a link to the app's own default/home view, whether or not that view has its own task-specific name — the header icon/title link (`.app-title-row`, see "App shell" in `app-shell.md`) is the only way back to it. `#app-nav` lists just what's left: About, Updates, Security, and any additional non-default task tabs the app genuinely has (e.g. a multi-step app with Preview/Publish steps beyond its default Build step).
+An h1 has one of two sizes, set by two tokens in `shared/app-brand.css`. Nothing else sets an h1 size: an app does not write `font-size` on an h1.
+
+| Use | Class | Token | Size |
+|---|---|---|---|
+| **App title**: the h1 in the app header | `.app-title` (the shell draws it) | `--app-h1-app` | 1.35rem to 1.75rem |
+| **Page title**: the h1 of a page's own content (a document, a guide, a report, a landing page) | `.page-title`, or `.doc-title`, or `.hero h1` | `--app-h1-page` | 1.75rem to 2.25rem |
+
+A page has one h1. An app page has the app title in its header and no second h1 in the content; a content page in a docs shell (no app header) has its page title as the one h1. Section headings (h2 and below) keep their own sizes. `python3 vendor/marinos/audit-h1.py . --fail` (App Shell 2.6.0 and later) lists an app's own CSS that sets an h1 size. An app's own heading class (a gate title, a reader title) sets it with `font-size: var(--app-h1-app)` or `font-size: var(--app-h1-page)` and a media query is not needed, because the tokens already get smaller on a small screen.
+
+## MarinOS menu (banner)
+
+The MarinOS menu in the banner lists the apps from the MarinOS catalog. On a screen 1024px wide or more it opens as a wide panel with the apps in a horizontal grid and more room between them, and "Browse all in MarinOS" along the bottom; on a narrower screen it is a single vertical list. It is the same links and the same disclosure either way: the button reports `aria-expanded`, Escape closes it and returns focus to the button, and the focus order follows the page order. An app marked `"unlisted": true` in the catalog is left out of the menu (App Shell 2.6.0 and later).
+
+## Standard app nav: the app's own tabs only
+
+`#app-nav` holds only the tabs the app genuinely has beyond its default view (for example a multi-step app with Preview and Publish views, or an app with a Data tab). **About, Updates, Security, Accessibility and Tech are not in the header.** The shell puts all five in the footer of every app, so people find them in the same place everywhere and the header stays for the task. An app with no tabs of its own has an empty `#app-nav`, and the shell leaves out the Menu button as well, so the header is just the app's name.
+
+`#app-nav` never includes a link to the app's own default/home view, whether or not that view has its own task-specific name — the header icon/title link (`.app-title-row`, see "App shell" in `app-shell.md`) is the only way back to it.
 
 ```html
-<!-- Default view has no task-specific tab of its own (e.g. a directory or lookup landing page) -->
-<nav class="app-nav" id="app-nav" aria-label="Application navigation">
-  <a href="#about">About</a>
-  <a href="#updates">Updates</a>
-</nav>
+<!-- An app with no tabs of its own: nothing to write. The shell draws no nav and no Menu button. -->
+<marin-app-header app-name="Marin Spec" app-description="Turn project research into a build-ready specification."></marin-app-header>
 
-<!-- Default view is itself a named task tab (e.g. "Estimate", "Start", "Builder") — the tab's
-     data-tab-section still exists and still loads by default via hash-fallback, it just isn't
-     also duplicated as its own #app-nav entry -->
-<nav class="app-nav" id="app-nav" aria-label="Application navigation">
-  <a href="#about">About</a>
-  <a href="#updates">Updates</a>
-</nav>
+<!-- An app with its own task tabs lists only those, in a template the shell copies into #app-nav. -->
+<marin-app-header app-name="Marin Budget" app-description="…">
+  <template data-navigation>
+    <a href="#capital">Capital</a>
+  </template>
+</marin-app-header>
 ```
+
+The About and Updates sections still exist in the page (`#about`, `#updates`) and the footer links to them; only the header link is gone. The shell's `standard-links` attribute still works for an app that must show a standard page in its header, but the default is none.
 
 Don't add a "Home"/"Start" nav link pointing at the same view the header icon/title already links to — that's a duplicate, not a convenience.
 
 **The header icon/title links to `./` (the app's own root URL), not a `#<hash>`.** A hash link to the tab that's already showing doesn't do anything if you're on it but scrolled down — no hashchange fires for a same-hash click, so the page just stays wherever it was scrolled, and clicking it looks like it silently failed. `./` is a real navigation to a clean URL every time, which resets scroll (and all in-page state) on arrival the way "go home" should actually behave. Because `app-shell.js`'s tab-sync only tracks `a[href^="#"]` links (see "Tab sections" above), a `./` link is intentionally outside that system — don't hardcode `aria-current="page"` on it; that status belongs to whichever hash-tab is genuinely active, and `./` isn't one.
 
-**Use "About" — not "Help" — for the app's second, non-task tab, everywhere.** This is a single fixed label, not a per-app judgment call: usage instructions, "what this tool is," source/disclaimer content, and anything else that isn't the task itself all belong under one "About" tab and heading. The nav link text and the section's own heading must say the same thing ("About" in both). Structure: a plain `<section id="about" class="app-card" data-tab-section="about" hidden>`.
+**Use "About" — not "Help" — for the app's second, non-task section, everywhere.** This is a single fixed label, not a per-app judgment call: usage instructions, "what this tool is," source/disclaimer content, and anything else that isn't the task itself all belong under one "About" section and heading. The footer link text and the section's own heading must say the same thing ("About" in both). Structure: a plain `<section id="about" class="app-card" data-tab-section="about" hidden>`.
 
 **The default view must be immediately functional.** Whatever tab is shown with no hash (the task itself) should be the working tool — inputs, actions, results — not explanatory copy, source metadata, or how-to instructions sitting above or beside it. Move anything that isn't part of operating the tool into About, even if it's a small block like "where this data comes from" or a topic-link list. A group can span more than one non-adjacent element (give each the same `data-tab-section="about"` value) when About needs to combine usage instructions with metadata like this.
 
