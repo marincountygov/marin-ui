@@ -77,6 +77,14 @@ def run(page, base):
     require(page.url.endswith("#answer"), "The address names the step")
     require(page.inner_text(".steps-progress p") == "Step 2 of 3: Answer", "The progress line updates")
 
+    # Previous and Next are made for every step, in a named group, with names that match what is seen.
+    group = page.locator(".step:not([hidden]) .steps-pager")
+    require(group.get_attribute("role") == "group" and group.get_attribute("aria-label") == "Previous and next step", "The pager is a named group")
+    require(group.locator("[data-prev-step]").get_attribute("aria-label") == "Previous: gather", "Previous is named")
+    require(group.locator("[data-next-step]").inner_text().strip() == "Next: send", "Next keeps its words")
+    require(page.locator("#gather .steps-pager [data-prev-step]").count() == 0 and page.locator("#send .steps-pager [data-next-step]").count() == 0, "No Previous on the first step and no Next on the last")
+    require(group.locator("[disabled]").count() == 0, "Nothing is disabled")
+
     # Skip ahead: the last step is one click away, and the first two read as completed.
     page.click("nav.steps a[href='#send']")
     require(states(page) == ["complete", "complete", "current"], f"After skipping ahead: {states(page)}")
