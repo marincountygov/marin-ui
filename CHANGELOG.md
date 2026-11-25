@@ -1,5 +1,8 @@
 # MarinOS brand bundle changelog
 
+## Documentation, 2026-11-24 (no version change: docs are not part of the shipped bundle)
+- `docs/components.md` "Tab sections": Data is always the last tab. "Sortable table columns": a table has a border and each cell has one, the same on the page and in Fullscreen, in every app. A table holds one kind of thing: group rows with a table for each group (heading and caption), and sort only a column whose values are comparable.
+
 ## 1.38.0 — 2026-11-24
 - Add `mark.search-hit` and `.search-snippet` to `shared/app-brand.css`: a search result can show a line of the text where the words are, with the matched words marked, and the same words are marked on the page the result opens. The mark is a tint of the accent on the surface with the normal text color, never the browser's default yellow. `scripts/check-contrast.js` checks the pair in light and dark mode. The behavior (`marinSearchSnippet`, `marinSearchHighlight`) is in the App Shell. Why: Marin Docs and the MarinOS home search each carried a copy; every app's search can now use the same one. The standard is "Search results that show where the words are" in `docs/components.md`.
 
