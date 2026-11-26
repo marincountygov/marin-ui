@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home page fixture</title>
+  <link rel="stylesheet" href="../../vendor/pico.min.css">
+  <link rel="stylesheet" href="../../shared/app-brand.css">
+</head>
+<body>
+  <main id="main" class="container app-main">
+    <h1 class="visually-hidden">Home page fixture</h1>
+    <section id="directory">
+      <search class="home-search" id="home-search" aria-label="Search the fixture">
+        <div class="search-input-field"><label for="home-search-input">Search</label><input type="search" id="home-search-input"></div>
+        <div class="mm-results-summary"><p class="app-help-text" id="home-search-status"><span class="results-line"><span class="results-line__count">2 results</span><span class="results-line__slash"> / </span><span class="results-line__filters">matching “a”</span></span></p></div>
+        <div class="home-search__results"><section class="home-search__group"><h3>Places (2)</h3><ul><li><a href="#a">Alpha</a> <span class="home-search__what">a place</span></li><li><a href="#b">Beta</a></li></ul></section></div>
+      </search>
+      <div class="directory-grid" id="directory-grid">
+        <article class="app-card directory-card"><h3><a href="#1">One</a></h3><p>First card.</p><div class="directory-card__badges"><span class="app-status" data-status="beta">Beta</span></div></article>
+        <article class="app-card directory-card"><h3><a href="#2">Two</a></h3><p>Second card.</p></article>
+        <article class="app-card directory-card"><h3><a href="#3">Three</a></h3><p>Third card.</p></article>
+        <article class="app-card directory-card"><h3><a href="#4">Four</a></h3><p>Fourth card.</p></article>
+        <article class="app-card directory-card"><h3><a href="#5">Five</a></h3><p>Fifth card.</p></article>
+      </div>
+      <div class="docs-grid" id="docs-grid">
+        <article class="app-card"><h3><a href="#6">Six</a></h3><p>Sixth card.</p></article>
+        <article class="app-card"><h3><a href="#7">Seven</a></h3><p>Seventh card.</p></article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

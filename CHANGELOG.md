@@ -3,6 +3,9 @@
 ## Documentation, 2026-11-25 (no version change: docs are not part of the shipped bundle)
 - `docs/components.md` "Steps layout": the steps panel carries `data-filter-column-exempt="steps"` so the filter-column audit does not list it. Why: the audit lists every `search-sidebar` that is not drawn from `filters.json`, and the steps list is not a filter.
 
+## 1.44.0 — 2026-11-26
+- The home page layout is shared. `.home-search` and its results (`.home-search__group`, `.results-line__*`, `.home-search__what`), `.directory-grid` (the same grid as `.docs-grid`, with no margin under a card), `.directory-card` and `.directory-card__badges` are in `shared/app-brand.css`, and `docs/components.md` "Home page" says a home page is `main.container.app-main`. `tests/fixtures/home.html` and `tests/browser_home.py` check the numbers in light and dark, wide and narrow, and with axe-core. Why: the MarinOS, Marin Docs and Marin Pulse home pages each had their own copy of the search styles, and Docs and Pulse used the document layout (`docs-main`: 40px above, 24px at the sides) where MarinOS used the app layout (32px above, 16px at the sides), so the search box and the cards jumped 8px when going from one to the other.
+
 ## Documentation, 2026-11-26 (no version change: docs are not part of the shipped bundle)
 - `docs/components.md` "Heading sizes": a page below the home page that has its own title has that title as its one h1, and its header draws the app name as plain text (`title-heading="false"`, App Shell 2.9.0). Why: every inner page of Marin Docs (guides, regulations, procedures) had two h1s, the app title and the page's own, and demoting the page title would have flattened its headings.
 
