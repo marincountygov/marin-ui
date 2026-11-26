@@ -253,6 +253,30 @@ project:
 
 `test` is `true` or `false` and defaults to `false`. `test_sections` is one line of folders separated by commas (the shell reads `marin.yml` as simple key and value lines, so no YAML list) and applies when `test` is `false`. A static page does not read `marin.yml`, so the app's build writes the banner from it. Remove the line (or set `false`) when the data has been reviewed; do not keep the banner on reviewed data. It is not an alert: it never closes, and it does not change focus or move the page.
 
+## Home page
+
+The home page of an app that holds a list of things (a directory of apps, the collections of Docs or Pulse) has one layout in every app, so going from one app's home page to another's does not move anything:
+
+```html
+<main id="main" class="container app-main" tabindex="-1">
+  <section data-tab-section="directory" aria-label="Collections">
+    <search class="home-search" id="home-search" aria-label="Search Marin Pulse" hidden>
+      <div class="search-input-field"><label for="home-search-input">Search</label><input type="search" id="home-search-input" autocomplete="off"></div>
+      <div class="mm-results-summary"><p class="app-help-text" id="home-search-status" role="status" aria-live="polite"></p></div>
+      <div class="home-search__results" id="home-search-results"></div>
+    </search>
+    <div class="directory-grid" id="collections">
+      <article class="app-card directory-card">…</article>
+    </div>
+  </section>
+</main>
+```
+
+- **The page is `main.container.app-main`** (32px above, 16px at the sides, 72px below, no wider than 1280px). Not `docs-main` or `page`: those are for a document and have 40px above and 24px at the sides, so a home page built on them sits 8px off from every other app's.
+- **The search box comes first** (`.home-search`, three quarters of the width, full width on a narrow screen), then the cards. The box is hidden until JavaScript runs (`hidden`), so without JavaScript the cards are all there is. Results are grouped by kind in `.home-search__group`, each result ruled off.
+- **The cards are `.directory-grid`** (the same grid as `.docs-grid`: columns at least 18rem wide, 1rem apart, no margin under a card), each an `.app-card.directory-card`. A status badge, if there is one, goes in `.directory-card__badges` and sits at the bottom of the card.
+- **An app writes none of this CSS.** Marin OS, Marin Docs and Marin Pulse each carried a copy, and the copies had drifted. `tests/browser_home.py` checks the numbers above.
+
 ## Cards
 
 **One card surface, `.app-card`:** a surface background, a 1px border, the standard radius, 1rem of padding, a soft shadow and 1rem below it. Every card in every app is an `.app-card`. An app does not redraw a card's border, radius, background or shadow in its own CSS, and does not make a second card class for the surface (`.job-card`, `.logo-card`, `.course-card` and the like are only for what is inside a card). A card has the default padding; a card that holds one main thing (a quiz question, a review) may set more padding on a class of its own, because padding is layout, not surface. A card whose colors change with a state sets `--app-card-bg`, `--app-card-border` and `--app-card-shadow` on itself (for example `transparent`, `transparent` and `none` for a card that fades out its edge), never `background`, `border` or `box-shadow`. The one variant is `.app-card--secondary`, the same card quieter (a smaller icon, name and text) for a second-level list: a department among departments, a help item. A card that has an icon uses `.app-card__icon` (2.25rem, accent colored, drawn with the Lucide icon in a `viewBox="0 0 24 24"` SVG).
